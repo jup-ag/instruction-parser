@@ -1,0 +1,15 @@
+{
+  "name": "instruction-parser",
+  "version": "1.0.0",
+  "description": "Parser to parse instruction on the Jupiter program.",
+  "main": "index.js",
+  "scripts": {
+    "parse": "tsc && node ./dist/cli/parse.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@project-serum/anchor": "^0.21.0",
+    "@solana/web3.js": "^1.33.0"
+  }
+}
