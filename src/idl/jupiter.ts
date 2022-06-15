@@ -135,6 +135,77 @@ export type Jupiter = {
       ];
     },
     {
+      name: "saberSwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "swap";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "swapAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "inputUserAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputUserAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "feesTokenAccount";
+          isMut: true;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "inAmount";
+          type: {
+            option: "u64";
+          };
+        },
+        {
+          name: "minimumOutAmount";
+          type: "u64";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
       name: "saberAddDecimalsDeposit";
       accounts: [
         {
@@ -1231,6 +1302,167 @@ export type Jupiter = {
       ];
     },
     {
+      name: "cykuraSwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "signer";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "factoryState";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "poolState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "lastObservationState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "coreProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "inAmount";
+          type: {
+            option: "u64";
+          };
+        },
+        {
+          name: "minimumOutAmount";
+          type: "u64";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "whirlpoolSwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenAuthority";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "whirlpool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenOwnerAccountA";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenVaultA";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenOwnerAccountB";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenVaultB";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray0";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray1";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray2";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "oracle";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "inAmount";
+          type: {
+            option: "u64";
+          };
+        },
+        {
+          name: "minimumOutAmount";
+          type: "u64";
+        },
+        {
+          name: "aToB";
+          type: "bool";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
       name: "riskCheckAndFee";
       accounts: [
         {
@@ -1271,20 +1503,15 @@ export type Jupiter = {
         {
           name: "tokenLedger";
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: "payer";
-          isMut: false;
+          isMut: true;
           isSigner: true;
         },
         {
           name: "systemProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "rent";
           isMut: false;
           isSigner: false;
         }
@@ -1424,39 +1651,29 @@ export type Jupiter = {
       };
     },
     {
-      name: "Deposit";
+      name: "Swap";
       type: {
         kind: "struct";
         fields: [
           {
             name: "amount";
             type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "Withdraw";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "maxBurnAmount";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "Direction";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "LeftToRight";
           },
           {
-            name: "RightToLeft";
+            name: "otherAmountThreshold";
+            type: "u64";
+          },
+          {
+            name: "sqrtPriceLimit";
+            type: "u128";
+          },
+          {
+            name: "amountSpecifiedIsInput";
+            type: "bool";
+          },
+          {
+            name: "aToB";
+            type: "bool";
           }
         ];
       };
@@ -1487,6 +1704,20 @@ export type Jupiter = {
           },
           {
             name: "Ask";
+          }
+        ];
+      };
+    },
+    {
+      name: "Direction";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "LeftToRight";
+          },
+          {
+            name: "RightToLeft";
           }
         ];
       };
@@ -1621,6 +1852,77 @@ export const IDL: Jupiter = {
         },
         {
           name: "clock",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "inputUserAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputUserAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "feesTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "inAmount",
+          type: {
+            option: "u64",
+          },
+        },
+        {
+          name: "minimumOutAmount",
+          type: "u64",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "saberSwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "swap",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "swapAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userAuthority",
           isMut: false,
           isSigner: false,
         },
@@ -2764,6 +3066,167 @@ export const IDL: Jupiter = {
       ],
     },
     {
+      name: "cykuraSwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "signer",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "factoryState",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "poolState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "lastObservationState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "coreProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "inAmount",
+          type: {
+            option: "u64",
+          },
+        },
+        {
+          name: "minimumOutAmount",
+          type: "u64",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "whirlpoolSwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenAuthority",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "whirlpool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenOwnerAccountA",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenVaultA",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenOwnerAccountB",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenVaultB",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray0",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray1",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray2",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "oracle",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "inAmount",
+          type: {
+            option: "u64",
+          },
+        },
+        {
+          name: "minimumOutAmount",
+          type: "u64",
+        },
+        {
+          name: "aToB",
+          type: "bool",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
       name: "riskCheckAndFee",
       accounts: [
         {
@@ -2804,20 +3267,15 @@ export const IDL: Jupiter = {
         {
           name: "tokenLedger",
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: "payer",
-          isMut: false,
+          isMut: true,
           isSigner: true,
         },
         {
           name: "systemProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "rent",
           isMut: false,
           isSigner: false,
         },
@@ -2957,7 +3415,7 @@ export const IDL: Jupiter = {
       },
     },
     {
-      name: "Deposit",
+      name: "Swap",
       type: {
         kind: "struct",
         fields: [
@@ -2965,31 +3423,21 @@ export const IDL: Jupiter = {
             name: "amount",
             type: "u64",
           },
-        ],
-      },
-    },
-    {
-      name: "Withdraw",
-      type: {
-        kind: "struct",
-        fields: [
           {
-            name: "maxBurnAmount",
+            name: "otherAmountThreshold",
             type: "u64",
           },
-        ],
-      },
-    },
-    {
-      name: "Direction",
-      type: {
-        kind: "enum",
-        variants: [
           {
-            name: "LeftToRight",
+            name: "sqrtPriceLimit",
+            type: "u128",
           },
           {
-            name: "RightToLeft",
+            name: "amountSpecifiedIsInput",
+            type: "bool",
+          },
+          {
+            name: "aToB",
+            type: "bool",
           },
         ],
       },
@@ -3020,6 +3468,20 @@ export const IDL: Jupiter = {
           },
           {
             name: "Ask",
+          },
+        ],
+      },
+    },
+    {
+      name: "Direction",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "LeftToRight",
+          },
+          {
+            name: "RightToLeft",
           },
         ],
       },
