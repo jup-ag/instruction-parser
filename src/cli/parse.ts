@@ -1,24 +1,21 @@
-import { Connection, PartiallyDecodedInstruction } from "@solana/web3.js";
-import { InstructionParser } from "..";
+import { Connection } from "@solana/web3.js";
+import { extract, getTokenMap } from "..";
 
 (async () => {
   const signature =
-    "3SoxaZFAiYL7WPfUpgMZ4czZcKxdft11hEeyEVsie5gcFuPTPDJU99QUt8ayj4mPPUAFnwecr5KKJADqGCBwVjJB";
-  const connection = new Connection("https://ssc-dao.genesysgo.net");
-  const tx = await connection.getParsedConfirmedTransaction(signature);
-
-  // The third instruction of the above tx signature is a Jupiter swap instruction.
-  const ix = tx.transaction.message
-    .instructions[2] as PartiallyDecodedInstruction;
-
-  const parser = new InstructionParser();
-  const { source, destination } = parser.getSenderAndReceiverTokenAccounts(
-    tx.transaction.message.accountKeys,
-    ix
-  );
-
-  console.log({
-    source: source.toBase58(),
-    destination: destination.toBase58(),
+    "2wi2SPbyFm9XbH1un1CcdfVTQcMoQxCreRvCikDDaVw49aQQvZoJPB9Sv2KX6NMTV2tctAtyF4EmvjGH8SMafq5a";
+  const connection = new Connection(""); // Use your own RPC endpoint here.
+  const tx = await connection.getParsedTransaction(signature, {
+    maxSupportedTransactionVersion: 0,
   });
+
+  const tokenMap = await getTokenMap();
+  const result = await extract(
+    signature,
+    connection,
+    tx,
+    tokenMap,
+    tx.blockTime
+  );
+  console.log(result);
 })();
