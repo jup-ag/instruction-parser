@@ -2,17 +2,18 @@
   "name": "instruction-parser",
   "version": "1.0.0",
   "description": "Parser to parse instruction on the Jupiter program.",
-  "main": "index.js",
+  "main": "cli.js",
   "scripts": {
-    "parse": "tsc && node ./dist/cli/parse.js"
+    "start": "tsc && node dist/cli.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@project-serum/anchor": "^0.26.0",
-    "@solana/spl-token-registry": "^0.2.4574",
     "@solana/spl-token": "^0.1.8",
+    "@solana/spl-token-registry": "^0.2.7",
     "@solana/web3.js": "^1.73.2",
+    "commander": "^9.1.0",
     "decimal.js": "^10.3.1",
     "got": "^11.8.2"
   }
