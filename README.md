@@ -1,7 +1,15 @@
-# Event Parser for Jupiter V4 Contract
+# Parser for Jupiter V4 Contract
 
-A simple demo on how to parse the events in swap instruction on the Jupiter program using the Jupiter IDL.
-To learn how this works, check out the code in `./src/cli/parse`. Or, you can run `npm run parse`.
+A library you can use to parse the Jupiter v4 swap instruction. It is also the same library that we use to parse the swap information on the https://station.jup.ag/stats page.
+
+After cloning the repo, in the project directory run `yarn install`. Then:
+
+
+```
+yarn start lookup-tx --signature <TRANSACTION_SIGNATURE> --rpc <RPC_URL>
+```
+
+For an example on how to use the library, you can check out: `src/cli.ts`.
 
 ## Jupiter V3 Contract
 
