@@ -47,91 +47,6 @@ export type Jupiter = {
       ];
     },
     {
-      name: "whirlpoolSwapExactOutput";
-      accounts: [
-        {
-          name: "swapProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "tokenProgram";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "tokenAuthority";
-          isMut: false;
-          isSigner: true;
-        },
-        {
-          name: "whirlpool";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tokenOwnerAccountA";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tokenVaultA";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tokenOwnerAccountB";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tokenVaultB";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tickArray0";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tickArray1";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "tickArray2";
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: "oracle";
-          isMut: false;
-          isSigner: false;
-        }
-      ];
-      args: [
-        {
-          name: "outAmount";
-          type: "u64";
-        },
-        {
-          name: "inAmountWithSlippage";
-          type: {
-            defined: "AmountWithSlippage";
-          };
-        },
-        {
-          name: "aToB";
-          type: "bool";
-        },
-        {
-          name: "platformFeeBps";
-          type: "u8";
-        }
-      ];
-    },
-    {
       name: "createOpenOrders";
       accounts: [
         {
@@ -2017,6 +1932,133 @@ export type Jupiter = {
         }
       ];
       args: [];
+    },
+    {
+      name: "phoenixSwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "logAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "market";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "trader";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "baseAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "quoteAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "baseVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "quoteVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "symmetrySwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "buyer";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "fundState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "pdaAccount";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "pdaFromTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "buyerFromTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "pdaToTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "buyerToTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "swapFeeAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "hostFeeAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "managerFeeAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenInfo";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "prismData";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
     }
   ];
   types: [
@@ -2375,6 +2417,30 @@ export type Jupiter = {
                 };
               }
             ];
+          },
+          {
+            name: "Phoenix";
+            fields: [
+              {
+                name: "side";
+                type: {
+                  defined: "Side";
+                };
+              }
+            ];
+          },
+          {
+            name: "Symmetry";
+            fields: [
+              {
+                name: "fromTokenId";
+                type: "u64";
+              },
+              {
+                name: "toTokenId";
+                type: "u64";
+              }
+            ];
           }
         ];
       };
@@ -2556,91 +2622,6 @@ export const IDL: Jupiter = {
         {
           name: "slippageBps",
           type: "u16",
-        },
-        {
-          name: "platformFeeBps",
-          type: "u8",
-        },
-      ],
-    },
-    {
-      name: "whirlpoolSwapExactOutput",
-      accounts: [
-        {
-          name: "swapProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "tokenProgram",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "tokenAuthority",
-          isMut: false,
-          isSigner: true,
-        },
-        {
-          name: "whirlpool",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tokenOwnerAccountA",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tokenVaultA",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tokenOwnerAccountB",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tokenVaultB",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tickArray0",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tickArray1",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "tickArray2",
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: "oracle",
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: "outAmount",
-          type: "u64",
-        },
-        {
-          name: "inAmountWithSlippage",
-          type: {
-            defined: "AmountWithSlippage",
-          },
-        },
-        {
-          name: "aToB",
-          type: "bool",
         },
         {
           name: "platformFeeBps",
@@ -4535,6 +4516,133 @@ export const IDL: Jupiter = {
       ],
       args: [],
     },
+    {
+      name: "phoenixSwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "logAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "market",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "trader",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "baseAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "quoteAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "baseVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "quoteVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "symmetrySwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "buyer",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "fundState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "pdaAccount",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "pdaFromTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "buyerFromTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "pdaToTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "buyerToTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "swapFeeAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "hostFeeAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "managerFeeAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenInfo",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "prismData",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
   ],
   types: [
     {
@@ -4890,6 +4998,30 @@ export const IDL: Jupiter = {
                 type: {
                   defined: "Side",
                 },
+              },
+            ],
+          },
+          {
+            name: "Phoenix",
+            fields: [
+              {
+                name: "side",
+                type: {
+                  defined: "Side",
+                },
+              },
+            ],
+          },
+          {
+            name: "Symmetry",
+            fields: [
+              {
+                name: "fromTokenId",
+                type: "u64",
+              },
+              {
+                name: "toTokenId",
+                type: "u64",
               },
             ],
           },
