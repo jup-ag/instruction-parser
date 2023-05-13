@@ -11,6 +11,10 @@ yarn start lookup-tx --signature <TRANSACTION_SIGNATURE> --rpc <RPC_URL>
 
 For an example on how to use the library, you can check out: `src/cli.ts`.
 
+## Note
+
+We are using Anchor events for extracting swap details. One downside about this approach is that we cannot longer extract swap details if the log is being truncated.
+
 ## Jupiter V3 Contract
 
 For the old V3 contract, check out [v3 tag](https://github.com/jup-ag/instruction-parser/tree/v3).
