@@ -17,7 +17,6 @@ export async function getPriceInUSDByMint(
 
     // Cache for 60 seconds
     if (price && ttl && new Date().getTime() - ttl < 60 * 1000) {
-      console.log(`Get cached price for ${tokenMint} at ${price}`);
       return new Decimal(price);
     }
 

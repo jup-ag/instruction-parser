@@ -91,7 +91,7 @@ export async function extract(
   tx: ParsedTransactionWithMeta,
   tokenMap: Map<string, TokenInfo>,
   blockTime?: number
-): Promise<SwapAttributes> {
+): Promise<SwapAttributes | undefined> {
   const programId = JUPITER_V4_PROGRAM_ID;
   const accountInfosMap: AccountInfoMap = new Map();
 
@@ -211,7 +211,7 @@ export async function extract(
 
   if (feeEvent) {
     const { symbol, mint, amount, amountInDecimal, amountInUSD } =
-      await this.extractVolume(
+      await extractVolume(
         tokenMap,
         accountInfosMap,
         feeEvent.data.mint as any,
@@ -332,7 +332,7 @@ function extractTokenAccountOwner(
     accountData.data.length === 165
   ) {
     const accountInfo = AccountLayout.decode(accountData.data);
-    return accountInfo.owner;
+    return new PublicKey(accountInfo.owner);
   }
 
   return;
