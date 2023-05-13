@@ -1,18 +1,29 @@
 {
-  "name": "instruction-parser",
-  "version": "1.0.0",
-  "description": "Parser to parse instruction on the Jupiter program.",
-  "main": "index.js",
+  "name": "@jup-ag/instruction-parser",
+  "version": "1.0.4",
+  "description": "Parser to parse instruction on the Jupiter v4 program.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "parse": "tsc && node ./dist/cli/parse.js"
+    "start": "ts-node src/cli.ts",
+    "build": "tsup"
   },
   "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "tsup": "^6.4.0",
+    "typescript": "^4.4.4"
+  },
   "dependencies": {
     "@project-serum/anchor": "^0.26.0",
-    "@solana/spl-token-registry": "^0.2.4574",
     "@solana/spl-token": "^0.1.8",
+    "@solana/spl-token-registry": "^0.2.7",
     "@solana/web3.js": "^1.73.2",
+    "commander": "^9.1.0",
     "decimal.js": "^10.3.1",
     "got": "^11.8.2"
   }

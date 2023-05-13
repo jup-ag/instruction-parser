@@ -50,8 +50,6 @@ export class InstructionParser {
 
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
-      console.log({ ixName: ix.name, ixData: JSON.stringify(ix.data) });
-
       if (ix.name === "route") {
         const initialPositions = [];
         this.processSwapLegToExtractInitialPositions(

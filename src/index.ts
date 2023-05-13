@@ -1,5 +1,5 @@
 import { BN, Event, IdlTypes } from "@project-serum/anchor";
-import { MintLayout } from "@solana/spl-token";
+import { AccountLayout, MintLayout } from "@solana/spl-token";
 import { TokenInfo } from "@solana/spl-token-registry";
 import {
   AccountInfo,
@@ -8,11 +8,12 @@ import {
   PublicKey,
 } from "@solana/web3.js";
 import Decimal from "decimal.js";
-import got from "got";
 import { Jupiter } from "./idl/jupiter";
 import { EventExtractor } from "./lib/event-extractor";
 import { InstructionParser } from "./lib/instruction-parser";
 import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
+
+export { getTokenMap } from "./lib/utils";
 
 type AccountInfoMap = Map<string, AccountInfo<Buffer>>;
 
@@ -49,9 +50,12 @@ export const AMM_TYPES = {
   CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK: "Raydium CLMM",
   srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX: "Openbook",
   "9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H": "Marco Polo",
+  PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY: "Phoenix",
+  "2KehYt3KsEQR53jYcxjbQp2d2kCp4AkuQW68atufRwSr": "Symmetry",
+  BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p: "BonkSwap",
 };
 
-export type TransactionAttributes = {
+export type SwapAttributes = {
   owner: string;
   programId: string;
   signature: string;
@@ -81,33 +85,13 @@ export type TransactionAttributes = {
   tokenLedger?: string;
 };
 
-export async function getTokenMap(): Promise<Map<string, TokenInfo>> {
-  const tokenMap = new Map();
-
-  const tokenList = await got("https://cache.jup.ag/tokens").json<
-    Array<TokenInfo>
-  >();
-  tokenList.forEach((item) => {
-    tokenMap.set(item.address, item);
-  });
-
-  const unknownTokenList = await got(
-    "https://cache.jup.ag/unknown-tokens"
-  ).json<Array<TokenInfo>>();
-  unknownTokenList.forEach((item) => {
-    tokenMap.set(item.address, item);
-  });
-
-  return tokenMap;
-}
-
 export async function extract(
   signature: string,
   connection: Connection,
   tx: ParsedTransactionWithMeta,
   tokenMap: Map<string, TokenInfo>,
   blockTime?: number
-): Promise<TransactionAttributes> {
+): Promise<SwapAttributes | undefined> {
   const programId = JUPITER_V4_PROGRAM_ID;
   const accountInfosMap: AccountInfoMap = new Map();
 
@@ -188,64 +172,64 @@ export async function extract(
       ? Decimal.min(outAmountInUSD, inAmountInUSD)
       : outAmountInUSD ?? inAmountInUSD;
 
-  const newTx: TransactionAttributes = {} as TransactionAttributes;
+  const swap: SwapAttributes = {} as SwapAttributes;
 
-  newTx.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
-  newTx.programId = programId.toBase58();
-  newTx.signature = signature;
-  newTx.timestamp = new Date(new Date((blockTime ?? 0) * 1000).toISOString());
-  newTx.legCount = swapEvents.length;
-  newTx.volumeInUSD = volumeInUSD.toNumber();
+  swap.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
+  swap.programId = programId.toBase58();
+  swap.signature = signature;
+  swap.timestamp = new Date(new Date((blockTime ?? 0) * 1000).toISOString());
+  swap.legCount = swapEvents.length;
+  swap.volumeInUSD = volumeInUSD.toNumber();
 
-  newTx.inSymbol = inSymbol;
-  newTx.inAmount = inAmount;
-  newTx.inAmountInDecimal = inAmountInDecimal.toNumber();
-  newTx.inAmountInUSD = inAmountInUSD.toNumber();
-  newTx.inMint = inMint;
+  swap.inSymbol = inSymbol;
+  swap.inAmount = inAmount;
+  swap.inAmountInDecimal = inAmountInDecimal.toNumber();
+  swap.inAmountInUSD = inAmountInUSD.toNumber();
+  swap.inMint = inMint;
 
-  newTx.outSymbol = outSymbol;
-  newTx.outAmount = outAmount;
-  newTx.outAmountInDecimal = outAmountInDecimal.toNumber();
-  newTx.outAmountInUSD = outAmountInUSD.toNumber();
-  newTx.outMint = outMint;
+  swap.outSymbol = outSymbol;
+  swap.outAmount = outAmount;
+  swap.outAmountInDecimal = outAmountInDecimal.toNumber();
+  swap.outAmountInUSD = outAmountInUSD.toNumber();
+  swap.outMint = outMint;
 
   const exactOutAmount = parser.getExactOutAmount(
     tx.transaction.message.instructions as any
   );
   if (exactOutAmount) {
-    newTx.exactOutAmount = BigInt(exactOutAmount);
+    swap.exactOutAmount = BigInt(exactOutAmount);
 
     if (outAmountInUSD) {
-      newTx.exactOutAmountInUSD = new Decimal(exactOutAmount)
+      swap.exactOutAmountInUSD = new Decimal(exactOutAmount)
         .div(outAmount.toString())
         .mul(outAmountInUSD)
         .toNumber();
     }
   }
 
-  newTx.swapData = JSON.parse(JSON.stringify(swapData));
+  swap.swapData = JSON.parse(JSON.stringify(swapData));
 
   if (feeEvent) {
     const { symbol, mint, amount, amountInDecimal, amountInUSD } =
-      await this.extractVolume(
+      await extractVolume(
         tokenMap,
         accountInfosMap,
         feeEvent.data.mint as any,
         feeEvent.data.amount as any
       );
-    newTx.feeTokenPubkey = (feeEvent.data.account as any).toBase58();
-    newTx.feeOwner = this.extractTokenAccountOwner(
+    swap.feeTokenPubkey = (feeEvent.data.account as any).toBase58();
+    swap.feeOwner = extractTokenAccountOwner(
       accountInfosMap,
       feeEvent.data.account as any
     )?.toBase58();
-    newTx.feeSymbol = symbol;
-    newTx.feeAmount = BigInt(amount);
-    newTx.feeAmountInDecimal = amountInDecimal?.toNumber();
-    newTx.feeAmountInUSD = amountInUSD?.toNumber();
-    newTx.feeMint = mint;
+    swap.feeSymbol = symbol;
+    swap.feeAmount = BigInt(amount);
+    swap.feeAmountInDecimal = amountInDecimal?.toNumber();
+    swap.feeAmountInUSD = amountInUSD?.toNumber();
+    swap.feeMint = mint;
   }
 
-  return newTx;
+  return swap;
 }
 
 async function parseSwapEvents(
@@ -332,6 +316,26 @@ async function extractVolume(
     amountInDecimal,
     amountInUSD,
   };
+}
+
+function extractTokenAccountOwner(
+  accountInfosMap: AccountInfoMap,
+  account: PublicKey
+) {
+  const accountData = accountInfosMap.get(account.toBase58());
+
+  if (
+    accountData &&
+    accountData.owner.equals(
+      new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    ) &&
+    accountData.data.length === 165
+  ) {
+    const accountInfo = AccountLayout.decode(accountData.data);
+    return new PublicKey(accountInfo.owner);
+  }
+
+  return;
 }
 
 function extractMintDecimals(accountInfosMap: AccountInfoMap, mint: PublicKey) {
