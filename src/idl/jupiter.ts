@@ -4,6 +4,7 @@ export type Jupiter = {
   instructions: [
     {
       name: "route";
+      docs: ["route_plan Topologically sorted trade DAG"];
       accounts: [
         {
           name: "tokenProgram";
@@ -23,9 +24,11 @@ export type Jupiter = {
       ];
       args: [
         {
-          name: "swapLeg";
+          name: "routePlan";
           type: {
-            defined: "SwapLeg";
+            vec: {
+              defined: "RoutePlanStep";
+            };
           };
         },
         {
@@ -39,6 +42,281 @@ export type Jupiter = {
         {
           name: "slippageBps";
           type: "u16";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "whirlpoolSwapExactOutput";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenAuthority";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "whirlpool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenOwnerAccountA";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenVaultA";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenOwnerAccountB";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenVaultB";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray0";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray1";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray2";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "oracle";
+          isMut: false;
+          isSigner: false;
+          docs: [
+            "Oracle is currently unused and will be enabled on subsequent updates"
+          ];
+        }
+      ];
+      args: [
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "inAmountWithSlippage";
+          type: {
+            defined: "AmountWithSlippage";
+          };
+        },
+        {
+          name: "aToB";
+          type: "bool";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "raydiumSwapExactOutput";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "ammId";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "ammAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "ammOpenOrders";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "poolCoinTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "poolPcTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumProgramId";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "serumMarket";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumBids";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumAsks";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumEventQueue";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumCoinVaultAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumPcVaultAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumVaultSigner";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userSourceTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userDestinationTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userSourceOwner";
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "inAmountWithSlippage";
+          type: {
+            defined: "AmountWithSlippage";
+          };
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "raydiumClmmSwapExactOutput";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "payer";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "ammConfig";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "poolState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "observationState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tickArray";
+          isMut: true;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "inAmountWithSlippage";
+          type: {
+            defined: "AmountWithSlippage";
+          };
         },
         {
           name: "platformFeeBps";
@@ -1220,6 +1498,9 @@ export type Jupiter = {
           name: "oracle";
           isMut: false;
           isSigner: false;
+          docs: [
+            "Oracle is currently unused and will be enabled on subsequent updates"
+          ];
         }
       ];
       args: [];
@@ -2079,53 +2360,27 @@ export type Jupiter = {
       };
     },
     {
-      name: "SplitLegDeeper";
+      name: "RoutePlanStep";
       type: {
         kind: "struct";
         fields: [
+          {
+            name: "swap";
+            type: {
+              defined: "Swap";
+            };
+          },
           {
             name: "percent";
             type: "u8";
           },
           {
-            name: "swapLeg";
-            type: {
-              defined: "SwapLegSwap";
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "SplitLeg";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "percent";
+            name: "inputIndex";
             type: "u8";
           },
           {
-            name: "swapLeg";
-            type: {
-              defined: "SwapLegDeeper";
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "SwapInstrution";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "Swap";
-            fields: [
-              {
-                defined: "Swap";
-              }
-            ];
+            name: "outputIndex";
+            type: "u8";
           }
         ];
       };
@@ -2140,121 +2395,6 @@ export type Jupiter = {
           },
           {
             name: "Ask";
-          }
-        ];
-      };
-    },
-    {
-      name: "SwapLegSwap";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "PlaceholderOne";
-          },
-          {
-            name: "PlaceholderTwo";
-          },
-          {
-            name: "Swap";
-            fields: [
-              {
-                name: "swap";
-                type: {
-                  defined: "Swap";
-                };
-              }
-            ];
-          }
-        ];
-      };
-    },
-    {
-      name: "SwapLegDeeper";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "Chain";
-            fields: [
-              {
-                name: "swap_legs";
-                type: {
-                  vec: {
-                    defined: "SwapLegSwap";
-                  };
-                };
-              }
-            ];
-          },
-          {
-            name: "Split";
-            fields: [
-              {
-                name: "split_legs";
-                type: {
-                  vec: {
-                    defined: "SplitLegDeeper";
-                  };
-                };
-              }
-            ];
-          },
-          {
-            name: "Swap";
-            fields: [
-              {
-                name: "swap";
-                type: {
-                  defined: "Swap";
-                };
-              }
-            ];
-          }
-        ];
-      };
-    },
-    {
-      name: "SwapLeg";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "Chain";
-            fields: [
-              {
-                name: "swap_legs";
-                type: {
-                  vec: {
-                    defined: "SwapLegDeeper";
-                  };
-                };
-              }
-            ];
-          },
-          {
-            name: "Split";
-            fields: [
-              {
-                name: "split_legs";
-                type: {
-                  vec: {
-                    defined: "SplitLeg";
-                  };
-                };
-              }
-            ];
-          },
-          {
-            name: "Swap";
-            fields: [
-              {
-                name: "swap";
-                type: {
-                  defined: "Swap";
-                };
-              }
-            ];
           }
         ];
       };
@@ -2433,46 +2573,12 @@ export type Jupiter = {
             name: "Symmetry";
             fields: [
               {
-                name: "fromTokenId";
+                name: "from_token_id";
                 type: "u64";
               },
               {
-                name: "toTokenId";
+                name: "to_token_id";
                 type: "u64";
-              }
-            ];
-          }
-        ];
-      };
-    },
-    {
-      name: "SwapAction";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "SetupSplit";
-            fields: [
-              {
-                name: "percents";
-                type: "bytes";
-              }
-            ];
-          },
-          {
-            name: "NextSplitLeg";
-          },
-          {
-            name: "MergeSplit";
-          },
-          {
-            name: "Swap";
-            fields: [
-              {
-                name: "swap";
-                type: {
-                  defined: "Swap";
-                };
               }
             ];
           }
@@ -2482,7 +2588,7 @@ export type Jupiter = {
   ];
   events: [
     {
-      name: "Swap";
+      name: "SwapEvent";
       fields: [
         {
           name: "amm";
@@ -2512,7 +2618,7 @@ export type Jupiter = {
       ];
     },
     {
-      name: "Fee";
+      name: "FeeEvent";
       fields: [
         {
           name: "account";
@@ -2565,18 +2671,28 @@ export type Jupiter = {
     },
     {
       code: 6006;
-      name: "InAmountsStackIsEmpty";
-      msg: "In amounts stack is empty";
+      name: "InvalidInputIndex";
+      msg: "Token input index is invalid";
     },
     {
       code: 6007;
-      name: "OutAmountsStackIsEmpty";
-      msg: "Out amounts stack is empty";
+      name: "InvalidOutputIndex";
+      msg: "Token output index is invalid";
     },
     {
       code: 6008;
       name: "NotEnoughAccountKeys";
       msg: "Not Enough Account keys";
+    },
+    {
+      code: 6009;
+      name: "NonZeroMinimumOutAmountNotSupported";
+      msg: "Non zero minimum out amount not supported";
+    },
+    {
+      code: 6010;
+      name: "InvalidRoutePlan";
+      msg: "Invalid route plan";
     }
   ];
 };
@@ -2587,6 +2703,7 @@ export const IDL: Jupiter = {
   instructions: [
     {
       name: "route",
+      docs: ["route_plan Topologically sorted trade DAG"],
       accounts: [
         {
           name: "tokenProgram",
@@ -2606,9 +2723,11 @@ export const IDL: Jupiter = {
       ],
       args: [
         {
-          name: "swapLeg",
+          name: "routePlan",
           type: {
-            defined: "SwapLeg",
+            vec: {
+              defined: "RoutePlanStep",
+            },
           },
         },
         {
@@ -2622,6 +2741,281 @@ export const IDL: Jupiter = {
         {
           name: "slippageBps",
           type: "u16",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "whirlpoolSwapExactOutput",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenAuthority",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "whirlpool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenOwnerAccountA",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenVaultA",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenOwnerAccountB",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenVaultB",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray0",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray1",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray2",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "oracle",
+          isMut: false,
+          isSigner: false,
+          docs: [
+            "Oracle is currently unused and will be enabled on subsequent updates",
+          ],
+        },
+      ],
+      args: [
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "inAmountWithSlippage",
+          type: {
+            defined: "AmountWithSlippage",
+          },
+        },
+        {
+          name: "aToB",
+          type: "bool",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "raydiumSwapExactOutput",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "ammId",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "ammAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "ammOpenOrders",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "poolCoinTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "poolPcTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumProgramId",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "serumMarket",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumBids",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumAsks",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumEventQueue",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumCoinVaultAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumPcVaultAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumVaultSigner",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userSourceTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userDestinationTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userSourceOwner",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "inAmountWithSlippage",
+          type: {
+            defined: "AmountWithSlippage",
+          },
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "raydiumClmmSwapExactOutput",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "payer",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "ammConfig",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "poolState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "observationState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tickArray",
+          isMut: true,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "inAmountWithSlippage",
+          type: {
+            defined: "AmountWithSlippage",
+          },
         },
         {
           name: "platformFeeBps",
@@ -3803,6 +4197,9 @@ export const IDL: Jupiter = {
           name: "oracle",
           isMut: false,
           isSigner: false,
+          docs: [
+            "Oracle is currently unused and will be enabled on subsequent updates",
+          ],
         },
       ],
       args: [],
@@ -4662,53 +5059,27 @@ export const IDL: Jupiter = {
       },
     },
     {
-      name: "SplitLegDeeper",
+      name: "RoutePlanStep",
       type: {
         kind: "struct",
         fields: [
+          {
+            name: "swap",
+            type: {
+              defined: "Swap",
+            },
+          },
           {
             name: "percent",
             type: "u8",
           },
           {
-            name: "swapLeg",
-            type: {
-              defined: "SwapLegSwap",
-            },
-          },
-        ],
-      },
-    },
-    {
-      name: "SplitLeg",
-      type: {
-        kind: "struct",
-        fields: [
-          {
-            name: "percent",
+            name: "inputIndex",
             type: "u8",
           },
           {
-            name: "swapLeg",
-            type: {
-              defined: "SwapLegDeeper",
-            },
-          },
-        ],
-      },
-    },
-    {
-      name: "SwapInstrution",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "Swap",
-            fields: [
-              {
-                defined: "Swap",
-              },
-            ],
+            name: "outputIndex",
+            type: "u8",
           },
         ],
       },
@@ -4723,121 +5094,6 @@ export const IDL: Jupiter = {
           },
           {
             name: "Ask",
-          },
-        ],
-      },
-    },
-    {
-      name: "SwapLegSwap",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "PlaceholderOne",
-          },
-          {
-            name: "PlaceholderTwo",
-          },
-          {
-            name: "Swap",
-            fields: [
-              {
-                name: "swap",
-                type: {
-                  defined: "Swap",
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-    {
-      name: "SwapLegDeeper",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "Chain",
-            fields: [
-              {
-                name: "swap_legs",
-                type: {
-                  vec: {
-                    defined: "SwapLegSwap",
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: "Split",
-            fields: [
-              {
-                name: "split_legs",
-                type: {
-                  vec: {
-                    defined: "SplitLegDeeper",
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: "Swap",
-            fields: [
-              {
-                name: "swap",
-                type: {
-                  defined: "Swap",
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
-    {
-      name: "SwapLeg",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "Chain",
-            fields: [
-              {
-                name: "swap_legs",
-                type: {
-                  vec: {
-                    defined: "SwapLegDeeper",
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: "Split",
-            fields: [
-              {
-                name: "split_legs",
-                type: {
-                  vec: {
-                    defined: "SplitLeg",
-                  },
-                },
-              },
-            ],
-          },
-          {
-            name: "Swap",
-            fields: [
-              {
-                name: "swap",
-                type: {
-                  defined: "Swap",
-                },
-              },
-            ],
           },
         ],
       },
@@ -5016,46 +5272,12 @@ export const IDL: Jupiter = {
             name: "Symmetry",
             fields: [
               {
-                name: "fromTokenId",
+                name: "from_token_id",
                 type: "u64",
               },
               {
-                name: "toTokenId",
+                name: "to_token_id",
                 type: "u64",
-              },
-            ],
-          },
-        ],
-      },
-    },
-    {
-      name: "SwapAction",
-      type: {
-        kind: "enum",
-        variants: [
-          {
-            name: "SetupSplit",
-            fields: [
-              {
-                name: "percents",
-                type: "bytes",
-              },
-            ],
-          },
-          {
-            name: "NextSplitLeg",
-          },
-          {
-            name: "MergeSplit",
-          },
-          {
-            name: "Swap",
-            fields: [
-              {
-                name: "swap",
-                type: {
-                  defined: "Swap",
-                },
               },
             ],
           },
@@ -5065,7 +5287,7 @@ export const IDL: Jupiter = {
   ],
   events: [
     {
-      name: "Swap",
+      name: "SwapEvent",
       fields: [
         {
           name: "amm",
@@ -5095,7 +5317,7 @@ export const IDL: Jupiter = {
       ],
     },
     {
-      name: "Fee",
+      name: "FeeEvent",
       fields: [
         {
           name: "account",
@@ -5148,18 +5370,28 @@ export const IDL: Jupiter = {
     },
     {
       code: 6006,
-      name: "InAmountsStackIsEmpty",
-      msg: "In amounts stack is empty",
+      name: "InvalidInputIndex",
+      msg: "Token input index is invalid",
     },
     {
       code: 6007,
-      name: "OutAmountsStackIsEmpty",
-      msg: "Out amounts stack is empty",
+      name: "InvalidOutputIndex",
+      msg: "Token output index is invalid",
     },
     {
       code: 6008,
       name: "NotEnoughAccountKeys",
       msg: "Not Enough Account keys",
+    },
+    {
+      code: 6009,
+      name: "NonZeroMinimumOutAmountNotSupported",
+      msg: "Non zero minimum out amount not supported",
+    },
+    {
+      code: 6010,
+      name: "InvalidRoutePlan",
+      msg: "Invalid route plan",
     },
   ],
 };

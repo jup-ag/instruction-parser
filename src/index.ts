@@ -17,8 +17,8 @@ export { getTokenMap } from "./lib/utils";
 
 type AccountInfoMap = Map<string, AccountInfo<Buffer>>;
 
-export const JUPITER_V4_PROGRAM_ID = new PublicKey(
-  "JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB"
+export const JUPITER_V5_PROGRAM_ID = new PublicKey(
+  "JUP5pEAZeHdHrLxh5UCwAbpjGwYKKoquCpda2hfP4u8"
 );
 
 export const AMM_TYPES = {
@@ -92,7 +92,7 @@ export async function extract(
   tokenMap: Map<string, TokenInfo>,
   blockTime?: number
 ): Promise<SwapAttributes | undefined> {
-  const programId = JUPITER_V4_PROGRAM_ID;
+  const programId = JUPITER_V5_PROGRAM_ID;
   const accountInfosMap: AccountInfoMap = new Map();
 
   const logMessages = tx.meta.logMessages;
@@ -104,8 +104,8 @@ export async function extract(
   const parser = new InstructionParser(programId);
   const events = extractor.getEvents(logMessages);
 
-  const swapEvents = events.filter((event) => event.name === "Swap");
-  const feeEvent = events.filter((event) => event.name === "Fee")[0];
+  const swapEvents = events.filter((event) => event.name === "SwapEvent");
+  const feeEvent = events.filter((event) => event.name === "FeeEvent")[0];
 
   if (swapEvents.length === 0) {
     // Not a swap event, for example: https://solscan.io/tx/5ZSozCHmAFmANaqyjRj614zxQY8HDXKyfAs2aAVjZaadS4DbDwVq8cTbxmM5m5VzDcfhysTSqZgKGV1j2A2Hqz1V

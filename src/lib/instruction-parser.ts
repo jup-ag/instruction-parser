@@ -51,19 +51,22 @@ export class InstructionParser {
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
       if (ix.name === "route") {
+        const inputIndex = 0;
+        const outputIndex = (ix.data as any).routePlan.length;
+
         const initialPositions = [];
-        this.processSwapLegToExtractInitialPositions(
-          (ix.data as any).swapLeg,
-          -1,
-          false,
-          initialPositions
-        );
+        for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
+          if ((ix.data as any).routePlan[j].inputIndex === inputIndex) {
+            initialPositions.push(j);
+          }
+        }
+
         const finalPositions = [];
-        this.processSwapLegToExtractFinalPositions(
-          (ix.data as any).swapLeg,
-          -1,
-          finalPositions
-        );
+        for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
+          if ((ix.data as any).routePlan[j].outputIndex === outputIndex) {
+            finalPositions.push(j);
+          }
+        }
 
         return [initialPositions, finalPositions];
       } else if (ix.name === "whirlpoolSwapExactOutput") {
@@ -71,85 +74,6 @@ export class InstructionParser {
         return [[0], [0]];
       }
     }
-  }
-
-  processSwapLegToExtractInitialPositions(
-    swapLeg: any,
-    position: number,
-    swapYet: boolean,
-    initialPositions: number[]
-  ) {
-    if (swapLeg.chain) {
-      for (let i = 0; i < swapLeg.chain.swapLegs.length; i++) {
-        position = this.processSwapLegToExtractInitialPositions(
-          swapLeg.chain.swapLegs[i],
-          position,
-          swapYet,
-          initialPositions
-        );
-
-        if (!swapYet && 0 === i && swapLeg.chain.swapLegs[i].swap) {
-          swapYet = true;
-          initialPositions.push(position);
-        }
-      }
-    } else if (swapLeg.split) {
-      for (let i = 0; i < swapLeg.split.splitLegs.length; i++) {
-        position = this.processSwapLegToExtractInitialPositions(
-          swapLeg.split.splitLegs[i].swapLeg,
-          position,
-          swapYet,
-          initialPositions
-        );
-
-        if (!swapYet && swapLeg.split.splitLegs[i].swapLeg.swap) {
-          initialPositions.push(position);
-        }
-      }
-    } else if (swapLeg.swap) {
-      return position + 1;
-    }
-
-    return position;
-  }
-
-  processSwapLegToExtractFinalPositions(
-    swapLeg: any,
-    position: number,
-    finalPosition: number[]
-  ) {
-    if (swapLeg.chain) {
-      for (let i = 0; i < swapLeg.chain.swapLegs.length; i++) {
-        position = this.processSwapLegToExtractFinalPositions(
-          swapLeg.chain.swapLegs[i],
-          position,
-          finalPosition
-        );
-
-        if (
-          swapLeg.chain.swapLegs.length - 1 === i &&
-          swapLeg.chain.swapLegs[i].swap
-        ) {
-          finalPosition.push(position);
-        }
-      }
-    } else if (swapLeg.split) {
-      for (let i = 0; i < swapLeg.split.splitLegs.length; i++) {
-        position = this.processSwapLegToExtractFinalPositions(
-          swapLeg.split.splitLegs[i].swapLeg,
-          position,
-          finalPosition
-        );
-
-        if (swapLeg.split.splitLegs[i].swapLeg.swap) {
-          finalPosition.push(position);
-        }
-      }
-    } else if (swapLeg.swap) {
-      return position + 1;
-    }
-
-    return position;
   }
 
   getExactOutAmount(instructions: PartiallyDecodedInstruction[]) {
