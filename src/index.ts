@@ -17,8 +17,8 @@ export { getTokenMap } from "./lib/utils";
 
 type AccountInfoMap = Map<string, AccountInfo<Buffer>>;
 
-export const JUPITER_V5_PROGRAM_ID = new PublicKey(
-  "JUP5pEAZeHdHrLxh5UCwAbpjGwYKKoquCpda2hfP4u8"
+export const JUPITER_V5_1_PROGRAM_ID = new PublicKey(
+  "JUP5cHjnnCx2DppVsufsLrXs8EBZeEZzGtEK9Gdz6ow"
 );
 
 export const AMM_TYPES = {
@@ -53,6 +53,7 @@ export const AMM_TYPES = {
   PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY: "Phoenix",
   "2KehYt3KsEQR53jYcxjbQp2d2kCp4AkuQW68atufRwSr": "Symmetry",
   BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p: "BonkSwap",
+  FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X: "FluxBeam",
 };
 
 export type SwapAttributes = {
@@ -92,7 +93,7 @@ export async function extract(
   tokenMap: Map<string, TokenInfo>,
   blockTime?: number
 ): Promise<SwapAttributes | undefined> {
-  const programId = JUPITER_V5_PROGRAM_ID;
+  const programId = JUPITER_V5_1_PROGRAM_ID;
   const accountInfosMap: AccountInfoMap = new Map();
 
   const logMessages = tx.meta.logMessages;
