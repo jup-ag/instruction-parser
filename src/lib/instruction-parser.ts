@@ -69,6 +69,9 @@ export class InstructionParser {
       } else if (ix.name === "whirlpoolSwapExactOutput") {
         // Exact out only has one 1 swap. So, in and out final position is always at the 0th index of the swap array.
         return [[0], [0]];
+      } else if (ix.name === "raydiumSwapExactOutput") {
+        // Exact out only has one 1 swap. So, in and out final position is always at the 0th index of the swap array.
+        return [[0], [0]];
       }
     }
   }

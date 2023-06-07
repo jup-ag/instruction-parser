@@ -47,6 +47,278 @@ export type Jupiter = {
       ];
     },
     {
+      name: "whirlpoolSwapExactOutput";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenAuthority";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "whirlpool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenOwnerAccountA";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenVaultA";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenOwnerAccountB";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenVaultB";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray0";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray1";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tickArray2";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "oracle";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "inAmountWithSlippage";
+          type: {
+            defined: "AmountWithSlippage";
+          };
+        },
+        {
+          name: "aToB";
+          type: "bool";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "raydiumSwapExactOutput";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "ammId";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "ammAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "ammOpenOrders";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "poolCoinTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "poolPcTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumProgramId";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "serumMarket";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumBids";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumAsks";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumEventQueue";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumCoinVaultAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumPcVaultAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "serumVaultSigner";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userSourceTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userDestinationTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userSourceOwner";
+          isMut: false;
+          isSigner: true;
+        }
+      ];
+      args: [
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "inAmountWithSlippage";
+          type: {
+            defined: "AmountWithSlippage";
+          };
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "raydiumClmmSwapExactOutput";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "payer";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "ammConfig";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "poolState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "observationState";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tickArray";
+          isMut: true;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "inAmountWithSlippage";
+          type: {
+            defined: "AmountWithSlippage";
+          };
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+    },
+    {
       name: "createOpenOrders";
       accounts: [
         {
@@ -2622,6 +2894,278 @@ export const IDL: Jupiter = {
         {
           name: "slippageBps",
           type: "u16",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "whirlpoolSwapExactOutput",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenAuthority",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "whirlpool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenOwnerAccountA",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenVaultA",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenOwnerAccountB",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenVaultB",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray0",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray1",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tickArray2",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "oracle",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "inAmountWithSlippage",
+          type: {
+            defined: "AmountWithSlippage",
+          },
+        },
+        {
+          name: "aToB",
+          type: "bool",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "raydiumSwapExactOutput",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "ammId",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "ammAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "ammOpenOrders",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "poolCoinTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "poolPcTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumProgramId",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "serumMarket",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumBids",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumAsks",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumEventQueue",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumCoinVaultAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumPcVaultAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "serumVaultSigner",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userSourceTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userDestinationTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userSourceOwner",
+          isMut: false,
+          isSigner: true,
+        },
+      ],
+      args: [
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "inAmountWithSlippage",
+          type: {
+            defined: "AmountWithSlippage",
+          },
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+    },
+    {
+      name: "raydiumClmmSwapExactOutput",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "payer",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "ammConfig",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "poolState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "observationState",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tickArray",
+          isMut: true,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "inAmountWithSlippage",
+          type: {
+            defined: "AmountWithSlippage",
+          },
         },
         {
           name: "platformFeeBps",
