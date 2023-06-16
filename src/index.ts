@@ -54,6 +54,7 @@ export const AMM_TYPES = {
   "2KehYt3KsEQR53jYcxjbQp2d2kCp4AkuQW68atufRwSr": "Symmetry",
   BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p: "BonkSwap",
   FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X: "FluxBeam",
+  treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5: "Helium Network",
 };
 
 export type SwapAttributes = {

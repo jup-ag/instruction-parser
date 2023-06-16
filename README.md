@@ -17,7 +17,7 @@ If you are using this via NPM, make sure that you are using the right version fo
 
 * `JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB`: `1.0.5`
 * `JUP5pEAZeHdHrLxh5UCwAbpjGwYKKoquCpda2hfP4u8`: `5.0.1`
-* `JUP5cHjnnCx2DppVsufsLrXs8EBZeEZzGtEK9Gdz6ow`: `5.1.0`
+* `JUP5cHjnnCx2DppVsufsLrXs8EBZeEZzGtEK9Gdz6ow`: `5.2.0`
 
 If you will need all of them in order to parse different contract, you can include them in your `package.json` as this:
 
@@ -26,7 +26,7 @@ If you will need all of them in order to parse different contract, you can inclu
   "dependencies": {
     "@jup-ag/instruction-parser-v4": "npm:@jup-ag/instruction-parser@1.0.5",
     "@jup-ag/instruction-parser-v5": "npm:@jup-ag/instruction-parser@5.0.1",
-    "@jup-ag/instruction-parser-v5-1": "npm:@jup-ag/instruction-parser@5.1.0"
+    "@jup-ag/instruction-parser-v5-1": "npm:@jup-ag/instruction-parser@5.2.0"
   }
 }
 ```
