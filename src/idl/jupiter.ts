@@ -2428,6 +2428,67 @@ export type Jupiter = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "heliumTreasuryManagementRedeemV0",
+      "accounts": [
+        {
+          "name": "swapProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "treasuryManagement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "treasuryMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "supplyMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "treasury",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "circuitBreaker",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "from",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "to",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "circuitBreakerProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "types": [
@@ -2672,6 +2733,9 @@ export type Jupiter = {
           },
           {
             "name": "TokenSwapV2"
+          },
+          {
+            "name": "HeliumTreasuryManagementRedeemV0"
           }
         ]
       }
@@ -5218,6 +5282,67 @@ export const IDL: Jupiter = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "heliumTreasuryManagementRedeemV0",
+      "accounts": [
+        {
+          "name": "swapProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "treasuryManagement",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "treasuryMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "supplyMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "treasury",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "circuitBreaker",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "from",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "to",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "circuitBreakerProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
     }
   ],
   "types": [
@@ -5462,6 +5587,9 @@ export const IDL: Jupiter = {
           },
           {
             "name": "TokenSwapV2"
+          },
+          {
+            "name": "HeliumTreasuryManagementRedeemV0"
           }
         ]
       }
