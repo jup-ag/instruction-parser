@@ -1,5 +1,5 @@
 import { BN, Event, IdlTypes } from "@project-serum/anchor";
-import { AccountLayout, MintLayout } from "@solana/spl-token";
+import { unpackAccount, unpackMint } from "@solana/spl-token";
 import { TokenInfo } from "@solana/spl-token-registry";
 import {
   AccountInfo,
@@ -326,15 +326,9 @@ function extractTokenAccountOwner(
 ) {
   const accountData = accountInfosMap.get(account.toBase58());
 
-  if (
-    accountData &&
-    accountData.owner.equals(
-      new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-    ) &&
-    accountData.data.length === 165
-  ) {
-    const accountInfo = AccountLayout.decode(accountData.data);
-    return new PublicKey(accountInfo.owner);
+  if (accountData) {
+    const accountInfo = unpackAccount(account, accountData, accountData.owner);
+    return accountInfo.owner;
   }
 
   return;
@@ -343,16 +337,19 @@ function extractTokenAccountOwner(
 function extractMintDecimals(accountInfosMap: AccountInfoMap, mint: PublicKey) {
   const mintData = accountInfosMap.get(mint.toBase58());
 
-  if (
-    mintData &&
-    mintData.owner.equals(
-      new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-    ) &&
-    mintData.data.length === 82
-  ) {
-    const mintInfo = MintLayout.decode(mintData.data);
+  if (mintData) {
+    const mintInfo = unpackMint(mint, mintData, mintData.owner);
     return mintInfo.decimals;
   }
 
   return;
+}
+
+function isToken(pubkey: PublicKey) {
+  return (
+    pubkey.equals(
+      new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    ) ||
+    pubkey.equals(new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"))
+  );
 }
