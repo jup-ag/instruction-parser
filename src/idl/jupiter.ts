@@ -2736,6 +2736,18 @@ export type Jupiter = {
           },
           {
             "name": "HeliumTreasuryManagementRedeemV0"
+          },
+          {
+            "name": "StakeDexStakeWrappedSol"
+          },
+          {
+            "name": "StakeDexSwapViaStake",
+            "fields": [
+              {
+                "name": "bridge_stake_seed",
+                "type": "u32"
+              }
+            ]
           }
         ]
       }
@@ -2848,6 +2860,11 @@ export type Jupiter = {
       "code": 6010,
       "name": "InvalidRoutePlan",
       "msg": "Invalid route plan"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidReferralAuthority",
+      "msg": "Invalid referral authority"
     }
   ]
 };
@@ -5590,6 +5607,18 @@ export const IDL: Jupiter = {
           },
           {
             "name": "HeliumTreasuryManagementRedeemV0"
+          },
+          {
+            "name": "StakeDexStakeWrappedSol"
+          },
+          {
+            "name": "StakeDexSwapViaStake",
+            "fields": [
+              {
+                "name": "bridge_stake_seed",
+                "type": "u32"
+              }
+            ]
           }
         ]
       }
@@ -5702,6 +5731,11 @@ export const IDL: Jupiter = {
       "code": 6010,
       "name": "InvalidRoutePlan",
       "msg": "Invalid route plan"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidReferralAuthority",
+      "msg": "Invalid referral authority"
     }
   ]
 };
