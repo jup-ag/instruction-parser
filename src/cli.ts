@@ -11,7 +11,7 @@ program
   .requiredOption("-r, --rpc <rpc>")
   .addHelpText(
     "beforeAll",
-    "Look up a Jupiter v5 swap transaction and extract its information"
+    "Look up a Jupiter v6 swap transaction and extract its information"
   )
   .action(async ({ signature, rpc }) => {
     const connection = new Connection(rpc); // Use your own RPC endpoint here.

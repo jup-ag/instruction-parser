@@ -49,8 +49,12 @@ export class InstructionParser {
       }
 
       const ix = this.coder.instruction.decode(instruction.data, "base58");
+      // This will happen because now event is also an CPI instruction.
+      if (!ix) {
+        continue;
+      }
 
-      if (ix.name === "route") {
+      if (this.isRouting(ix.name)) {
         const inputIndex = 0;
         const outputIndex = (ix.data as any).routePlan.length;
 
@@ -85,11 +89,20 @@ export class InstructionParser {
 
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
-      if (ix.name === "route") {
+      if (this.isRouting(ix.name)) {
         return (ix.data as any).quotedOutAmount.toString();
       }
     }
 
     return;
+  }
+
+  isRouting(name: string) {
+    return (
+      name === "route" ||
+      name === "routeWithTokenLedger" ||
+      name === "sharedAccountsRoute" ||
+      name === "sharedAccountsRouteWithTokenLedger"
+    );
   }
 }
