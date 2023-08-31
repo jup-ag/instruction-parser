@@ -15,6 +15,23 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
+  getInstructionName(instructions: PartiallyDecodedInstruction[]) {
+    for (let i = 0; i < instructions.length; i++) {
+      let instruction = instructions[i];
+      if (!instruction.programId.equals(this.programId)) {
+        continue;
+      }
+
+      const ix = this.coder.instruction.decode(instruction.data, "base58");
+
+      if (this.isRouting(ix.name)) {
+        return ix.name;
+      }
+    }
+
+    return;
+  }
+
   // For CPI, we have to also check for innerInstructions.
   getInstructions(tx: ParsedTransactionWithMeta) {
     let parsedInstructions: PartiallyDecodedInstruction[] = [];
@@ -73,9 +90,6 @@ export class InstructionParser {
         }
 
         return [initialPositions, finalPositions];
-      } else if (ix.name === "whirlpoolSwapExactOutput") {
-        // Exact out only has one 1 swap. So, in and out final position is always at the 0th index of the swap array.
-        return [[0], [0]];
       }
     }
   }
@@ -89,12 +103,42 @@ export class InstructionParser {
 
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
-      if (this.isRouting(ix.name)) {
+      if (this.isExactIn(ix.name)) {
         return (ix.data as any).quotedOutAmount.toString();
       }
     }
 
     return;
+  }
+
+  getExactInAmount(instructions: PartiallyDecodedInstruction[]) {
+    for (let i = 0; i < instructions.length; i++) {
+      let instruction = instructions[i];
+      if (!instruction.programId.equals(this.programId)) {
+        continue;
+      }
+
+      const ix = this.coder.instruction.decode(instruction.data, "base58");
+
+      if (this.isExactOut(ix.name)) {
+        return (ix.data as any).quotedInAmount.toString();
+      }
+    }
+
+    return;
+  }
+
+  isExactIn(name: string) {
+    return (
+      name === "route" ||
+      name === "routeWithTokenLedger" ||
+      name === "sharedAccountsRoute" ||
+      name === "sharedAccountsRouteWithTokenLedger"
+    );
+  }
+
+  isExactOut(name: string) {
+    return name === "sharedAccountsExactOutRoute";
   }
 
   isRouting(name: string) {
