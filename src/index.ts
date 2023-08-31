@@ -35,6 +35,9 @@ export type SwapAttributes = {
   outAmountInDecimal?: number;
   outAmountInUSD: number;
   outMint: string;
+  instruction: string;
+  exactInAmount: BigInt;
+  exactInAmountInUSD: number;
   exactOutAmount: BigInt;
   exactOutAmountInUSD: number;
   swapData: JSON;
@@ -136,6 +139,9 @@ export async function extract(
 
   const swap: SwapAttributes = {} as SwapAttributes;
 
+  swap.instruction = parser.getInstructionName(
+    tx.transaction.message.instructions as any
+  );
   swap.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
   swap.programId = programId.toBase58();
   swap.signature = signature;
@@ -165,6 +171,20 @@ export async function extract(
       swap.exactOutAmountInUSD = new Decimal(exactOutAmount)
         .div(outAmount.toString())
         .mul(outAmountInUSD)
+        .toNumber();
+    }
+  }
+
+  const exactInAmount = parser.getExactInAmount(
+    tx.transaction.message.instructions as any
+  );
+  if (exactInAmount) {
+    swap.exactInAmount = BigInt(exactInAmount);
+
+    if (inAmountInUSD) {
+      swap.exactInAmountInUSD = new Decimal(exactInAmount)
+        .div(inAmount.toString())
+        .mul(inAmountInUSD)
         .toNumber();
     }
   }
