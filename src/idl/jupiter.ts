@@ -373,6 +373,112 @@ export type Jupiter = {
       returns: "u64";
     },
     {
+      name: "sharedAccountsExactOutRoute";
+      docs: [
+        "Route by using program owned token accounts and open orders accounts."
+      ];
+      accounts: [
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "programAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userTransferAuthority";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "sourceTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "programSourceTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "programDestinationTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "destinationTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sourceMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "destinationMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "platformFeeAccount";
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
+        },
+        {
+          name: "token2022Program";
+          isMut: false;
+          isSigner: false;
+          isOptional: true;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "id";
+          type: "u8";
+        },
+        {
+          name: "routePlan";
+          type: {
+            vec: {
+              defined: "RoutePlanStep";
+            };
+          };
+        },
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "quotedInAmount";
+          type: "u64";
+        },
+        {
+          name: "slippageBps";
+          type: "u16";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+      returns: "u64";
+    },
+    {
       name: "setTokenLedger";
       accounts: [
         {
@@ -3032,6 +3138,16 @@ export type Jupiter = {
       code: 6015;
       name: "TokenProgramNotProvided";
       msg: "Token program not provided";
+    },
+    {
+      code: 6016;
+      name: "SwapNotSupported";
+      msg: "Swap not supported";
+    },
+    {
+      code: 6017;
+      name: "ExactOutAmountNotMatched";
+      msg: "Exact out amount doesn't match";
     }
   ];
 };
@@ -3397,6 +3513,112 @@ export const IDL: Jupiter = {
         },
         {
           name: "quotedOutAmount",
+          type: "u64",
+        },
+        {
+          name: "slippageBps",
+          type: "u16",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+      returns: "u64",
+    },
+    {
+      name: "sharedAccountsExactOutRoute",
+      docs: [
+        "Route by using program owned token accounts and open orders accounts.",
+      ],
+      accounts: [
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "programAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userTransferAuthority",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "sourceTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "programSourceTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "programDestinationTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "destinationTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sourceMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "destinationMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "platformFeeAccount",
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+        },
+        {
+          name: "token2022Program",
+          isMut: false,
+          isSigner: false,
+          isOptional: true,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "id",
+          type: "u8",
+        },
+        {
+          name: "routePlan",
+          type: {
+            vec: {
+              defined: "RoutePlanStep",
+            },
+          },
+        },
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "quotedInAmount",
           type: "u64",
         },
         {
@@ -6070,6 +6292,16 @@ export const IDL: Jupiter = {
       code: 6015,
       name: "TokenProgramNotProvided",
       msg: "Token program not provided",
+    },
+    {
+      code: 6016,
+      name: "SwapNotSupported",
+      msg: "Swap not supported",
+    },
+    {
+      code: 6017,
+      name: "ExactOutAmountNotMatched",
+      msg: "Exact out amount doesn't match",
     },
   ],
 };

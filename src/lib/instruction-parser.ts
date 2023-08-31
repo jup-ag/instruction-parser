@@ -102,7 +102,8 @@ export class InstructionParser {
       name === "route" ||
       name === "routeWithTokenLedger" ||
       name === "sharedAccountsRoute" ||
-      name === "sharedAccountsRouteWithTokenLedger"
+      name === "sharedAccountsRouteWithTokenLedger" ||
+      name === "sharedAccountsExactOutRoute"
     );
   }
 }
