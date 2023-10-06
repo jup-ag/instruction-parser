@@ -39,4 +39,5 @@ export const AMM_TYPES = {
   FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X: "FluxBeam",
   treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5: "Helium Network",
   stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq: "unstake.it",
+  GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn: "GooseFX v2",
 };
