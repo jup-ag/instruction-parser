@@ -2724,6 +2724,193 @@ export type Jupiter = {
         }
       ];
       args: [];
+    },
+    {
+      name: "goosefxV2Swap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "pair";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "poolRegistry";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userWallet";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "sslPoolInSigner";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "sslPoolOutSigner";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userAtaIn";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userAtaOut";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sslOutMainVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sslOutSecondaryVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sslInMainVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sslInSecondaryVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sslOutFeeVault";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "feeDestination";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputTokenPriceHistory";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "outputTokenOracle";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "inputTokenPriceHistory";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "inputTokenOracle";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "perpsSwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "owner";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "fundingAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "receivingAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "transferAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "perpetuals";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "pool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "receivingCustody";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "receivingCustodyOracleAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "receivingCustodyTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "dispensingCustody";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "dispensingCustodyOracleAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "dispensingCustodyTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
     }
   ];
   accounts: [
@@ -3001,6 +3188,12 @@ export type Jupiter = {
                 type: "u32";
               }
             ];
+          },
+          {
+            name: "GooseFXV2";
+          },
+          {
+            name: "Perps";
           }
         ];
       };
@@ -5879,6 +6072,193 @@ export const IDL: Jupiter = {
       ],
       args: [],
     },
+    {
+      name: "goosefxV2Swap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "pair",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "poolRegistry",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userWallet",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "sslPoolInSigner",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "sslPoolOutSigner",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userAtaIn",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userAtaOut",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sslOutMainVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sslOutSecondaryVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sslInMainVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sslInSecondaryVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sslOutFeeVault",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "feeDestination",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputTokenPriceHistory",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "outputTokenOracle",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "inputTokenPriceHistory",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "inputTokenOracle",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "perpsSwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "owner",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "fundingAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "receivingAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "transferAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "perpetuals",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "pool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "receivingCustody",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "receivingCustodyOracleAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "receivingCustodyTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "dispensingCustody",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "dispensingCustodyOracleAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "dispensingCustodyTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
   ],
   accounts: [
     {
@@ -6155,6 +6535,12 @@ export const IDL: Jupiter = {
                 type: "u32",
               },
             ],
+          },
+          {
+            name: "GooseFXV2",
+          },
+          {
+            name: "Perps",
           },
         ],
       },
