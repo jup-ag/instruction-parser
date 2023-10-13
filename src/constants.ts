@@ -40,4 +40,5 @@ export const AMM_TYPES = {
   treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5: "Helium Network",
   stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq: "unstake.it",
   GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn: "GooseFX v2",
+  PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu: "Perps",
 };
