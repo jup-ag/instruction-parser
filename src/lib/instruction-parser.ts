@@ -89,6 +89,13 @@ export class InstructionParser {
           }
         }
 
+        if (
+          finalPositions.length === 0 &&
+          this.isCircular((ix.data as any).routePlan)
+        ) {
+          finalPositions.push(0);
+        }
+
         return [initialPositions, finalPositions];
       }
     }
@@ -149,5 +156,31 @@ export class InstructionParser {
       name === "sharedAccountsRouteWithTokenLedger" ||
       name === "sharedAccountsExactOutRoute"
     );
+  }
+
+  isCircular(arr) {
+    if (!arr || arr.length === 0) {
+      return false; // Empty or null array is not circular
+    }
+
+    const indexMap = new Map(
+      arr.map((obj) => [obj.inputIndex, obj.outputIndex])
+    );
+    let visited = new Set();
+    let currentIndex = arr[0].inputIndex; // Start from the first object's inputIndex
+
+    while (true) {
+      if (visited.has(currentIndex)) {
+        return currentIndex === arr[0].inputIndex;
+      }
+
+      visited.add(currentIndex);
+
+      if (!indexMap.has(currentIndex)) {
+        return false; // No further mapping, not circular
+      }
+
+      currentIndex = indexMap.get(currentIndex);
+    }
   }
 }
