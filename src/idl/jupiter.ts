@@ -2647,7 +2647,7 @@ export type Jupiter = {
           isSigner: false;
         },
         {
-          name: "tokenInfo";
+          name: "tokenList";
           isMut: false;
           isSigner: false;
         },
@@ -2871,7 +2871,7 @@ export type Jupiter = {
         },
         {
           name: "receivingCustodyOracleAccount";
-          isMut: true;
+          isMut: false;
           isSigner: false;
         },
         {
@@ -2886,7 +2886,7 @@ export type Jupiter = {
         },
         {
           name: "dispensingCustodyOracleAccount";
-          isMut: true;
+          isMut: false;
           isSigner: false;
         },
         {
@@ -2906,6 +2906,234 @@ export type Jupiter = {
         },
         {
           name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "perpsAddLiquidity";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "owner";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "fundingOrReceivingAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "lpTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "transferAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "perpetuals";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "pool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "custody";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "custodyOracleAccount";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "custodyTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "lpTokenMint";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "perpsRemoveLiquidity";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "owner";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "fundingOrReceivingAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "lpTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "transferAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "perpetuals";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "pool";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "custody";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "custodyOracleAccount";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "custodyTokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "lpTokenMint";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "meteoraDlmmSwap";
+      accounts: [
+        {
+          name: "swapProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "lbPair";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "binArrayBitmapExtension";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "reserveX";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "reserveY";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userTokenIn";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "userTokenOut";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenXMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenYMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "oracle";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "hostFeeIn";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "user";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenXProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenYProgram";
           isMut: false;
           isSigner: false;
         }
@@ -2932,6 +3160,44 @@ export type Jupiter = {
     }
   ];
   types: [
+    {
+      name: "AddLiquidity";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "tokenAmountIn";
+            type: "u64";
+          },
+          {
+            name: "minLpAmountOut";
+            type: "u64";
+          },
+          {
+            name: "tokenAmountPreSwap";
+            type: {
+              option: "u64";
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "RemoveLiquidity";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lpAmountIn";
+            type: "u64";
+          },
+          {
+            name: "minAmountOut";
+            type: "u64";
+          }
+        ];
+      };
+    },
     {
       name: "AmountWithSlippage";
       type: {
@@ -3194,6 +3460,15 @@ export type Jupiter = {
           },
           {
             name: "Perps";
+          },
+          {
+            name: "PerpsAddLiquidity";
+          },
+          {
+            name: "PerpsRemoveLiquidity";
+          },
+          {
+            name: "MeteoraDlmm";
           }
         ];
       };
@@ -5994,7 +6269,7 @@ export const IDL: Jupiter = {
           isSigner: false,
         },
         {
-          name: "tokenInfo",
+          name: "tokenList",
           isMut: false,
           isSigner: false,
         },
@@ -6218,7 +6493,7 @@ export const IDL: Jupiter = {
         },
         {
           name: "receivingCustodyOracleAccount",
-          isMut: true,
+          isMut: false,
           isSigner: false,
         },
         {
@@ -6233,7 +6508,7 @@ export const IDL: Jupiter = {
         },
         {
           name: "dispensingCustodyOracleAccount",
-          isMut: true,
+          isMut: false,
           isSigner: false,
         },
         {
@@ -6253,6 +6528,234 @@ export const IDL: Jupiter = {
         },
         {
           name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "perpsAddLiquidity",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "owner",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "fundingOrReceivingAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "lpTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "transferAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "perpetuals",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "pool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "custody",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "custodyOracleAccount",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "custodyTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "lpTokenMint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "perpsRemoveLiquidity",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "owner",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "fundingOrReceivingAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "lpTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "transferAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "perpetuals",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "pool",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "custody",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "custodyOracleAccount",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "custodyTokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "lpTokenMint",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: "meteoraDlmmSwap",
+      accounts: [
+        {
+          name: "swapProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "lbPair",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "binArrayBitmapExtension",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "reserveX",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "reserveY",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userTokenIn",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "userTokenOut",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenXMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenYMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "oracle",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "hostFeeIn",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "user",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenXProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenYProgram",
           isMut: false,
           isSigner: false,
         },
@@ -6279,6 +6782,44 @@ export const IDL: Jupiter = {
     },
   ],
   types: [
+    {
+      name: "AddLiquidity",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "tokenAmountIn",
+            type: "u64",
+          },
+          {
+            name: "minLpAmountOut",
+            type: "u64",
+          },
+          {
+            name: "tokenAmountPreSwap",
+            type: {
+              option: "u64",
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: "RemoveLiquidity",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "lpAmountIn",
+            type: "u64",
+          },
+          {
+            name: "minAmountOut",
+            type: "u64",
+          },
+        ],
+      },
+    },
     {
       name: "AmountWithSlippage",
       type: {
@@ -6541,6 +7082,15 @@ export const IDL: Jupiter = {
           },
           {
             name: "Perps",
+          },
+          {
+            name: "PerpsAddLiquidity",
+          },
+          {
+            name: "PerpsRemoveLiquidity",
+          },
+          {
+            name: "MeteoraDlmm",
           },
         ],
       },
