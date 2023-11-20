@@ -41,4 +41,5 @@ export const AMM_TYPES = {
   stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq: "unstake.it",
   GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn: "GooseFX v2",
   PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu: "Perps",
+  LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo: "Meteora DLMM",
 };
