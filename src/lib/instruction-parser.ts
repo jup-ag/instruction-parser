@@ -93,7 +93,11 @@ export class InstructionParser {
           finalPositions.length === 0 &&
           this.isCircular((ix.data as any).routePlan)
         ) {
-          finalPositions.push(0);
+          for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
+            if ((ix.data as any).routePlan[j].outputIndex === 0) {
+              finalPositions.push(j);
+            }
+          }
         }
 
         return [initialPositions, finalPositions];
