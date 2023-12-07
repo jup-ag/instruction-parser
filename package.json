@@ -1,6 +1,6 @@
 {
   "name": "@jup-ag/instruction-parser",
-  "version": "6.0.9",
+  "version": "6.0.10",
   "description": "Parser to parse instruction on the Jupiter v4 program.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
