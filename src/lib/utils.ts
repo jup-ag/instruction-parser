@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import got from "got";
-import { BN } from "@project-serum/anchor";
+import { BN } from "@coral-xyz/anchor";
 import { TokenInfo } from "@solana/spl-token-registry";
 
 // Caches for Price API

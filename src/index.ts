@@ -1,20 +1,16 @@
-import { BN, Event, IdlTypes } from "@project-serum/anchor";
+import { BN, Event } from "@coral-xyz/anchor";
 import { unpackAccount, unpackMint } from "@solana/spl-token";
 import { TokenInfo } from "@solana/spl-token-registry";
-import {
-  AccountInfo,
-  Connection,
-  ParsedTransactionWithMeta,
-  PublicKey,
-} from "@solana/web3.js";
+import { AccountInfo, Connection, PublicKey } from "@solana/web3.js";
 import Decimal from "decimal.js";
-import { Jupiter } from "./idl/jupiter";
 import { InstructionParser } from "./lib/instruction-parser";
 import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
 import { getEvents } from "./lib/get-events";
 import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
+import { FeeEvent, SwapEvent, TransactionWithMeta } from "./types";
 
 export { getTokenMap } from "./lib/utils";
+export { TransactionWithMeta };
 
 type AccountInfoMap = Map<string, AccountInfo<Buffer>>;
 
@@ -51,10 +47,18 @@ export type SwapAttributes = {
   tokenLedger?: string;
 };
 
+const reduceEventData = <T>(events: Event[], name: string) =>
+  events.reduce((acc, event) => {
+    if (event.name === name) {
+      acc.push(event.data as T);
+    }
+    return acc;
+  }, new Array<T>());
+
 export async function extract(
   signature: string,
   connection: Connection,
-  tx: ParsedTransactionWithMeta,
+  tx: TransactionWithMeta,
   tokenMap: Map<string, TokenInfo>,
   blockTime?: number
 ): Promise<SwapAttributes | undefined> {
@@ -69,22 +73,22 @@ export async function extract(
   const parser = new InstructionParser(programId);
   const events = getEvents(tx);
 
-  const swapEvents = events.filter((event) => event.name === "SwapEvent");
-  const feeEvent = events.filter((event) => event.name === "FeeEvent")[0];
+  const swapEvents = reduceEventData<SwapEvent>(events, "SwapEvent");
+  const feeEvent = reduceEventData<FeeEvent>(events, "FeeEvent")[0];
 
   if (swapEvents.length === 0) {
     // Not a swap event, for example: https://solscan.io/tx/5ZSozCHmAFmANaqyjRj614zxQY8HDXKyfAs2aAVjZaadS4DbDwVq8cTbxmM5m5VzDcfhysTSqZgKGV1j2A2Hqz1V
     return;
   }
 
-  const accountsToBeFetched = [];
-  swapEvents.forEach((event) => {
-    accountsToBeFetched.push(event.data.inputMint);
-    accountsToBeFetched.push(event.data.outputMint);
+  const accountsToBeFetched = new Array<PublicKey>();
+  swapEvents.forEach((swapEvent) => {
+    accountsToBeFetched.push(swapEvent.inputMint);
+    accountsToBeFetched.push(swapEvent.outputMint);
   });
 
   if (feeEvent) {
-    accountsToBeFetched.push(feeEvent.data.account);
+    accountsToBeFetched.push(feeEvent.account);
   }
   const accountInfos = await connection.getMultipleAccountsInfo(
     accountsToBeFetched
@@ -93,11 +97,7 @@ export async function extract(
     accountInfosMap.set(account.toBase58(), accountInfos[index]);
   });
 
-  const swapData = await parseSwapEvents(
-    tokenMap,
-    accountInfosMap,
-    swapEvents as any
-  );
+  const swapData = await parseSwapEvents(tokenMap, accountInfosMap, swapEvents);
 
   const [initialPositions, finalPositions] =
     parser.getInitialAndFinalSwapPositions(parser.getInstructions(tx));
@@ -137,10 +137,10 @@ export async function extract(
       ? Decimal.min(outAmountInUSD, inAmountInUSD)
       : outAmountInUSD ?? inAmountInUSD;
 
-  const swap: SwapAttributes = {} as SwapAttributes;
+  const swap = {} as SwapAttributes;
 
   swap.instruction = parser.getInstructionName(
-    tx.transaction.message.instructions as any
+    tx.transaction.message.instructions
   );
   swap.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
   swap.programId = programId.toBase58();
@@ -162,7 +162,7 @@ export async function extract(
   swap.outMint = outMint;
 
   const exactOutAmount = parser.getExactOutAmount(
-    tx.transaction.message.instructions as any
+    tx.transaction.message.instructions
   );
   if (exactOutAmount) {
     swap.exactOutAmount = BigInt(exactOutAmount);
@@ -176,7 +176,7 @@ export async function extract(
   }
 
   const exactInAmount = parser.getExactInAmount(
-    tx.transaction.message.instructions as any
+    tx.transaction.message.instructions
   );
   if (exactInAmount) {
     swap.exactInAmount = BigInt(exactInAmount);
@@ -196,13 +196,13 @@ export async function extract(
       await extractVolume(
         tokenMap,
         accountInfosMap,
-        feeEvent.data.mint as any,
-        feeEvent.data.amount as any
+        feeEvent.mint,
+        feeEvent.amount
       );
-    swap.feeTokenPubkey = (feeEvent.data.account as any).toBase58();
+    swap.feeTokenPubkey = feeEvent.account.toBase58();
     swap.feeOwner = extractTokenAccountOwner(
       accountInfosMap,
-      feeEvent.data.account as any
+      feeEvent.account
     )?.toBase58();
     swap.feeSymbol = symbol;
     swap.feeAmount = BigInt(amount);
@@ -217,12 +217,12 @@ export async function extract(
 async function parseSwapEvents(
   tokenMap: Map<string, TokenInfo>,
   accountInfosMap: AccountInfoMap,
-  events: Event<Jupiter["events"][0], IdlTypes<Jupiter>>[]
+  swapEvents: SwapEvent[]
 ) {
   const swapData = await Promise.all(
-    events.map(async (event) => {
-      return await extractSwapData(tokenMap, accountInfosMap, event);
-    })
+    swapEvents.map((swapEvent) =>
+      extractSwapData(tokenMap, accountInfosMap, swapEvent)
+    )
   );
 
   return swapData;
@@ -231,9 +231,9 @@ async function parseSwapEvents(
 async function extractSwapData(
   tokenMap: Map<string, TokenInfo>,
   accountInfosMap: AccountInfoMap,
-  event: Event<Jupiter["events"][0], IdlTypes<Jupiter>>
+  swapEvent: SwapEvent
 ) {
-  const amm = AMM_TYPES[event.data.amm.toBase58()];
+  const amm = AMM_TYPES[swapEvent.amm.toBase58()];
 
   const {
     symbol: inSymbol,
@@ -244,8 +244,8 @@ async function extractSwapData(
   } = await extractVolume(
     tokenMap,
     accountInfosMap,
-    event.data.inputMint,
-    event.data.inputAmount
+    swapEvent.inputMint,
+    swapEvent.inputAmount
   );
   const {
     symbol: outSymbol,
@@ -256,8 +256,8 @@ async function extractSwapData(
   } = await extractVolume(
     tokenMap,
     accountInfosMap,
-    event.data.outputMint,
-    event.data.outputAmount
+    swapEvent.outputMint,
+    swapEvent.outputAmount
   );
 
   return {
