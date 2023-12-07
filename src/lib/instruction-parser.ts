@@ -17,7 +17,7 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  getInstructionName(instructions: (ParsedInstruction | PartialInstruction)[]) {
+  getInstructionName(instructions: PartialInstruction[]) {
     for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;

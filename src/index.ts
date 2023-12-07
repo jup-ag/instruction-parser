@@ -90,17 +90,16 @@ export async function extract(
   if (feeEvent) {
     accountsToBeFetched.push(feeEvent.account);
   }
-  const accountInfos = await connection.getMultipleAccountsInfo(
-    accountsToBeFetched
-  );
+  const accountInfos =
+    await connection.getMultipleAccountsInfo(accountsToBeFetched);
   accountsToBeFetched.forEach((account, index) => {
     accountInfosMap.set(account.toBase58(), accountInfos[index]);
   });
 
   const swapData = await parseSwapEvents(tokenMap, accountInfosMap, swapEvents);
-
+  const instructions = parser.getInstructions(tx);
   const [initialPositions, finalPositions] =
-    parser.getInitialAndFinalSwapPositions(parser.getInstructions(tx));
+    parser.getInitialAndFinalSwapPositions(instructions);
 
   const inSymbol = swapData[initialPositions[0]].inSymbol;
   const inMint = swapData[initialPositions[0]].inMint;
@@ -139,9 +138,7 @@ export async function extract(
 
   const swap = {} as SwapAttributes;
 
-  swap.instruction = parser.getInstructionName(
-    tx.transaction.message.instructions
-  );
+  swap.instruction = parser.getInstructionName(instructions);
   swap.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
   swap.programId = programId.toBase58();
   swap.signature = signature;
