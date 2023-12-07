@@ -42,4 +42,5 @@ export const AMM_TYPES = {
   GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn: "GooseFX v2",
   PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu: "Perps",
   LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo: "Meteora DLMM",
+  SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8: "Token Swap",
 };
