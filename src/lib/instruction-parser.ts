@@ -1,10 +1,12 @@
 import {
+  ParsedInstruction,
   ParsedTransactionWithMeta,
   PartiallyDecodedInstruction,
   PublicKey,
 } from "@solana/web3.js";
-import { BorshCoder } from "@project-serum/anchor";
+import { BorshCoder } from "@coral-xyz/anchor";
 import { IDL } from "../idl/jupiter";
+import { PartialInstruction, RoutePlan, TransactionWithMeta } from "../types";
 
 export class InstructionParser {
   private coder: BorshCoder;
@@ -15,9 +17,8 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  getInstructionName(instructions: PartiallyDecodedInstruction[]) {
-    for (let i = 0; i < instructions.length; i++) {
-      let instruction = instructions[i];
+  getInstructionName(instructions: (ParsedInstruction | PartialInstruction)[]) {
+    for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;
       }
@@ -33,21 +34,16 @@ export class InstructionParser {
   }
 
   // For CPI, we have to also check for innerInstructions.
-  getInstructions(tx: ParsedTransactionWithMeta) {
-    let parsedInstructions: PartiallyDecodedInstruction[] = [];
-    const instructions = tx.transaction.message.instructions;
-    for (let i = 0; i < instructions.length; i++) {
-      let instruction = instructions[i];
+  getInstructions(tx: TransactionWithMeta): PartialInstruction[] {
+    const parsedInstructions: PartialInstruction[] = [];
+    for (const instruction of tx.transaction.message.instructions) {
       if (instruction.programId.equals(this.programId)) {
         parsedInstructions.push(instruction as any);
       }
     }
 
-    const innerInstructions = tx.meta.innerInstructions;
-    for (let i = 0; i < innerInstructions.length; i++) {
-      const instructions = innerInstructions[i].instructions;
-      for (let j = 0; j < instructions.length; j++) {
-        let instruction = instructions[j];
+    for (const instructions of tx.meta.innerInstructions) {
+      for (const instruction of instructions.instructions) {
         if (instruction.programId.equals(this.programId)) {
           parsedInstructions.push(instruction as any);
         }
@@ -58,9 +54,8 @@ export class InstructionParser {
   }
 
   // Extract the position of the initial and final swap from the swap array.
-  getInitialAndFinalSwapPositions(instructions: PartiallyDecodedInstruction[]) {
-    for (let i = 0; i < instructions.length; i++) {
-      let instruction = instructions[i];
+  getInitialAndFinalSwapPositions(instructions: PartialInstruction[]) {
+    for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;
       }
@@ -72,19 +67,20 @@ export class InstructionParser {
       }
 
       if (this.isRouting(ix.name)) {
+        const routePlan = (ix.data as any).routePlan as RoutePlan;
         const inputIndex = 0;
-        const outputIndex = (ix.data as any).routePlan.length;
+        const outputIndex = routePlan.length;
 
-        const initialPositions = [];
-        for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
-          if ((ix.data as any).routePlan[j].inputIndex === inputIndex) {
+        const initialPositions: number[] = [];
+        for (let j = 0; j < routePlan.length; j++) {
+          if (routePlan[j].inputIndex === inputIndex) {
             initialPositions.push(j);
           }
         }
 
-        const finalPositions = [];
-        for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
-          if ((ix.data as any).routePlan[j].outputIndex === outputIndex) {
+        const finalPositions: number[] = [];
+        for (let j = 0; j < routePlan.length; j++) {
+          if (routePlan[j].outputIndex === outputIndex) {
             finalPositions.push(j);
           }
         }
@@ -105,12 +101,12 @@ export class InstructionParser {
     }
   }
 
-  getExactOutAmount(instructions: PartiallyDecodedInstruction[]) {
-    for (let i = 0; i < instructions.length; i++) {
-      let instruction = instructions[i];
+  getExactOutAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
+    for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;
       }
+      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
 
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
@@ -122,12 +118,12 @@ export class InstructionParser {
     return;
   }
 
-  getExactInAmount(instructions: PartiallyDecodedInstruction[]) {
-    for (let i = 0; i < instructions.length; i++) {
-      let instruction = instructions[i];
+  getExactInAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
+    for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;
       }
+      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
 
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
@@ -162,20 +158,20 @@ export class InstructionParser {
     );
   }
 
-  isCircular(arr) {
-    if (!arr || arr.length === 0) {
+  isCircular(routePlan: RoutePlan) {
+    if (!routePlan || routePlan.length === 0) {
       return false; // Empty or null array is not circular
     }
 
     const indexMap = new Map(
-      arr.map((obj) => [obj.inputIndex, obj.outputIndex])
+      routePlan.map((obj) => [obj.inputIndex, obj.outputIndex])
     );
     let visited = new Set();
-    let currentIndex = arr[0].inputIndex; // Start from the first object's inputIndex
+    let currentIndex = routePlan[0].inputIndex; // Start from the first object's inputIndex
 
     while (true) {
       if (visited.has(currentIndex)) {
-        return currentIndex === arr[0].inputIndex;
+        return currentIndex === routePlan[0].inputIndex;
       }
 
       visited.add(currentIndex);
