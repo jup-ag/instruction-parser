@@ -1,16 +1,11 @@
-import { Event, Program, utils, Provider } from "@coral-xyz/anchor";
-import { IDL, Jupiter } from "../idl/jupiter";
-import { ParsedTransactionWithMeta } from "@solana/web3.js";
+import { Event, Program, utils } from "@coral-xyz/anchor";
 import { JUPITER_V6_PROGRAM_ID } from "../constants";
 import { TransactionWithMeta } from "../types";
 
-const program = new Program<Jupiter>(
-  IDL,
-  JUPITER_V6_PROGRAM_ID,
-  {} as Provider
-);
-
-export function getEvents(transactionResponse: TransactionWithMeta) {
+export function getEvents(
+  program: Program,
+  transactionResponse: TransactionWithMeta
+) {
   let events: Event[] = [];
 
   if (transactionResponse && transactionResponse.meta) {
