@@ -1,4 +1,4 @@
-import { BN, Event } from "@coral-xyz/anchor";
+import { BN, Event, Program, Provider } from "@coral-xyz/anchor";
 import { unpackAccount, unpackMint } from "@solana/spl-token";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { AccountInfo, Connection, PublicKey } from "@solana/web3.js";
@@ -8,14 +8,22 @@ import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
 import { getEvents } from "./lib/get-events";
 import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
 import { FeeEvent, SwapEvent, TransactionWithMeta } from "./types";
+import { IDL, Jupiter } from "./idl/jupiter";
 
 export { getTokenMap } from "./lib/utils";
 export { TransactionWithMeta };
+
+export const program = new Program<Jupiter>(
+  IDL,
+  JUPITER_V6_PROGRAM_ID,
+  {} as Provider
+);
 
 type AccountInfoMap = Map<string, AccountInfo<Buffer>>;
 
 export type SwapAttributes = {
   owner: string;
+  transferAuthority: string;
   programId: string;
   signature: string;
   timestamp: Date;
@@ -71,7 +79,7 @@ export async function extract(
   }
 
   const parser = new InstructionParser(programId);
-  const events = getEvents(tx);
+  const events = getEvents(program, tx);
 
   const swapEvents = reduceEventData<SwapEvent>(events, "SwapEvent");
   const feeEvent = reduceEventData<FeeEvent>(events, "FeeEvent")[0];
@@ -90,8 +98,9 @@ export async function extract(
   if (feeEvent) {
     accountsToBeFetched.push(feeEvent.account);
   }
-  const accountInfos =
-    await connection.getMultipleAccountsInfo(accountsToBeFetched);
+  const accountInfos = await connection.getMultipleAccountsInfo(
+    accountsToBeFetched
+  );
   accountsToBeFetched.forEach((account, index) => {
     accountInfosMap.set(account.toBase58(), accountInfos[index]);
   });
@@ -138,7 +147,11 @@ export async function extract(
 
   const swap = {} as SwapAttributes;
 
-  swap.instruction = parser.getInstructionName(instructions);
+  const [instructionName, transferAuthority] =
+    parser.getInstructionNameAndTransferAuthority(instructions);
+
+  swap.transferAuthority = transferAuthority;
+  swap.instruction = instructionName;
   swap.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
   swap.programId = programId.toBase58();
   swap.signature = signature;
@@ -320,13 +333,4 @@ function extractMintDecimals(accountInfosMap: AccountInfoMap, mint: PublicKey) {
   }
 
   return;
-}
-
-function isToken(pubkey: PublicKey) {
-  return (
-    pubkey.equals(
-      new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
-    ) ||
-    pubkey.equals(new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"))
-  );
 }

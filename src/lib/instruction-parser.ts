@@ -1,10 +1,5 @@
-import {
-  ParsedInstruction,
-  ParsedTransactionWithMeta,
-  PartiallyDecodedInstruction,
-  PublicKey,
-} from "@solana/web3.js";
-import { BorshCoder } from "@coral-xyz/anchor";
+import { ParsedInstruction, PublicKey } from "@solana/web3.js";
+import { BorshCoder, Program } from "@coral-xyz/anchor";
 import { IDL } from "../idl/jupiter";
 import { PartialInstruction, RoutePlan, TransactionWithMeta } from "../types";
 
@@ -17,7 +12,7 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  getInstructionName(instructions: PartialInstruction[]) {
+  getInstructionNameAndTransferAuthority(instructions: PartialInstruction[]) {
     for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;
@@ -26,11 +21,29 @@ export class InstructionParser {
       const ix = this.coder.instruction.decode(instruction.data, "base58");
 
       if (this.isRouting(ix.name)) {
-        return ix.name;
+        const instructionName = ix.name;
+        const transferAuthority =
+          instruction.accounts[
+            this.getTransferAuthorityIndex(instructionName)
+          ].toString();
+
+        return [ix.name, transferAuthority];
       }
     }
 
-    return;
+    return [];
+  }
+
+  getTransferAuthorityIndex(instructionName: string) {
+    switch (instructionName) {
+      case "route":
+      case "routeWithTokenLedger":
+        return 1;
+      case "sharedAccountsRoute":
+      case "sharedAccountsRouteWithTokenLedger":
+      case "sharedAccountsExactOutRoute":
+        return 2;
+    }
   }
 
   // For CPI, we have to also check for innerInstructions.

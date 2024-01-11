@@ -10,7 +10,7 @@ export type RoutePlan = RoutePlanStep[];
 export interface PartialInstruction {
   programId: PublicKey;
   data: string /** Expecting base58 */;
-  // accountKeys are not necessary
+  accounts: PublicKey[];
 }
 
 // Subset of @solana/web3.js ParsedTransactionWithMeta to allow flexible upstream data
