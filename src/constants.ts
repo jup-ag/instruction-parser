@@ -43,4 +43,5 @@ export const AMM_TYPES = {
   PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu: "Perps",
   LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo: "Meteora DLMM",
   SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8: "Token Swap",
+  opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb: "Openbook v2",
 };
