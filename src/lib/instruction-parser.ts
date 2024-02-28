@@ -52,18 +52,23 @@ export class InstructionParser {
 
       if (ix.name === "route") {
         const initialPositions = [];
-        this.processSwapLegToExtractInitialPositions(
+        const initialPosition = this.processSwapLegToExtractInitialPositions(
           (ix.data as any).swapLeg,
           -1,
           false,
           initialPositions
         );
         const finalPositions = [];
-        this.processSwapLegToExtractFinalPositions(
+        const finalPosition = this.processSwapLegToExtractFinalPositions(
           (ix.data as any).swapLeg,
           -1,
           finalPositions
         );
+
+        // Only simple swap
+        if (initialPosition === 0 && initialPosition === finalPosition) {
+          return [[initialPosition], [finalPosition]];
+        }
 
         return [initialPositions, finalPositions];
       } else if (ix.name === "whirlpoolSwapExactOutput") {
