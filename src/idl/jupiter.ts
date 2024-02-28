@@ -373,6 +373,96 @@ export type Jupiter = {
       returns: "u64";
     },
     {
+      name: "exactOutRoute";
+      accounts: [
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userTransferAuthority";
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: "userSourceTokenAccount";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "userDestinationTokenAccount";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "destinationTokenAccount";
+          isMut: false;
+          isSigner: false;
+          isOptional: true;
+        },
+        {
+          name: "sourceMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "destinationMint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "platformFeeAccount";
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
+        },
+        {
+          name: "token2022Program";
+          isMut: false;
+          isSigner: false;
+          isOptional: true;
+        },
+        {
+          name: "eventAuthority";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "program";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "routePlan";
+          type: {
+            vec: {
+              defined: "RoutePlanStep";
+            };
+          };
+        },
+        {
+          name: "outAmount";
+          type: "u64";
+        },
+        {
+          name: "quotedInAmount";
+          type: "u64";
+        },
+        {
+          name: "slippageBps";
+          type: "u16";
+        },
+        {
+          name: "platformFeeBps";
+          type: "u8";
+        }
+      ];
+      returns: "u64";
+    },
+    {
       name: "sharedAccountsExactOutRoute";
       docs: [
         "Route by using program owned token accounts and open orders accounts."
@@ -983,6 +1073,9 @@ export type Jupiter = {
                 };
               }
             ];
+          },
+          {
+            name: "RaydiumClmmV2";
           }
         ];
       };
@@ -1500,6 +1593,96 @@ export const IDL: Jupiter = {
         },
         {
           name: "quotedOutAmount",
+          type: "u64",
+        },
+        {
+          name: "slippageBps",
+          type: "u16",
+        },
+        {
+          name: "platformFeeBps",
+          type: "u8",
+        },
+      ],
+      returns: "u64",
+    },
+    {
+      name: "exactOutRoute",
+      accounts: [
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userTransferAuthority",
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: "userSourceTokenAccount",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "userDestinationTokenAccount",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "destinationTokenAccount",
+          isMut: false,
+          isSigner: false,
+          isOptional: true,
+        },
+        {
+          name: "sourceMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "destinationMint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "platformFeeAccount",
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+        },
+        {
+          name: "token2022Program",
+          isMut: false,
+          isSigner: false,
+          isOptional: true,
+        },
+        {
+          name: "eventAuthority",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "program",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "routePlan",
+          type: {
+            vec: {
+              defined: "RoutePlanStep",
+            },
+          },
+        },
+        {
+          name: "outAmount",
+          type: "u64",
+        },
+        {
+          name: "quotedInAmount",
           type: "u64",
         },
         {
@@ -2124,6 +2307,9 @@ export const IDL: Jupiter = {
                 },
               },
             ],
+          },
+          {
+            name: "RaydiumClmmV2",
           },
         ],
       },
