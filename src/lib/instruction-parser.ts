@@ -37,6 +37,7 @@ export class InstructionParser {
   getTransferAuthorityIndex(instructionName: string) {
     switch (instructionName) {
       case "route":
+      case "exactOutRoute":
       case "routeWithTokenLedger":
         return 1;
       case "sharedAccountsRoute":
@@ -158,7 +159,7 @@ export class InstructionParser {
   }
 
   isExactOut(name: string) {
-    return name === "sharedAccountsExactOutRoute";
+    return name === "sharedAccountsExactOutRoute" || name === "exactOutRoute";
   }
 
   isRouting(name: string) {
@@ -167,7 +168,8 @@ export class InstructionParser {
       name === "routeWithTokenLedger" ||
       name === "sharedAccountsRoute" ||
       name === "sharedAccountsRouteWithTokenLedger" ||
-      name === "sharedAccountsExactOutRoute"
+      name === "sharedAccountsExactOutRoute" ||
+      name === "exactOutRoute"
     );
   }
 
