@@ -136,7 +136,6 @@ export async function extract(
 
   const [initialPositions, finalPositions] =
     parser.getInitialAndFinalSwapPositions(parser.getInstructions(tx));
-  console.log({ swapData, initialPositions, finalPositions });
 
   const inSymbol = swapData[initialPositions[0]].inSymbol;
   const inMint = swapData[initialPositions[0]].inMint;
