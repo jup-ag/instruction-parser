@@ -880,7 +880,7 @@ export type Jupiter = {
             name: "Crema";
             fields: [
               {
-                name: "a_to_b";
+                name: "aToB";
                 type: "bool";
               }
             ];
@@ -937,7 +937,7 @@ export type Jupiter = {
             name: "Whirlpool";
             fields: [
               {
-                name: "a_to_b";
+                name: "aToB";
                 type: "bool";
               }
             ];
@@ -946,7 +946,7 @@ export type Jupiter = {
             name: "Invariant";
             fields: [
               {
-                name: "x_to_y";
+                name: "xToY";
                 type: "bool";
               }
             ];
@@ -973,7 +973,7 @@ export type Jupiter = {
             name: "MarcoPolo";
             fields: [
               {
-                name: "x_to_y";
+                name: "xToY";
                 type: "bool";
               }
             ];
@@ -1021,11 +1021,11 @@ export type Jupiter = {
             name: "Symmetry";
             fields: [
               {
-                name: "from_token_id";
+                name: "fromTokenId";
                 type: "u64";
               },
               {
-                name: "to_token_id";
+                name: "toTokenId";
                 type: "u64";
               }
             ];
@@ -1043,7 +1043,7 @@ export type Jupiter = {
             name: "StakeDexSwapViaStake";
             fields: [
               {
-                name: "bridge_stake_seed";
+                name: "bridgeStakeSeed";
                 type: "u32";
               }
             ];
@@ -1076,6 +1076,15 @@ export type Jupiter = {
           },
           {
             name: "RaydiumClmmV2";
+          },
+          {
+            name: "StakeDexPrefundWithdrawStakeAndDepositStake";
+            fields: [
+              {
+                name: "bridgeStakeSeed";
+                type: "u32";
+              }
+            ];
           }
         ];
       };
@@ -2114,7 +2123,7 @@ export const IDL: Jupiter = {
             name: "Crema",
             fields: [
               {
-                name: "a_to_b",
+                name: "aToB",
                 type: "bool",
               },
             ],
@@ -2171,7 +2180,7 @@ export const IDL: Jupiter = {
             name: "Whirlpool",
             fields: [
               {
-                name: "a_to_b",
+                name: "aToB",
                 type: "bool",
               },
             ],
@@ -2180,7 +2189,7 @@ export const IDL: Jupiter = {
             name: "Invariant",
             fields: [
               {
-                name: "x_to_y",
+                name: "xToY",
                 type: "bool",
               },
             ],
@@ -2207,7 +2216,7 @@ export const IDL: Jupiter = {
             name: "MarcoPolo",
             fields: [
               {
-                name: "x_to_y",
+                name: "xToY",
                 type: "bool",
               },
             ],
@@ -2255,11 +2264,11 @@ export const IDL: Jupiter = {
             name: "Symmetry",
             fields: [
               {
-                name: "from_token_id",
+                name: "fromTokenId",
                 type: "u64",
               },
               {
-                name: "to_token_id",
+                name: "toTokenId",
                 type: "u64",
               },
             ],
@@ -2277,7 +2286,7 @@ export const IDL: Jupiter = {
             name: "StakeDexSwapViaStake",
             fields: [
               {
-                name: "bridge_stake_seed",
+                name: "bridgeStakeSeed",
                 type: "u32",
               },
             ],
@@ -2310,6 +2319,15 @@ export const IDL: Jupiter = {
           },
           {
             name: "RaydiumClmmV2",
+          },
+          {
+            name: "StakeDexPrefundWithdrawStakeAndDepositStake",
+            fields: [
+              {
+                name: "bridgeStakeSeed",
+                type: "u32",
+              },
+            ],
           },
         ],
       },
