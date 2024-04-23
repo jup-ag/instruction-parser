@@ -45,4 +45,5 @@ export const AMM_TYPES = {
   SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8: "Token Swap",
   opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb: "Openbook v2",
   DSwpgjMvXhtGn6BsbqmacdBZyfLj6jSWf3HJpdJtmg6N: "Dexlab",
+  C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr: "Clone",
 };

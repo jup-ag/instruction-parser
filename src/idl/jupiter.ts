@@ -1085,6 +1085,23 @@ export type Jupiter = {
                 type: "u32";
               }
             ];
+          },
+          {
+            name: "Clone";
+            fields: [
+              {
+                name: "poolIndex";
+                type: "u8";
+              },
+              {
+                name: "quantityIsInput";
+                type: "bool";
+              },
+              {
+                name: "quantityIsCollateral";
+                type: "bool";
+              }
+            ];
           }
         ];
       };
@@ -2326,6 +2343,23 @@ export const IDL: Jupiter = {
               {
                 name: "bridgeStakeSeed",
                 type: "u32",
+              },
+            ],
+          },
+          {
+            name: "Clone",
+            fields: [
+              {
+                name: "poolIndex",
+                type: "u8",
+              },
+              {
+                name: "quantityIsInput",
+                type: "bool",
+              },
+              {
+                name: "quantityIsCollateral",
+                type: "bool",
               },
             ],
           },
