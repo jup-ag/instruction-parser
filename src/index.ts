@@ -53,6 +53,7 @@ export type SwapAttributes = {
   feeAmountInUSD?: number;
   feeMint?: string;
   tokenLedger?: string;
+  lastAccount: string; // This can be a tracking account since we don't have a way to know we just log it the last account.
 };
 
 const reduceEventData = <T>(events: Event[], name: string) =>
@@ -147,10 +148,11 @@ export async function extract(
 
   const swap = {} as SwapAttributes;
 
-  const [instructionName, transferAuthority] =
-    parser.getInstructionNameAndTransferAuthority(instructions);
+  const [instructionName, transferAuthority, lastAccount] =
+    parser.getInstructionNameAndTransferAuthorityAndLastAccount(instructions);
 
   swap.transferAuthority = transferAuthority;
+  swap.lastAccount = lastAccount;
   swap.instruction = instructionName;
   swap.owner = tx.transaction.message.accountKeys[0].pubkey.toBase58();
   swap.programId = programId.toBase58();

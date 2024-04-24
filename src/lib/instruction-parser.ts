@@ -12,7 +12,9 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  getInstructionNameAndTransferAuthority(instructions: PartialInstruction[]) {
+  getInstructionNameAndTransferAuthorityAndLastAccount(
+    instructions: PartialInstruction[]
+  ) {
     for (const instruction of instructions) {
       if (!instruction.programId.equals(this.programId)) {
         continue;
@@ -26,8 +28,10 @@ export class InstructionParser {
           instruction.accounts[
             this.getTransferAuthorityIndex(instructionName)
           ].toString();
+        const lastAccount =
+          instruction.accounts[instruction.accounts.length - 1].toString();
 
-        return [ix.name, transferAuthority];
+        return [ix.name, transferAuthority, lastAccount];
       }
     }
 
