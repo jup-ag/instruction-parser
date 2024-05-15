@@ -1102,6 +1102,53 @@ export type Jupiter = {
                 type: "bool";
               }
             ];
+          },
+          {
+            name: "SanctumS";
+            fields: [
+              {
+                name: "srcLstValueCalcAccs";
+                type: "u8";
+              },
+              {
+                name: "dstLstValueCalcAccs";
+                type: "u8";
+              },
+              {
+                name: "srcLstIndex";
+                type: "u32";
+              },
+              {
+                name: "dstLstIndex";
+                type: "u32";
+              }
+            ];
+          },
+          {
+            name: "SanctumSAddLiquidity";
+            fields: [
+              {
+                name: "lstValueCalcAccs";
+                type: "u8";
+              },
+              {
+                name: "lstIndex";
+                type: "u32";
+              }
+            ];
+          },
+          {
+            name: "SanctumSRemoveLiquidity";
+            fields: [
+              {
+                name: "lstValueCalcAccs";
+                type: "u8";
+              },
+              {
+                name: "lstIndex";
+                type: "u32";
+              }
+            ];
           }
         ];
       };
@@ -2360,6 +2407,53 @@ export const IDL: Jupiter = {
               {
                 name: "quantityIsCollateral",
                 type: "bool",
+              },
+            ],
+          },
+          {
+            name: "SanctumS",
+            fields: [
+              {
+                name: "srcLstValueCalcAccs",
+                type: "u8",
+              },
+              {
+                name: "dstLstValueCalcAccs",
+                type: "u8",
+              },
+              {
+                name: "srcLstIndex",
+                type: "u32",
+              },
+              {
+                name: "dstLstIndex",
+                type: "u32",
+              },
+            ],
+          },
+          {
+            name: "SanctumSAddLiquidity",
+            fields: [
+              {
+                name: "lstValueCalcAccs",
+                type: "u8",
+              },
+              {
+                name: "lstIndex",
+                type: "u32",
+              },
+            ],
+          },
+          {
+            name: "SanctumSRemoveLiquidity",
+            fields: [
+              {
+                name: "lstValueCalcAccs",
+                type: "u8",
+              },
+              {
+                name: "lstIndex",
+                type: "u32",
               },
             ],
           },
