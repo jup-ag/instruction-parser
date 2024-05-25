@@ -2460,9 +2460,12 @@ export const IDL: Jupiter = {
               },
             ],
           },
+<<<<<<< HEAD
           {
             name: "RaydiumCP",
           },
+=======
+>>>>>>> main
         ],
       },
     },
