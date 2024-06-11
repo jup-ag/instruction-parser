@@ -48,4 +48,5 @@ export const AMM_TYPES = {
   C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr: "Clone",
   H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt: "Cropper Whirlpool",
   "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx": "Sanctum S",
+  Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1: "GuacSwap",
 };
