@@ -1149,6 +1149,9 @@ export type Jupiter = {
                 type: "u32";
               }
             ];
+          },
+          {
+            name: "RaydiumCP";
           }
         ];
       };
@@ -2456,6 +2459,9 @@ export const IDL: Jupiter = {
                 type: "u32",
               },
             ],
+          },
+          {
+            name: "RaydiumCP",
           },
         ],
       },
