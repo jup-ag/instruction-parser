@@ -1,7 +1,13 @@
 import { Connection, ParsedInstruction, PublicKey } from "@solana/web3.js";
 import { BorshCoder } from "@coral-xyz/anchor";
-import { IDL } from "../idl/jupiter"
-import { ParsedEvent, PartialInstruction, RoutePlan, TransactionWithMeta, TransferData } from "../types";
+import { IDL } from "../idl/jupiter";
+import {
+  ParsedEvent,
+  PartialInstruction,
+  RoutePlan,
+  TransactionWithMeta,
+  TransferData,
+} from "../types";
 import { AMM_TYPES } from "../constants";
 import { getAccount } from "@solana/spl-token";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
@@ -123,41 +129,48 @@ export class InstructionParser {
   }
 
   async getParsedEvents(tx: TransactionWithMeta, connection: Connection) {
-    
-    const events: ParsedEvent[] = []; 
-    const routingInstructionIndexes: number[] = []; 
+    const events: ParsedEvent[] = [];
+    const routingInstructionIndexes: number[] = [];
     tx.transaction.message.instructions.forEach((instruction, index) => {
-      if (instruction.programId.equals(this.programId)) { 
-        const ix = this.coder.instruction.decode((instruction as PartialInstruction).data, "base58");
-        if(this.isRouting(ix.name))
-          routingInstructionIndexes.push(index);
+      if (instruction.programId.equals(this.programId)) {
+        const ix = this.coder.instruction.decode(
+          (instruction as PartialInstruction).data,
+          "base58"
+        );
+        if (this.isRouting(ix.name)) routingInstructionIndexes.push(index);
       }
-    })
+    });
 
     const innerInstructions: (PartialInstruction | ParsedInstruction)[] = [];
     const swapInstructionIndexes = [];
 
     for (const routingInstructionIndex of routingInstructionIndexes) {
       for (const instructions of tx.meta.innerInstructions) {
-        if (instructions.index == routingInstructionIndex) {
+        if (instructions.index === routingInstructionIndex) {
           instructions.instructions.forEach((instruction, index) => {
             innerInstructions.push(instruction);
-            if (instruction.programId.toBase58() in AMM_TYPES){
+            if (instruction.programId.toBase58() in AMM_TYPES) {
               swapInstructionIndexes.push(index);
             }
-          })
-          break
+          });
+          break;
         }
       }
     }
 
     for (const index of swapInstructionIndexes) {
       const swapInstruction = innerInstructions[index];
-      const [inTransferInstruction, outTransferInstruction] = this.getTransferInstructions(innerInstructions, index);
+      const [inTransferInstruction, outTransferInstruction] =
+        this.getTransferInstructions(innerInstructions, index);
 
-      const inTransferData = await this.getTransferData(inTransferInstruction, connection);
-      const outTransferData = await this.getTransferData(outTransferInstruction, connection);
-
+      const inTransferData = await this.getTransferData(
+        inTransferInstruction,
+        connection
+      );
+      const outTransferData = await this.getTransferData(
+        outTransferInstruction,
+        connection
+      );
 
       const event: ParsedEvent = {
         data: {
@@ -167,25 +180,28 @@ export class InstructionParser {
           outputMint: outTransferData.mint,
           outputAmount: outTransferData.amount,
         },
-        name: 'ParsedSwapEvent'
-      }
+        name: "ParsedSwapEvent",
+      };
 
-      events.push(event)
+      events.push(event);
     }
 
     return events;
   }
 
-  getTransferInstructions(innerInstructions: (PartialInstruction | ParsedInstruction)[], swapInstructionIndex: number) {
+  getTransferInstructions(
+    innerInstructions: (PartialInstruction | ParsedInstruction)[],
+    swapInstructionIndex: number
+  ) {
     const transferInstructions: ParsedInstruction[] = [];
     const innerInstructionsLength = innerInstructions.length;
 
-    for (let i = swapInstructionIndex + 1; i < innerInstructionsLength; i++){
-      if (transferInstructions.length == 2) break
+    for (let i = swapInstructionIndex + 1; i < innerInstructionsLength; i++) {
+      if (transferInstructions.length == 2) break;
       const innerInstruction = innerInstructions[i];
       if (innerInstruction.programId.equals(TOKEN_PROGRAM_ID)) {
         const ixType = (innerInstruction as ParsedInstruction).parsed.type;
-        if (ixType == "transfer" || ixType == "transferChecked") {
+        if (ixType === "transfer" || ixType === "transferChecked") {
           transferInstructions.push(innerInstruction as ParsedInstruction);
         }
       }
@@ -194,19 +210,24 @@ export class InstructionParser {
     return transferInstructions;
   }
 
-  async getTransferData (transferInstruction: ParsedInstruction, connection: Connection): Promise<TransferData> {
-    if (transferInstruction.parsed.type == 'transferChecked'){
+  async getTransferData(
+    transferInstruction: ParsedInstruction,
+    connection: Connection
+  ): Promise<TransferData> {
+    if (transferInstruction.parsed.type === "transferChecked") {
       return {
         mint: new PublicKey(transferInstruction.parsed.info.mint),
-        amount: transferInstruction.parsed.info.tokenAmount.amount
-      }
-    }
-    else {
-      const sourceInfo = await getAccount(connection, new PublicKey(transferInstruction.parsed.info.source));
+        amount: transferInstruction.parsed.info.tokenAmount.amount,
+      };
+    } else {
+      const sourceInfo = await getAccount(
+        connection,
+        new PublicKey(transferInstruction.parsed.info.source)
+      );
       return {
         mint: sourceInfo.mint,
-        amount: transferInstruction.parsed.info.amount
-      }
+        amount: transferInstruction.parsed.info.amount,
+      };
     }
   }
 
