@@ -6,11 +6,9 @@ import {
   PartialInstruction,
   RoutePlan,
   TransactionWithMeta,
-  TransferData,
 } from "../types";
-import { AMM_TYPES } from "../constants";
 import { getAccount } from "@solana/spl-token";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
+import { isSwapInstruction, isTransferInstruction } from "./utils";
 
 export class InstructionParser {
   private coder: BorshCoder;
@@ -149,7 +147,7 @@ export class InstructionParser {
         if (instructions.index === routingInstructionIndex) {
           instructions.instructions.forEach((instruction, index) => {
             innerInstructions.push(instruction);
-            if (instruction.programId.toBase58() in AMM_TYPES) {
+            if (isSwapInstruction(instruction)) {
               swapInstructionIndexes.push(index);
             }
           });
@@ -160,15 +158,17 @@ export class InstructionParser {
 
     for (const index of swapInstructionIndexes) {
       const swapInstruction = innerInstructions[index];
-      const [inTransferInstruction, outTransferInstruction] =
+      const transferInstructions =
         this.getTransferInstructions(innerInstructions, index);
 
+      const tokenAuthorities = Object.keys(transferInstructions)
+
       const inTransferData = await this.getTransferData(
-        inTransferInstruction,
+        transferInstructions[tokenAuthorities[0]],
         connection
       );
       const outTransferData = await this.getTransferData(
-        outTransferInstruction,
+        transferInstructions[tokenAuthorities[1]],
         connection
       );
 
@@ -193,43 +193,56 @@ export class InstructionParser {
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapInstructionIndex: number
   ) {
-    const transferInstructions: ParsedInstruction[] = [];
-    const innerInstructionsLength = innerInstructions.length;
+    const transferInstructions = {};
 
-    for (let i = swapInstructionIndex + 1; i < innerInstructionsLength; i++) {
-      if (transferInstructions.length == 2) break;
-      const innerInstruction = innerInstructions[i];
-      if (innerInstruction.programId.equals(TOKEN_PROGRAM_ID)) {
-        const ixType = (innerInstruction as ParsedInstruction).parsed.type;
-        if (ixType === "transfer" || ixType === "transferChecked") {
-          transferInstructions.push(innerInstruction as ParsedInstruction);
-        }
+    let pointerIndex = swapInstructionIndex + 1;
+    while (pointerIndex < innerInstructions.length && !isSwapInstruction(innerInstructions[pointerIndex])) {
+      const innerInstruction = innerInstructions[pointerIndex];
+      const parsedInnerInstruction = innerInstruction as ParsedInstruction;
+      if (isTransferInstruction(parsedInnerInstruction)) {
+        const authority = parsedInnerInstruction.parsed.info.authority;
+        if (!transferInstructions[authority]) transferInstructions[authority] = [];
+        transferInstructions[authority].push(parsedInnerInstruction);
       }
+      pointerIndex += 1;
     }
 
     return transferInstructions;
   }
 
   async getTransferData(
-    transferInstruction: ParsedInstruction,
+    transferInstructions: ParsedInstruction[],
     connection: Connection
-  ): Promise<TransferData> {
+  ) {
+
+    let mint: PublicKey;
+
+    const amount = transferInstructions.reduce((acc, instruction) => {
+      if (instruction.parsed.type === "transferChecked") {
+        return acc + BigInt(instruction.parsed.info.tokenAmount.amount);
+      } else {
+        return acc + BigInt(instruction.parsed.info.amount);
+      }
+    }, BigInt(0))
+
+    const transferInstruction = transferInstructions[0];
+
     if (transferInstruction.parsed.type === "transferChecked") {
-      return {
-        mint: new PublicKey(transferInstruction.parsed.info.mint),
-        amount: transferInstruction.parsed.info.tokenAmount.amount,
-      };
+      mint = new PublicKey(transferInstruction.parsed.info.mint);
     } else {
-      const sourceInfo = await getAccount(
+      const destinationInfo = await getAccount(
         connection,
-        new PublicKey(transferInstruction.parsed.info.source)
+        new PublicKey(transferInstruction.parsed.info.destination)
       );
-      return {
-        mint: sourceInfo.mint,
-        amount: transferInstruction.parsed.info.amount,
-      };
+      mint = destinationInfo.mint;
+    }
+
+    return {
+      mint,
+      amount
     }
   }
+
 
   getExactOutAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
     for (const instruction of instructions) {
