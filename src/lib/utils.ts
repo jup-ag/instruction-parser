@@ -2,6 +2,10 @@ import Decimal from "decimal.js";
 import got from "got";
 import { BN } from "@coral-xyz/anchor";
 import { TokenInfo } from "@solana/spl-token-registry";
+import { ParsedInstruction } from "@solana/web3.js";
+import { PartialInstruction } from "../types";
+import { AMM_TYPES, SWAP_INSTRUCTION_STACK_HEIGHT, TRANSFER_INSTRUCTION_STACK_HEIGHT } from "../constants";
+import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 
 // Caches for Price API
 const jupiterPrices: Map<string, any> = new Map();
@@ -68,4 +72,17 @@ export async function getTokenMap(): Promise<Map<string, TokenInfo>> {
   });
 
   return tokenMap;
+}
+
+export function isSwapInstruction(instruction: ParsedInstruction | PartialInstruction) {
+  return instruction.programId.toBase58() in AMM_TYPES && (instruction as any).stackHeight == SWAP_INSTRUCTION_STACK_HEIGHT;
+}
+
+export function isTransferInstruction(instruction: ParsedInstruction) {
+  if (instruction.programId.equals(TOKEN_PROGRAM_ID) || instruction.programId.equals(TOKEN_2022_PROGRAM_ID)) {
+    const ixType = instruction.parsed.type;
+    const ixstackHeight = (instruction as any).stackHeight;
+    return (ixType === "transfer" || ixType === "transferChecked") && (ixstackHeight == TRANSFER_INSTRUCTION_STACK_HEIGHT);
+  }
+  return false;
 }

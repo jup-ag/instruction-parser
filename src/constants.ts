@@ -51,3 +51,6 @@ export const AMM_TYPES = {
   "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx": "Sanctum S",
   Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1: "GuacSwap",
 };
+
+export const SWAP_INSTRUCTION_STACK_HEIGHT = 2;
+export const TRANSFER_INSTRUCTION_STACK_HEIGHT = 3;
