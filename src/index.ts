@@ -7,7 +7,13 @@ import { InstructionParser } from "./lib/instruction-parser";
 import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
 import { getEvents } from "./lib/get-events";
 import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
-import { FeeEvent, ParsedFeeEvent, ParsedSwapEvent, SwapEvent, TransactionWithMeta } from "./types";
+import {
+  FeeEvent,
+  ParsedFeeEvent,
+  ParsedSwapEvent,
+  SwapEvent,
+  TransactionWithMeta,
+} from "./types";
 import { IDL, Jupiter } from "./idl/jupiter";
 
 export { getTokenMap } from "./lib/utils";
@@ -81,9 +87,13 @@ export async function extract(
 
   const parser = new InstructionParser(programId);
   const events = getEvents(program, tx);
-  const parsedEvents = await parser.getParsedEvents(tx, connection)
+  const parsedEvents = await parser.getParsedEvents(tx, connection);
 
-  const swapEvents = reduceEventData<ParsedSwapEvent>(parsedEvents, "ParsedSwapEvent");
+  const swapEvents = reduceEventData<ParsedSwapEvent>(
+    parsedEvents,
+    "ParsedSwapEvent"
+  );
+  // const swapEvents = reduceEventData<SwapEvent>(events, "SwapEvent");
   const feeEvent = reduceEventData<FeeEvent>(events, "FeeEvent")[0];
 
   if (swapEvents.length === 0) {

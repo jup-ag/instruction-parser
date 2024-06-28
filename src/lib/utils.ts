@@ -4,7 +4,7 @@ import { BN } from "@coral-xyz/anchor";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { ParsedInstruction } from "@solana/web3.js";
 import { PartialInstruction } from "../types";
-import { AMM_TYPES, SWAP_INSTRUCTION_STACK_HEIGHT, TRANSFER_INSTRUCTION_STACK_HEIGHT } from "../constants";
+import { AMM_TYPES, SWAP_DIRECTION_ARGS, STACK_HEIGHT } from "../constants";
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 
 // Caches for Price API
@@ -74,15 +74,42 @@ export async function getTokenMap(): Promise<Map<string, TokenInfo>> {
   return tokenMap;
 }
 
-export function isSwapInstruction(instruction: ParsedInstruction | PartialInstruction) {
-  return instruction.programId.toBase58() in AMM_TYPES && (instruction as any).stackHeight == SWAP_INSTRUCTION_STACK_HEIGHT;
+export function isSwapInstruction(
+  instruction: ParsedInstruction | PartialInstruction
+) {
+  return (
+    instruction.programId.toBase58() in AMM_TYPES &&
+    (instruction as any).stackHeight == STACK_HEIGHT.SWAP
+  );
 }
 
 export function isTransferInstruction(instruction: ParsedInstruction) {
-  if (instruction.programId.equals(TOKEN_PROGRAM_ID) || instruction.programId.equals(TOKEN_2022_PROGRAM_ID)) {
+  if (
+    instruction.programId.equals(TOKEN_PROGRAM_ID) ||
+    instruction.programId.equals(TOKEN_2022_PROGRAM_ID)
+  ) {
     const ixType = instruction.parsed.type;
     const ixstackHeight = (instruction as any).stackHeight;
-    return (ixType === "transfer" || ixType === "transferChecked") && (ixstackHeight == TRANSFER_INSTRUCTION_STACK_HEIGHT);
+    return (
+      (ixType === "transfer" || ixType === "transferChecked") &&
+      ixstackHeight == STACK_HEIGHT.TOKEN_TRANSFER
+    );
   }
   return false;
+}
+
+export function getSwapDirection(amm: string, swap: any) {
+  if (SWAP_DIRECTION_ARGS.NO_ARG.includes(amm)) return true;
+
+  if (SWAP_DIRECTION_ARGS.SIDE.includes(amm))
+    return !Object.values(swap)[0]["side"]["bid"];
+
+  if (SWAP_DIRECTION_ARGS.A_TO_B.includes(amm))
+    return Object.values(swap)[0]["aToB"];
+
+  if (SWAP_DIRECTION_ARGS.X_TO_Y.includes(amm)) {
+    return Object.values(swap)[0]["xToY"];
+  }
+
+  // custom checks for amms
 }
