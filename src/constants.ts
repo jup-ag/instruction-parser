@@ -52,5 +52,63 @@ export const AMM_TYPES = {
   Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1: "GuacSwap",
 };
 
-export const SWAP_INSTRUCTION_STACK_HEIGHT = 2;
-export const TRANSFER_INSTRUCTION_STACK_HEIGHT = 3;
+export const STACK_HEIGHT = {
+  SWAP: 2,
+  TOKEN_TRANSFER: 3,
+};
+
+export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
+  "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8": {
+    in: 15,
+    out: 16,
+  },
+  opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb: {
+    in: 9,
+    out: 10,
+  },
+  whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc: {
+    in: 3,
+    out: 5,
+  },
+  MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky: {
+    in: 8,
+    out: 9,
+  },
+  SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ: {
+    in: 3,
+    out: 6,
+  },
+  H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt: {
+    in: 3,
+    out: 5,
+  },
+  CTMAxxk34HjKWxQ3QLZK1HpaLXmBveao3ESePXbiyfzh: {
+    in: 4,
+    out: 7,
+  },
+};
+
+export const SWAP_DIRECTION_ARGS = {
+  NO_ARG: [
+    "MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky",
+    "SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ",
+  ],
+  SIDE: [
+    "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+    "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6",
+    "CURVGoZn8zycx6FXwwevgBTB2gVvdbGTEpvMJDbgs2t4",
+    "dp2waEWSBy5yKmq65ergoU3G6qRLmqa6K7We4rZSKph",
+    "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb",
+    "PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY",
+    "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb",
+  ],
+  A_TO_B: [
+    "H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt",
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+    "CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR",
+  ],
+  X_TO_Y: [
+    "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt",
+    "9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H",
+  ],
+};

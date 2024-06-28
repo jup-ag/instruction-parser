@@ -8,28 +8,33 @@ type RoutePlanStep = IdlTypes<Jupiter>["RoutePlanStep"];
 export type RoutePlan = RoutePlanStep[];
 
 export type ParsedSwapEvent = {
-  amm: PublicKey,
-  inputMint: PublicKey,
-  inputAmount: BigInt,
-  outputMint: PublicKey,
-  outputAmount: BigInt
-}
+  amm: PublicKey;
+  inputMint: PublicKey;
+  inputAmount: BigInt;
+  outputMint: PublicKey;
+  outputAmount: BigInt;
+};
 
 export type ParsedFeeEvent = {
-  account: PublicKey,
-  mint: PublicKey,
-  amount: BigInt
-}
+  account: PublicKey;
+  mint: PublicKey;
+  amount: BigInt;
+};
 
 export type ParsedEvent = {
-  data: ParsedSwapEvent | ParsedFeeEvent
-  name: string
-}
+  data: ParsedSwapEvent | ParsedFeeEvent;
+  name: string;
+};
 
 export type TransferData = {
-  mint: PublicKey,
-  amount: BigInt
-}
+  mint: PublicKey;
+  amount: BigInt;
+};
+
+export type RouteInfo = {
+  index: number;
+  routePlan: RoutePlan;
+};
 
 export interface PartialInstruction {
   programId: PublicKey;
