@@ -233,8 +233,10 @@ export class InstructionParser {
     const positions =
       SWAP_IN_OUT_ACCOUNTS_POSITION[swapInstruction.programId.toBase58()];
     const accounts = (swapInstruction as PartialInstruction).accounts;
-    const inAccount = accounts[positions.in].toBase58();
-    const outAccount = accounts[positions.out].toBase58();
+    const inAccountPostion = positions.in < 0 ? accounts.length + positions.in : positions.in;
+    const outAccountPosition = positions.out < 0 ? accounts.length + positions.out : positions.out;
+    const inAccount = accounts[inAccountPostion].toBase58();
+    const outAccount = accounts[outAccountPosition].toBase58();
     return [inAccount, outAccount];
   }
 
