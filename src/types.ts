@@ -36,6 +36,11 @@ export type RouteInfo = {
   routePlan: RoutePlan;
 };
 
+export enum TransferType {
+  IN,
+  OUT,
+}
+
 export interface PartialInstruction {
   programId: PublicKey;
   data: string /** Expecting base58 */;

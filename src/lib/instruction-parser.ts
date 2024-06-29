@@ -7,6 +7,7 @@ import {
   RouteInfo,
   RoutePlan,
   TransactionWithMeta,
+  TransferType,
 } from "../types";
 import { getAccount } from "@solana/spl-token";
 import {
@@ -166,12 +167,14 @@ export class InstructionParser {
       );
       const inTransferData = await this.reduceTokenTransfers(
         transferInstructions.inTransfers,
-        connection
+        connection,
+        TransferType.IN
       );
 
       const outTransferData = await this.reduceTokenTransfers(
         transferInstructions.outTransfers,
-        connection
+        connection,
+        TransferType.OUT
       );
 
       const event: ParsedEvent = {
@@ -233,8 +236,10 @@ export class InstructionParser {
     const positions =
       SWAP_IN_OUT_ACCOUNTS_POSITION[swapInstruction.programId.toBase58()];
     const accounts = (swapInstruction as PartialInstruction).accounts;
-    const inAccountPostion = positions.in < 0 ? accounts.length + positions.in : positions.in;
-    const outAccountPosition = positions.out < 0 ? accounts.length + positions.out : positions.out;
+    const inAccountPostion =
+      positions.in < 0 ? accounts.length + positions.in : positions.in;
+    const outAccountPosition =
+      positions.out < 0 ? accounts.length + positions.out : positions.out;
     const inAccount = accounts[inAccountPostion].toBase58();
     const outAccount = accounts[outAccountPosition].toBase58();
     return [inAccount, outAccount];
@@ -275,7 +280,8 @@ export class InstructionParser {
 
   async reduceTokenTransfers(
     transferInstructions: ParsedInstruction[],
-    connection: Connection
+    connection: Connection,
+    transferType: TransferType
   ) {
     let mint: PublicKey;
 
@@ -292,11 +298,12 @@ export class InstructionParser {
     if (transferInstruction.parsed.type === "transferChecked") {
       mint = new PublicKey(transferInstruction.parsed.info.mint);
     } else {
-      const destinationInfo = await getAccount(
-        connection,
-        new PublicKey(transferInstruction.parsed.info.destination)
-      );
-      mint = destinationInfo.mint;
+      const account =
+        transferType == TransferType.IN
+          ? new PublicKey(transferInstruction.parsed.info.destination)
+          : new PublicKey(transferInstruction.parsed.info.source);
+      const accountInfo = await getAccount(connection, account);
+      mint = accountInfo.mint;
     }
 
     return {
