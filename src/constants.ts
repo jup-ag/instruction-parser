@@ -75,8 +75,8 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     out: 10,
   },
   C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr: {
-    in: 0,
-    out: 0,
+    in: 5,
+    out: 4,
   },
   CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR: {
     in: 4,
@@ -87,8 +87,8 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     out: 7,
   },
   cysPXAjehMpVKUapzbMCCnpFxUFFryEWEaLgnb9NrR8: {
-    in: 0,
-    out: 0,
+    in: 3,
+    out: 4,
   },
   GNExJhNUhc9LN2DauuQAUJnXoy6DJ6zey3t9kT9A2PF3: {
     in: 2,
@@ -146,10 +146,6 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 4,
     out: 5,
   },
-  srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX: {
-    in: 0,
-    out: 0,
-  },
   opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb: {
     in: 9,
     out: 10,
@@ -179,8 +175,8 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     out: 6,
   },
   DecZY86MU5Gj7kppfUCEmd4LbXXuyZH1yHaP2NTqdiZB: {
-    in: 0,
-    out: 0,
+    in: 4,
+    out: 5,
   },
   "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx": {
     in: 3,
@@ -249,30 +245,6 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
 };
 
 export const SWAP_DIRECTION_ARGS = {
-  NO_ARG: [
-    "SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ",
-    "DecZY86MU5Gj7kppfUCEmd4LbXXuyZH1yHaP2NTqdiZB",
-    "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8",
-    "SCHAtsf8mbjyjiv4LkhLKutTf6JnZAbdJKFkXQNMFHZ",
-    "SSwpMgqNDsyV7mAgN9ady4bDVu5ySjmmXejXvy2vLt1",
-    "CTMAxxk34HjKWxQ3QLZK1HpaLXmBveao3ESePXbiyfzh",
-    "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
-    "EewxydAPCCVuNEyrVN68PuSYdQ7wKn27V9Gjeoi8dy3S",
-    "MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky",
-    "cysPXAjehMpVKUapzbMCCnpFxUFFryEWEaLgnb9NrR8",
-    "MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD",
-    "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB",
-    "7WduLbRfYhTJktjLw5FDEyrqoEv61aTTCuGAetgLjzN5",
-    "D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag",
-    "2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c",
-    "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
-    "treaf4wWBBty3fHdyBpo35Mz84M8k3heKXmjmi9vFt5",
-    "stkitrT1Uoy18Dk1fTrgPw8W6MVzoCfYoAFT4MLsmhq",
-    "GFXsSL5sSaDfNFQUYsHekbWBW1TsFdjDYzACh62tEHxn",
-    "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
-    "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
-    "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C"
-  ],
   SIDE: [
     "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
     "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6",
