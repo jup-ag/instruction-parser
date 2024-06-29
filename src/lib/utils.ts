@@ -90,17 +90,19 @@ export function isTransferInstruction(instruction: ParsedInstruction) {
   ) {
     const ixType = instruction.parsed.type;
     const ixstackHeight = (instruction as any).stackHeight;
-    return (
-      (ixType === "transfer" || ixType === "transferChecked") &&
-      ixstackHeight >= STACK_HEIGHT.TOKEN_TRANSFER  // Greater than is added to handle cases where token transfers happen in deposit and withdraw functions
-    );
+    if (
+      (ixType === "transfer" ||
+        ixType === "transferChecked" ||
+        ixType == "mintTo" || // Mint and burn are added to support Saber decimal Wrapper, Clone, Helium Network etc
+        ixType == "burn") &&
+      ixstackHeight >= STACK_HEIGHT.TOKEN_TRANSFER // Greater than is added to handle cases where token transfers happen in deposit and withdraw functions
+    )
+      return ixType;
   }
-  return false;
+  return null;
 }
 
 export function getSwapDirection(amm: string, swap: any) {
-  if (SWAP_DIRECTION_ARGS.NO_ARG.includes(amm)) return true;
-
   if (SWAP_DIRECTION_ARGS.SIDE.includes(amm))
     return !Object.values(swap)[0]["side"]["bid"];
 
@@ -112,4 +114,6 @@ export function getSwapDirection(amm: string, swap: any) {
   }
 
   // custom checks for amms
+
+  return true;
 }

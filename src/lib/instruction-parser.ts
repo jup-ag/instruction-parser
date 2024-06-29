@@ -263,14 +263,23 @@ export class InstructionParser {
     ) {
       const innerInstruction = innerInstructions[pointerIndex];
       const parsedInnerInstruction = innerInstruction as ParsedInstruction;
-      if (isTransferInstruction(parsedInnerInstruction)) {
+      const ixType = isTransferInstruction(parsedInnerInstruction);
+      if (ixType) {
         const source = parsedInnerInstruction.parsed.info.source;
         const destination = parsedInnerInstruction.parsed.info.destination;
 
-        if (inAccount === source)
-          transferInstructions.inTransfers.push(parsedInnerInstruction);
-        if (outAccount === destination)
-          transferInstructions.outTransfers.push(parsedInnerInstruction);
+        if (ixType === "transfer" || ixType === "transferChecked") {
+          if (inAccount === source)
+            transferInstructions.inTransfers.push(parsedInnerInstruction);
+          if (outAccount === destination)
+            transferInstructions.outTransfers.push(parsedInnerInstruction);
+        } else if (ixType === "burn") {
+          if (inAccount == parsedInnerInstruction.parsed.info.account)
+            transferInstructions.inTransfers.push(parsedInnerInstruction);
+        } else if (ixType === "mintTo") {
+          if (outAccount == parsedInnerInstruction.parsed.info.account)
+            transferInstructions.outTransfers.push(parsedInnerInstruction);
+        }
       }
       pointerIndex += 1;
     }
@@ -295,15 +304,15 @@ export class InstructionParser {
 
     const transferInstruction = transferInstructions[0];
 
-    if (transferInstruction.parsed.type === "transferChecked") {
-      mint = new PublicKey(transferInstruction.parsed.info.mint);
-    } else {
+    if (transferInstruction.parsed.type === "transfer") {
       const account =
         transferType == TransferType.IN
           ? new PublicKey(transferInstruction.parsed.info.destination)
           : new PublicKey(transferInstruction.parsed.info.source);
       const accountInfo = await getAccount(connection, account);
       mint = accountInfo.mint;
+    } else {
+      mint = new PublicKey(transferInstruction.parsed.info.mint);
     }
 
     return {
