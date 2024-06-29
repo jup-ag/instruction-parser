@@ -92,7 +92,7 @@ export function isTransferInstruction(instruction: ParsedInstruction) {
     const ixstackHeight = (instruction as any).stackHeight;
     return (
       (ixType === "transfer" || ixType === "transferChecked") &&
-      ixstackHeight == STACK_HEIGHT.TOKEN_TRANSFER
+      ixstackHeight >= STACK_HEIGHT.TOKEN_TRANSFER  // Greater than is added to handle cases where token transfers happen in deposit and withdraw functions
     );
   }
   return false;
