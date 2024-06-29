@@ -71,8 +71,8 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     out: 9,
   },
   BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p: {
-    in: 9,
-    out: 10,
+    in: 6,
+    out: 7,
   },
   C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr: {
     in: 5,
@@ -262,5 +262,6 @@ export const SWAP_DIRECTION_ARGS = {
   X_TO_Y: [
     "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt",
     "9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H",
+    "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p",
   ],
 };
