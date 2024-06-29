@@ -2,6 +2,7 @@ import { Connection } from "@solana/web3.js";
 import { Command } from "commander";
 import { getTokenMap } from "./lib/utils";
 import { extract } from ".";
+import { JUPITER_V6_PROGRAM_ID } from "./constants";
 
 const program = new Command();
 
@@ -33,6 +34,50 @@ program
     );
 
     console.log(result);
+  });
+
+program
+  .command("test")
+  .option("-r --limit <limit>", "limit of transactions", "500")
+  .requiredOption("-r --rpc <rpc>")
+  .addHelpText("beforeAll", "Test instruction parser")
+  .action(async ({ limit, rpc }) => {
+    const connection = new Connection(rpc);
+    const signatures = await connection.getSignaturesForAddress(
+      JUPITER_V6_PROGRAM_ID,
+      {
+        limit: parseInt(limit),
+      }
+    );
+
+    for (const signature of signatures) {
+      const tx = await connection.getParsedTransaction(signature.signature, {
+        maxSupportedTransactionVersion: 0,
+      });
+
+      if (tx.meta.err) {
+        continue;
+      }
+
+      const tokenMap = await getTokenMap();
+
+      try {
+        await extract(
+          signature.signature,
+          connection,
+          tx,
+          tokenMap,
+          tx.blockTime
+        );
+        console.log("Transaction succesfully extracted: ", signature.signature);
+      } catch (error) {
+        console.log(
+          "Error while extracting transaction: ",
+          signature.signature,
+          error
+        );
+      }
+    }
   });
 
 program.parse();
