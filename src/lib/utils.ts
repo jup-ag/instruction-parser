@@ -4,7 +4,12 @@ import { BN } from "@coral-xyz/anchor";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { ParsedInstruction } from "@solana/web3.js";
 import { PartialInstruction, Swap } from "../types";
-import { AMM_TYPES, SWAP_DIRECTION_ARGS, STACK_HEIGHT } from "../constants";
+import {
+  AMM_TYPES,
+  SWAP_DIRECTION_ARGS,
+  STACK_HEIGHT,
+  TRANSFER_INSTRUCTION_TYPES,
+} from "../constants";
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 
 // Caches for Price API
@@ -91,10 +96,7 @@ export function isTransferInstruction(instruction: ParsedInstruction) {
     const ixType = instruction.parsed.type;
     const ixstackHeight = (instruction as any).stackHeight;
     if (
-      (ixType === "transfer" ||
-        ixType === "transferChecked" ||
-        ixType == "mintTo" || // Mint and burn are added to support Saber decimal Wrapper, Clone, Helium Network etc
-        ixType == "burn") &&
+      TRANSFER_INSTRUCTION_TYPES.has(ixType) &&
       ixstackHeight >= STACK_HEIGHT.TOKEN_TRANSFER // Greater than is added to handle cases where token transfers happen in deposit and withdraw functions
     )
       return ixType;

@@ -270,12 +270,16 @@ export class InstructionParser {
             transferInstructions.inTransfers.push(parsedInnerInstruction);
           if (outAccountKey === destination)
             transferInstructions.outTransfers.push(parsedInnerInstruction);
-        } else if (ixType === "burn") {
-          if (inAccountKey == parsedInnerInstruction.parsed.info.account)
-            transferInstructions.inTransfers.push(parsedInnerInstruction);
-        } else if (ixType === "mintTo") {
-          if (outAccountKey == parsedInnerInstruction.parsed.info.account)
-            transferInstructions.outTransfers.push(parsedInnerInstruction);
+        } else if (
+          ixType === "burn" &&
+          inAccountKey === parsedInnerInstruction.parsed.info.account
+        ) {
+          transferInstructions.inTransfers.push(parsedInnerInstruction);
+        } else if (
+          ixType === "mintTo" &&
+          outAccountKey === parsedInnerInstruction.parsed.info.account
+        ) {
+          transferInstructions.outTransfers.push(parsedInnerInstruction);
         }
       }
       pointerIndex += 1;
