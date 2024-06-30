@@ -6,6 +6,8 @@ import {
   PartialInstruction,
   RouteInfo,
   RoutePlan,
+  Swap,
+  SwapInfo,
   TransactionWithMeta,
   TransferType,
 } from "../types";
@@ -137,34 +139,21 @@ export class InstructionParser {
     const events: ParsedEvent[] = [];
     const routeInfo: RouteInfo = this.getProgramInstructionInfo(tx);
 
-    const innerInstructions: (PartialInstruction | ParsedInstruction)[] = [];
-    const swapInstructionIndexes = [];
-    const swapDirections = [];
+    const { swaps, innerInstructions } = this.populateSwapsAndInnerInstructions(
+      tx,
+      routeInfo
+    );
 
-    for (const instructions of tx.meta.innerInstructions) {
-      if (instructions.index === routeInfo.index) {
-        instructions.instructions.forEach((instruction, index) => {
-          innerInstructions.push(instruction);
-          if (isSwapInstruction(instruction)) {
-            swapInstructionIndexes.push(index);
-            const routePlanIndex = swapDirections.length;
-            const swapDirection = getSwapDirection(
-              instruction.programId.toBase58(),
-              routeInfo.routePlan[routePlanIndex].swap
-            );
-            swapDirections.push(swapDirection);
-          }
-        });
-        break;
-      }
-    }
+    for (let index = 0; index < swaps.length; index++) {
+      const swap: SwapInfo = swaps[index];
 
-    for (let index = 0; index < swapInstructionIndexes.length; index++) {
-      const transferInstructions = this.parseTransferInstructions(
-        swapInstructionIndexes[index],
+      const transferInstructions = this.getInAndOutTransferInstructions(
         innerInstructions,
-        swapDirections[index]
+        swap.instructionIndex,
+        swap.isAsk ? swap.inAccount : swap.outAccount,
+        swap.isAsk ? swap.outAccount : swap.inAccount
       );
+
       const inTransferData = await this.reduceTokenTransfers(
         transferInstructions.inTransfers,
         connection,
@@ -179,7 +168,7 @@ export class InstructionParser {
 
       const event: ParsedEvent = {
         data: {
-          amm: innerInstructions[swapInstructionIndexes[index]].programId,
+          amm: innerInstructions[swaps[index].instructionIndex].programId,
           inputMint: inTransferData.mint,
           inputAmount: inTransferData.amount,
           outputMint: outTransferData.mint,
@@ -212,49 +201,57 @@ export class InstructionParser {
     return { index: routingInstructionIndex, routePlan };
   }
 
-  parseTransferInstructions(
-    swapInstructionIndex: number,
-    innerInstructions: (PartialInstruction | ParsedInstruction)[],
-    isAsk: boolean
+  populateSwapsAndInnerInstructions(
+    tx: TransactionWithMeta,
+    routeInfo: RouteInfo
   ) {
-    const [inAccount, outAccount] = this.getInAndOutAccountKeys(
-      innerInstructions[swapInstructionIndex] as PartialInstruction
-    );
-    const transferInstructions = this.getInAndOutTransferInstructions(
-      innerInstructions,
-      swapInstructionIndex,
-      isAsk ? inAccount : outAccount,
-      isAsk ? outAccount : inAccount
-    );
+    let innerInstructions: (PartialInstruction | ParsedInstruction)[];
+    const swaps: SwapInfo[] = [];
 
-    return transferInstructions;
-  }
+    for (const instruction of tx.meta.innerInstructions) {
+      if (instruction.index === routeInfo.index) {
+        innerInstructions = instruction.instructions;
+        instruction.instructions.forEach((instruction, index) => {
+          if (isSwapInstruction(instruction)) {
+            const routePlanIndex = swaps.length;
+            const isAsk = getSwapDirection(
+              instruction.programId.toBase58(),
+              routeInfo.routePlan[routePlanIndex].swap
+            );
 
-  getInAndOutAccountKeys(
-    swapInstruction: PartialInstruction | ParsedInstruction
-  ) {
-    const positions =
-      SWAP_IN_OUT_ACCOUNTS_POSITION[swapInstruction.programId.toBase58()];
-    const accounts = (swapInstruction as PartialInstruction).accounts;
-    const inAccountPostion =
-      positions.in < 0 ? accounts.length + positions.in : positions.in;
-    const outAccountPosition =
-      positions.out < 0 ? accounts.length + positions.out : positions.out;
-    const inAccount = accounts[inAccountPostion].toBase58();
-    const outAccount = accounts[outAccountPosition].toBase58();
-    return [inAccount, outAccount];
+            const [inAccount, outAccount] = this.getInAndOutAccountKeys(
+              instruction,
+              routeInfo.routePlan[routePlanIndex].swap
+            );
+
+            swaps.push({
+              instructionIndex: index,
+              isAsk,
+              inAccount,
+              outAccount,
+            });
+          }
+        });
+        break;
+      }
+    }
+
+    return { swaps, innerInstructions };
   }
 
   getInAndOutTransferInstructions(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapInstructionIndex: number,
-    inAccount: string,
-    outAccount: string
+    inAccount: PublicKey,
+    outAccount: PublicKey
   ) {
     const transferInstructions = {
       inTransfers: [],
       outTransfers: [],
     };
+
+    const inAccountKey = inAccount.toBase58();
+    const outAccountKey = outAccount.toBase58();
 
     let pointerIndex = swapInstructionIndex + 1;
     while (
@@ -269,15 +266,15 @@ export class InstructionParser {
         const destination = parsedInnerInstruction.parsed.info.destination;
 
         if (ixType === "transfer" || ixType === "transferChecked") {
-          if (inAccount === source)
+          if (inAccountKey === source)
             transferInstructions.inTransfers.push(parsedInnerInstruction);
-          if (outAccount === destination)
+          if (outAccountKey === destination)
             transferInstructions.outTransfers.push(parsedInnerInstruction);
         } else if (ixType === "burn") {
-          if (inAccount == parsedInnerInstruction.parsed.info.account)
+          if (inAccountKey == parsedInnerInstruction.parsed.info.account)
             transferInstructions.inTransfers.push(parsedInnerInstruction);
         } else if (ixType === "mintTo") {
-          if (outAccount == parsedInnerInstruction.parsed.info.account)
+          if (outAccountKey == parsedInnerInstruction.parsed.info.account)
             transferInstructions.outTransfers.push(parsedInnerInstruction);
         }
       }
@@ -319,6 +316,22 @@ export class InstructionParser {
       mint,
       amount,
     };
+  }
+
+  getInAndOutAccountKeys(
+    swapInstruction: PartialInstruction | ParsedInstruction,
+    swapData: Swap
+  ) {
+    const ixName = Object.keys(swapData)[0]; // get position based on instruction name
+    const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[ixName];
+    const accounts = (swapInstruction as PartialInstruction).accounts;
+
+    const inAccountPostion =
+      positions.in < 0 ? accounts.length + positions.in : positions.in;
+    const outAccountPosition =
+      positions.out < 0 ? accounts.length + positions.out : positions.out;
+
+    return [accounts[inAccountPostion], accounts[outAccountPosition]];
   }
 
   getExactOutAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {

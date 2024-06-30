@@ -3,7 +3,7 @@ import got from "got";
 import { BN } from "@coral-xyz/anchor";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { ParsedInstruction } from "@solana/web3.js";
-import { PartialInstruction } from "../types";
+import { PartialInstruction, Swap } from "../types";
 import { AMM_TYPES, SWAP_DIRECTION_ARGS, STACK_HEIGHT } from "../constants";
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 
@@ -102,7 +102,7 @@ export function isTransferInstruction(instruction: ParsedInstruction) {
   return null;
 }
 
-export function getSwapDirection(amm: string, swap: any) {
+export function getSwapDirection(amm: string, swap: Swap) {
   if (SWAP_DIRECTION_ARGS.SIDE.includes(amm))
     return !Object.values(swap)[0]["side"]["bid"];
 
@@ -113,7 +113,9 @@ export function getSwapDirection(amm: string, swap: any) {
     return Object.values(swap)[0]["xToY"];
   }
 
-  // custom checks for amms
+  if (SWAP_DIRECTION_ARGS.QUANTITY_IS_COLLATERAL.includes(amm)) {
+    return Object.values(swap)[0]["quantityIsCollateral"];
+  }
 
   return true;
 }
