@@ -6,6 +6,7 @@ export type SwapEvent = IdlEvents<Jupiter>["SwapEvent"];
 export type FeeEvent = IdlEvents<Jupiter>["FeeEvent"];
 type RoutePlanStep = IdlTypes<Jupiter>["RoutePlanStep"];
 export type RoutePlan = RoutePlanStep[];
+export type Swap = IdlTypes<Jupiter>["Swap"];
 
 export type ParsedSwapEvent = {
   amm: PublicKey;
@@ -40,6 +41,13 @@ export enum TransferType {
   IN,
   OUT,
 }
+
+export type SwapInfo = {
+  instructionIndex: number;
+  isAsk: boolean;
+  inAccount: PublicKey;
+  outAccount: PublicKey;
+};
 
 export interface PartialInstruction {
   programId: PublicKey;
