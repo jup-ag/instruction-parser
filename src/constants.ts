@@ -4,6 +4,13 @@ export const JUPITER_V6_PROGRAM_ID = new PublicKey(
   "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
 );
 
+export const TRANSFER_INSTRUCTION_TYPES = new Set([
+  "transfer",
+  "transferChecked",
+  "mintTo",
+  "burn",
+]);
+
 export const AMM_TYPES = {
   "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP": "Orca",
   MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky: "Mercurial",
