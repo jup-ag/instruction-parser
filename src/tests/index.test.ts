@@ -1,10 +1,12 @@
-import { describe, expect, jest, test } from "@jest/globals";
+import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { Connection } from "@solana/web3.js";
 import Decimal from "decimal.js";
 import * as utils from "../lib/utils";
 import { extract } from "..";
 
-jest.spyOn(utils, "getPriceInUSDByMint").mockImplementation((tokenMint) => {
+const getPriceInUSDByMintSpy = jest.spyOn(utils, "getPriceInUSDByMint");
+
+const getPriceInUSDByMintMockImpl = jest.fn((tokenMint) => {
   let price: number;
 
   if (tokenMint == "So11111111111111111111111111111111111111112") {
@@ -19,6 +21,11 @@ jest.spyOn(utils, "getPriceInUSDByMint").mockImplementation((tokenMint) => {
 });
 
 describe("Instruction parser", () => {
+
+  beforeEach(() => {
+    getPriceInUSDByMintSpy.mockImplementation(getPriceInUSDByMintMockImpl);
+  })
+
   test("Extract should work", async () => {
     const connection = new Connection(
       "https://jupiter.rpcpool.com/73517088-76ac-463a-aca4-b95717cb46d2"
