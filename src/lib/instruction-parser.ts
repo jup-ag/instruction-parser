@@ -159,13 +159,13 @@ export class InstructionParser {
         swap.isAsk ? swap.outAccount : swap.inAccount
       );
 
-      const inTransferData = await this.reduceTokenTransfers(
+      const inTransferData = await this.deduceTokenTransfers(
         transferInstructions.inTransfers,
         connection,
         TransferType.IN
       );
 
-      const outTransferData = await this.reduceTokenTransfers(
+      const outTransferData = await this.deduceTokenTransfers(
         transferInstructions.outTransfers,
         connection,
         TransferType.OUT
@@ -315,7 +315,7 @@ export class InstructionParser {
     return transferInstructions;
   }
 
-  async reduceTokenTransfers(
+  async deduceTokenTransfers(
     transferInstructions: ParsedInstruction[],
     connection: Connection,
     transferType: TransferType
