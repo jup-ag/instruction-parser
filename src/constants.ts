@@ -4,7 +4,7 @@ export const JUPITER_V6_PROGRAM_ID = new PublicKey(
   "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
 );
 
-export const TRANSFER_INSTRUCTION_TYPES = new Set([
+export const TRANSFER_INSTRUCTION_TYPES = new Set<string>([
   "transfer",
   "transferChecked",
   "mintTo",
@@ -61,6 +61,7 @@ export const AMM_TYPES = {
 
 export const STACK_HEIGHT = {
   SWAP: 2,
+  FEE: 2,
   TOKEN_TRANSFER: 3,
 };
 
@@ -262,4 +263,13 @@ export const SWAP_DIRECTION_ARGS = {
     "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p",
   ],
   QUANTITY_IS_COLLATERAL: ["C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr"],
+};
+
+export const PLATFORM_FEE_ACCOUNTS_POSITION = {
+  route: 6,
+  routeWithTokenLedger: 6,
+  sharedAccountsRoute: 9,
+  sharedAccountsRouteWithTokenLedger: 9,
+  sharedAccountsExactOutRoute: 9,
+  exactOutRoute: 7,
 };
