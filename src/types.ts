@@ -32,9 +32,18 @@ export type TransferData = {
   amount: BigInt;
 };
 
+export type SwapFee = {
+  account: PublicKey;
+  mint: PublicKey;
+  amount: BigInt;
+};
+
 export type RouteInfo = {
   index: number;
+  name: string;
+  accounts: PublicKey[];
   routePlan: RoutePlan;
+  platformFeeBps: number;
 };
 
 export enum TransferType {

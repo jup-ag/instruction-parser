@@ -104,6 +104,20 @@ export function isTransferInstruction(instruction: ParsedInstruction) {
   return null;
 }
 
+export function isFeeInstruction(
+  instruction: ParsedInstruction,
+  feeAccount: string,
+  destination: string
+) {
+  const ixType = instruction.parsed.type;
+  const stackHeight = (instruction as any).stackHeight;
+  return (
+    (ixType === "transfer" || ixType === "transferChecked") &&
+    stackHeight === STACK_HEIGHT.FEE &&
+    feeAccount === destination
+  );
+}
+
 export function getSwapDirection(amm: string, swap: Swap) {
   if (SWAP_DIRECTION_ARGS.SIDE.includes(amm))
     return !Object.values(swap)[0]["side"]["bid"];
