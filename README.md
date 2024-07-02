@@ -33,10 +33,6 @@ If you will need all of them in order to parse different contract, you can inclu
 }
 ```
 
-## Note
-
-We are using Anchor events for extracting swap details. One downside about this approach is that we cannot longer extract swap details if the log is being truncated.
-
 ## Jupiter V4 Contract
 
 For the old V4 contract, check out [v4 tag](https://github.com/jup-ag/instruction-parser/tree/v4).
