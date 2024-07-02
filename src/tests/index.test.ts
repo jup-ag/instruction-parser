@@ -9,24 +9,23 @@ const getPriceInUSDByMintSpy = jest.spyOn(utils, "getPriceInUSDByMint");
 const getPriceInUSDByMintMockImpl = jest.fn((tokenMint) => {
   let price: number;
 
-  if (tokenMint == "So11111111111111111111111111111111111111112") {
+  if (tokenMint === "So11111111111111111111111111111111111111112") {
     price = 147.793702285;
-  } else if (tokenMint == "AkVt31h8vgji5wF4nVbq1QmBV5wBoe8JdSoDTkDhQwEw") {
+  } else if (tokenMint === "AkVt31h8vgji5wF4nVbq1QmBV5wBoe8JdSoDTkDhQwEw") {
     price = 0.0012856699999999998;
-  } else if (tokenMint == "vVe16q1aGVSnZtK8PCXFnsh45VW6HCVrJPKCBSbpump") {
+  } else if (tokenMint === "vVe16q1aGVSnZtK8PCXFnsh45VW6HCVrJPKCBSbpump") {
     price = 0.00017610899999999998;
   }
 
   return Promise.resolve(new Decimal(price));
 });
 
-describe("Instruction parser", () => {
-
+describe("instruction parser", () => {
   beforeEach(() => {
     getPriceInUSDByMintSpy.mockImplementation(getPriceInUSDByMintMockImpl);
-  })
+  });
 
-  test("Extract should work", async () => {
+  test("extract should work", async () => {
     const connection = new Connection(
       "https://jupiter.rpcpool.com/73517088-76ac-463a-aca4-b95717cb46d2"
     );
