@@ -6,6 +6,57 @@ export type SwapEvent = IdlEvents<Jupiter>["SwapEvent"];
 export type FeeEvent = IdlEvents<Jupiter>["FeeEvent"];
 type RoutePlanStep = IdlTypes<Jupiter>["RoutePlanStep"];
 export type RoutePlan = RoutePlanStep[];
+export type Swap = IdlTypes<Jupiter>["Swap"];
+
+export type ParsedSwapEvent = {
+  amm: PublicKey;
+  inputMint: PublicKey;
+  inputAmount: BigInt;
+  outputMint: PublicKey;
+  outputAmount: BigInt;
+};
+
+export type ParsedFeeEvent = {
+  account: PublicKey;
+  mint: PublicKey;
+  amount: BigInt;
+};
+
+export type ParsedEvent = {
+  data: ParsedSwapEvent | ParsedFeeEvent;
+  name: string;
+};
+
+export type TransferData = {
+  mint: PublicKey;
+  amount: BigInt;
+};
+
+export type SwapFee = {
+  account: PublicKey;
+  mint: PublicKey;
+  amount: BigInt;
+};
+
+export type RouteInfo = {
+  index: number;
+  name: string;
+  accounts: PublicKey[];
+  routePlan: RoutePlan;
+  platformFeeBps: number;
+};
+
+export enum TransferType {
+  IN,
+  OUT,
+}
+
+export type SwapInfo = {
+  instructionIndex: number;
+  isAsk: boolean;
+  inAccount: PublicKey;
+  outAccount: PublicKey;
+};
 
 export interface PartialInstruction {
   programId: PublicKey;

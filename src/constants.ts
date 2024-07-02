@@ -4,6 +4,13 @@ export const JUPITER_V6_PROGRAM_ID = new PublicKey(
   "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
 );
 
+export const TRANSFER_INSTRUCTION_TYPES = new Set<string>([
+  "transfer",
+  "transferChecked",
+  "mintTo",
+  "burn",
+]);
+
 export const AMM_TYPES = {
   "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP": "Orca",
   MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky: "Mercurial",
@@ -50,4 +57,219 @@ export const AMM_TYPES = {
   H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt: "Cropper Whirlpool",
   "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx": "Sanctum S",
   Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1: "GuacSwap",
+};
+
+export const STACK_HEIGHT = {
+  SWAP: 2,
+  FEE: 2,
+  TOKEN_TRANSFER: 3,
+};
+
+export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
+  aldrin: {
+    in: 7,
+    out: 8,
+  },
+  aldrinV2: {
+    in: 7,
+    out: 8,
+  },
+  balansol: {
+    in: 6,
+    out: 9,
+  },
+  clone: {
+    in: 4,
+    out: 5,
+  },
+  crema: {
+    in: 4,
+    out: 5,
+  },
+  cropper: {
+    in: 4,
+    out: 7,
+  },
+  cykura: {
+    in: 3,
+    out: 4,
+  },
+  deltaFi: {
+    in: 2,
+    out: 3,
+  },
+  dradex: {
+    in: 9,
+    out: 10,
+  },
+  gooseFX: {
+    in: 8,
+    out: 9,
+  },
+  gooseFXV2: {
+    in: 5,
+    out: 6,
+  },
+  heliumTreasuryManagementRedeemV0: {
+    in: 5,
+    out: 6,
+  },
+  invariant: {
+    in: 3,
+    out: 4,
+  },
+  lifinity: {
+    in: 3,
+    out: 4,
+  },
+  lifinityV2: {
+    in: 3,
+    out: 4,
+  },
+  marcoPolo: {
+    in: 6,
+    out: 7,
+  },
+  marinadeDeposit: {},
+  marinadeUnstake: {},
+  mercurial: {
+    in: -2,
+    out: -1,
+  },
+  meteora: {
+    in: 1,
+    out: 2,
+  },
+  meteoraDlmm: {
+    in: 4,
+    out: 5,
+  },
+  openBookV2: {
+    in: 9,
+    out: 10,
+  },
+  perps: {
+    in: 1,
+    out: 2,
+  },
+  perpsAddLiquidity: {
+    in: 1,
+    out: 2,
+  },
+  perpsRemoveLiquidity: {
+    in: 2,
+    out: 1,
+  },
+  phoenix: {
+    in: 4,
+    out: 5,
+  },
+  raydium: {
+    in: 14,
+    out: 15,
+  },
+  raydiumClmm: {
+    in: 3,
+    out: 4,
+  },
+  raydiumClmmV2: {
+    in: 3,
+    out: 4,
+  },
+  raydiumCp: {
+    in: 4,
+    out: 5,
+  },
+  saber: {
+    in: 3,
+    out: 6,
+  },
+  saberAddDecimalsDeposit: {
+    in: 4,
+    out: 5,
+  },
+  saberAddDecimalsWithdraw: {
+    in: 5,
+    out: 4,
+  },
+  sanctumS: {
+    in: 3,
+    out: 4,
+  },
+  sanctumSAddLiquidity: {
+    in: 2,
+    out: 3,
+  },
+  sanctumSRemoveLiquidity: {
+    in: 3,
+    out: 2,
+  },
+  sencha: {
+    in: 3,
+    out: 6,
+  },
+  openbook: {},
+  serum: {},
+  stakeDexStakeWrappedSol: {
+    in: 1,
+    out: 2,
+  },
+  stakeDexSwapViaStake: {},
+  stakeDexPrefundWithdrawStakeAndDepositStake: {},
+  step: {
+    in: 3,
+    out: 6,
+  },
+  symmetry: {
+    in: 4,
+    out: 6,
+  },
+  tokenSwap: {
+    in: 3,
+    out: 6,
+  },
+  tokenSwapV2: {
+    in: 3,
+    out: 6,
+  },
+  whirlpool: {
+    in: 3,
+    out: 5,
+  },
+  whirlpoolSwapV2: {
+    in: 7,
+    out: 9,
+  },
+};
+
+export const SWAP_DIRECTION_ARGS = {
+  SIDE: [
+    "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+    "AMM55ShdkoGRB5jVYPjWziwk8m5MpwyDgsMWHaMSQWH6",
+    "CURVGoZn8zycx6FXwwevgBTB2gVvdbGTEpvMJDbgs2t4",
+    "dp2waEWSBy5yKmq65ergoU3G6qRLmqa6K7We4rZSKph",
+    "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb",
+    "PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY",
+    "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb",
+  ],
+  A_TO_B: [
+    "H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt",
+    "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+    "CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR",
+  ],
+  X_TO_Y: [
+    "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt",
+    "9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H",
+    "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p",
+  ],
+  QUANTITY_IS_COLLATERAL: ["C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr"],
+};
+
+export const PLATFORM_FEE_ACCOUNTS_POSITION = {
+  route: 6,
+  routeWithTokenLedger: 6,
+  sharedAccountsRoute: 9,
+  sharedAccountsRouteWithTokenLedger: 9,
+  sharedAccountsExactOutRoute: 9,
+  exactOutRoute: 7,
 };
