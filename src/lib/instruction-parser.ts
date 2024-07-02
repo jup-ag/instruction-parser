@@ -334,7 +334,7 @@ export class InstructionParser {
 
     if (transferInstruction.parsed.type === "transfer") {
       const account =
-        transferType == TransferType.IN
+        transferType === TransferType.IN
           ? new PublicKey(transferInstruction.parsed.info.destination)
           : new PublicKey(transferInstruction.parsed.info.source);
       const accountInfo = await getAccount(connection, account);

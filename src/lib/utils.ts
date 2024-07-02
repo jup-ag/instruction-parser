@@ -84,7 +84,7 @@ export function isSwapInstruction(
 ) {
   return (
     instruction.programId.toBase58() in AMM_TYPES &&
-    (instruction as any).stackHeight == STACK_HEIGHT.SWAP
+    (instruction as any).stackHeight === STACK_HEIGHT.SWAP
   );
 }
 
