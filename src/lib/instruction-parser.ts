@@ -12,7 +12,12 @@ import {
   TransactionWithMeta,
   TransferType,
 } from "../types";
-import { getAccount } from "@solana/spl-token";
+import {
+  TOKEN_2022_PROGRAM_ID,
+  getAccount,
+  getMint,
+  getTransferFeeConfig,
+} from "@solana/spl-token";
 import {
   getSwapDirection,
   isFeeInstruction,
@@ -323,14 +328,29 @@ export class InstructionParser {
     transferType: TransferType
   ) {
     let mint: PublicKey;
-
-    const amount = transferInstructions.reduce((acc, instruction) => {
-      if (instruction.parsed.type === "transferChecked") {
-        return acc + BigInt(instruction.parsed.info.tokenAmount.amount);
+    let amount: bigint = BigInt(0);
+    for (const instruction of transferInstructions) {
+      // fee on transfer is only supported with transferChecked and transferCheckedWithFee
+      if (
+        instruction.parsed.type === "transferChecked" ||
+        instruction.parsed.type === "transferCheckedWithFee"
+      ) {
+        // fee should only be deducted from out transfers.
+        if (transferType === TransferType.OUT) {
+          amount += BigInt(
+            await this.getExactOutAmountAfterFee(
+              instruction.parsed.info,
+              instruction.parsed.type,
+              connection
+            )
+          );
+        } else {
+          amount += BigInt(instruction.parsed.info.tokenAmount.amount);
+        }
       } else {
-        return acc + BigInt(instruction.parsed.info.amount);
+        amount += BigInt(instruction.parsed.info.amount);
       }
-    }, BigInt(0));
+    }
 
     const transferInstruction = transferInstructions[0];
 
@@ -349,6 +369,36 @@ export class InstructionParser {
       mint,
       amount,
     };
+  }
+
+  async getExactOutAmountAfterFee(
+    info: any,
+    transferInstructionType: string,
+    connection: Connection
+  ) {
+    // fee should be calculated manually if transferChecked is used
+    if (transferInstructionType == "transferChecked") {
+      try {
+        const mint = await getMint(
+          connection,
+          new PublicKey(info.mint),
+          "confirmed",
+          TOKEN_2022_PROGRAM_ID
+        );
+        const feeConfig = getTransferFeeConfig(mint);
+        const feeBasisPoints =
+          feeConfig.newerTransferFee.transferFeeBasisPoints;
+
+        const amount = info.tokenAmount.amount;
+        const fee = (BigInt(amount) * BigInt(feeBasisPoints)) / BigInt(10000);
+        return BigInt(amount) - fee;
+      } catch (_) {
+        // handle transfer without transfer fee
+        return BigInt(info.tokenAmount.amount);
+      }
+    } else {
+      return BigInt(info.tokenAmount.amount) - BigInt(info.feeAmount.amount);
+    }
   }
 
   getInAndOutAccountKeys(

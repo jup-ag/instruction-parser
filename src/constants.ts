@@ -7,6 +7,7 @@ export const JUPITER_V6_PROGRAM_ID = new PublicKey(
 export const TRANSFER_INSTRUCTION_TYPES = new Set<string>([
   "transfer",
   "transferChecked",
+  "transferCheckedWithFee",
   "mintTo",
   "burn",
 ]);
