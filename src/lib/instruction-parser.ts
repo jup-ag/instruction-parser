@@ -192,6 +192,8 @@ export class InstructionParser {
         connection
       );
 
+      if (!swapFee) return events; // In few cases, fee transfer doesn't occur even if platformFee is non-zero
+
       const feeEvent: ParsedEvent = {
         data: {
           account: swapFee.account,
