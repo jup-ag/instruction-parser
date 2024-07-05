@@ -53,7 +53,6 @@ export enum TransferType {
 
 export type SwapInfo = {
   instructionIndex: number;
-  isAsk: boolean;
   inAccount: PublicKey;
   outAccount: PublicKey;
 };
