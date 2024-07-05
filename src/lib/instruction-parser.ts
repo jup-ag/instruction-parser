@@ -20,6 +20,7 @@ import {
   isTransferInstruction,
 } from "./utils";
 import {
+  CUSTOM_SWAPS,
   PLATFORM_FEE_ACCOUNTS_POSITION,
   SWAP_IN_OUT_ACCOUNTS_POSITION,
 } from "../constants";
@@ -151,13 +152,27 @@ export class InstructionParser {
 
     for (let index = 0; index < swaps.length; index++) {
       const swap: SwapInfo = swaps[index];
-
-      const transferInstructions = this.getInAndOutTransferInstructions(
-        innerInstructions,
-        swap.instructionIndex,
-        swap.isAsk ? swap.inAccount : swap.outAccount,
-        swap.isAsk ? swap.outAccount : swap.inAccount
-      );
+      const swapProgramId =
+        innerInstructions[swaps[index].instructionIndex].programId;
+      const routePlan = routeInfo.routePlan[index];
+      const swapIxName = Object.keys(routePlan.swap)[0];
+      let transferInstructions: any;
+      if (CUSTOM_SWAPS.includes(swapIxName)) {
+        transferInstructions = this.getInAndOutTransferInstructions(
+          innerInstructions,
+          swap.instructionIndex,
+          swap.isAsk ? swap.inAccount : swap.outAccount,
+          swap.isAsk ? swap.outAccount : swap.inAccount,
+          swapProgramId
+        );
+      } else {
+        transferInstructions = this.getInAndOutTransferInstructions(
+          innerInstructions,
+          swap.instructionIndex,
+          swap.isAsk ? swap.inAccount : swap.outAccount,
+          swap.isAsk ? swap.outAccount : swap.inAccount
+        );
+      }
 
       const inTransferData = await this.deduceTokenTransfers(
         transferInstructions.inTransfers,
@@ -173,7 +188,7 @@ export class InstructionParser {
 
       const swapEvent: ParsedEvent = {
         data: {
-          amm: innerInstructions[swaps[index].instructionIndex].programId,
+          amm: swapProgramId,
           inputMint: inTransferData.mint,
           inputAmount: inTransferData.amount,
           outputMint: outTransferData.mint,
@@ -238,17 +253,40 @@ export class InstructionParser {
     for (const instruction of tx.meta.innerInstructions) {
       if (instruction.index === routeInfo.index) {
         innerInstructions = instruction.instructions;
-        instruction.instructions.forEach((instruction, index) => {
-          if (isSwapInstruction(instruction)) {
+        for (let index = 0; index < innerInstructions.length; index++) {
+          if (isSwapInstruction(innerInstructions[index])) {
             const routePlanIndex = swaps.length;
+            const swapProgramId = innerInstructions[index].programId;
+            const routePlan = routeInfo.routePlan[routePlanIndex];
+            const swapIxName = Object.keys(routePlan.swap)[0];
+            if (CUSTOM_SWAPS.includes(swapIxName)) {
+              const { inAccount, outAccount, skipToIndex } = this.getCustomSwap(
+                innerInstructions,
+                index,
+                swapProgramId,
+                swapIxName
+              );
+              const isAsk = getSwapDirection(
+                swapProgramId.toBase58(),
+                routePlan.swap
+              );
+              swaps.push({
+                instructionIndex: index,
+                isAsk,
+                inAccount,
+                outAccount,
+              });
+              index = skipToIndex;
+              continue;
+            }
             const isAsk = getSwapDirection(
-              instruction.programId.toBase58(),
-              routeInfo.routePlan[routePlanIndex].swap
+              swapProgramId.toBase58(),
+              routePlan.swap
             );
 
             const [inAccount, outAccount] = this.getInAndOutAccountKeys(
-              instruction,
-              routeInfo.routePlan[routePlanIndex].swap
+              innerInstructions[index],
+              routePlan.swap
             );
 
             swaps.push({
@@ -258,19 +296,44 @@ export class InstructionParser {
               outAccount,
             });
           }
-        });
+        }
         break;
       }
     }
-
     return { swaps, innerInstructions };
+  }
+
+  getCustomSwap(
+    innerInstructions: (PartialInstruction | ParsedInstruction)[],
+    index: number,
+    swapProgramId: PublicKey,
+    swapIxName: string
+  ) {
+    const firstInstruction = innerInstructions[index];
+    for (let i = index + 1; i < innerInstructions.length; i++) {
+      if (
+        innerInstructions[i].programId.toBase58() == swapProgramId.toBase58()
+      ) {
+        const secondInstruction = innerInstructions[i];
+        const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
+        const inAccount = (firstInstruction as any).accounts[positions.in];
+        const outAccount = (secondInstruction as any).accounts[positions.out];
+
+        return {
+          inAccount,
+          outAccount,
+          skipToIndex: i,
+        };
+      }
+    }
   }
 
   getInAndOutTransferInstructions(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapInstructionIndex: number,
     inAccount: PublicKey,
-    outAccount: PublicKey
+    outAccount: PublicKey,
+    swapProgramId?: PublicKey
   ) {
     const transferInstructions = {
       inTransfers: [],
@@ -281,9 +344,14 @@ export class InstructionParser {
     const outAccountKey = outAccount.toBase58();
 
     let pointerIndex = swapInstructionIndex + 1;
+
     while (
-      pointerIndex < innerInstructions.length &&
-      !isSwapInstruction(innerInstructions[pointerIndex])
+      this.isNotNextSwap(
+        pointerIndex,
+        innerInstructions.length,
+        innerInstructions[pointerIndex],
+        swapProgramId
+      )
     ) {
       const innerInstruction = innerInstructions[pointerIndex];
       const parsedInnerInstruction = innerInstruction as ParsedInstruction;
@@ -313,6 +381,26 @@ export class InstructionParser {
     }
 
     return transferInstructions;
+  }
+
+  isNotNextSwap(
+    pointerIndex: number,
+    innerInstructionsLength: number,
+    instruction: ParsedInstruction | PartialInstruction,
+    swapProgramId?: PublicKey
+  ) {
+    if (swapProgramId) { // handles custom swap
+      return (
+        pointerIndex < innerInstructionsLength &&
+        (instruction.programId.toBase58() === swapProgramId.toBase58() ||
+          !isSwapInstruction(instruction))
+      );
+    } else {
+      return (
+        pointerIndex < innerInstructionsLength &&
+        !isSwapInstruction(instruction)
+      );
+    }
   }
 
   async deduceTokenTransfers(
