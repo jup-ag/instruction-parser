@@ -210,11 +210,17 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
   },
   openbook: {
     in: 6,
-    out: 6,
+    out: {
+      ask: 6,
+      bid: 5,
+    }
   },
   serum: {
     in: 6,
-    out: 6,
+    out: {
+      ask: 6,
+      bid: 5,
+    }
   },
   stakeDexStakeWrappedSol: {
     in: 1,

@@ -264,15 +264,12 @@ export class InstructionParser {
                 innerInstructions,
                 index,
                 swapProgramId,
-                swapIxName
-              );
-              const isAsk = getSwapDirection(
-                swapProgramId.toBase58(),
+                swapIxName,
                 routePlan.swap
               );
               swaps.push({
                 instructionIndex: index,
-                isAsk,
+                isAsk: true, // swap direction is already determined at this point
                 inAccount,
                 outAccount,
               });
@@ -303,22 +300,40 @@ export class InstructionParser {
     return { swaps, innerInstructions };
   }
 
+  // @note swap direction must be determined here if any new custom swaps require it
   getCustomSwap(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     index: number,
     swapProgramId: PublicKey,
-    swapIxName: string
+    swapIxName: string,
+    swapData: Swap
   ) {
-    const firstInstruction = innerInstructions[index];
+    const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
     for (let i = index + 1; i < innerInstructions.length; i++) {
       if (
         innerInstructions[i].programId.toBase58() == swapProgramId.toBase58()
       ) {
-        const secondInstruction = innerInstructions[i];
-        const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
-        const inAccount = (firstInstruction as any).accounts[positions.in];
-        const outAccount = (secondInstruction as any).accounts[positions.out];
-
+        let inAccount: PublicKey;
+        let outAccount: PublicKey;
+        if (swapIxName == 'openbook' || swapIxName == 'serum') {
+          const newOrderInstruction = innerInstructions[index];
+          const settleFundsInstruction = innerInstructions[i]
+          const sideObj = Object.values(swapData)[0]["side"];
+          const side = Object.keys(sideObj)[0];
+          inAccount = (newOrderInstruction as any).accounts[positions.in];
+          outAccount = (settleFundsInstruction as any).accounts[positions.out[side]];
+          return {
+            inAccount,
+            outAccount,
+            skipToIndex: i,
+          };
+        }
+        else if (swapIxName == 'stakeDexPrefundWithdrawStakeAndDepositStake') {
+          const prefundWithdrawStakeInstruction = innerInstructions[index];
+          const depositStakeInstruction = innerInstructions[i];
+          inAccount = (prefundWithdrawStakeInstruction as any).accounts[positions.in];
+          outAccount = (depositStakeInstruction as any).accounts[positions.out];
+        }
         return {
           inAccount,
           outAccount,
