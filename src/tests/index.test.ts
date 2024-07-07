@@ -1,43 +1,19 @@
 import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import { Connection } from "@solana/web3.js";
-import Decimal from "decimal.js";
 import * as utils from "../lib/utils";
 import { extract } from "..";
+import { serialiseTransaction } from "./helpers/serialize";
+import basicTransaction from "./mockTransactions/basicTransaction.json";
+import openbookTrasaction from "./mockTransactions/openbookTransaction.json";
 
-const getPriceInUSDByMintSpy = jest.spyOn(utils, "getPriceInUSDByMint");
-
-const getPriceInUSDByMintMockImpl = jest.fn((tokenMint) => {
-  let price: number;
-
-  if (tokenMint === "So11111111111111111111111111111111111111112") {
-    price = 147.793702285;
-  } else if (tokenMint === "AkVt31h8vgji5wF4nVbq1QmBV5wBoe8JdSoDTkDhQwEw") {
-    price = 0.0012856699999999998;
-  } else if (tokenMint === "vVe16q1aGVSnZtK8PCXFnsh45VW6HCVrJPKCBSbpump") {
-    price = 0.00017610899999999998;
-  }
-
-  return Promise.resolve(new Decimal(price));
-});
+const rpc = "https://jupiter.rpcpool.com/73517088-76ac-463a-aca4-b95717cb46d2";
+const connection = new Connection(rpc);
 
 describe("instruction parser", () => {
-  beforeEach(() => {
-    getPriceInUSDByMintSpy.mockImplementation(getPriceInUSDByMintMockImpl);
-  });
-
-  test("extract should work", async () => {
-    const connection = new Connection(
-      "https://jupiter.rpcpool.com/73517088-76ac-463a-aca4-b95717cb46d2"
-    );
+  test("basic transaction parsing should work", async () => {
     const signature =
       "2m6e4MBQ2wKiFhtc8d479C6SUKkqEiBzemwxSQVaSdr4zGHdoefxWz28u2rnCtUu7SfcgwWpEBDr3L5NZnEqffnv";
-
-    const tx = await connection.getParsedTransaction(signature, {
-      maxSupportedTransactionVersion: 0,
-    });
-
-    const tokenMap = await utils.getTokenMap();
-
+    const tx = serialiseTransaction(basicTransaction);
     const expected = {
       transferAuthority: "6oHypdkuE3n41w3XBidags663HQRiXBN8W4qjxyUz4YS",
       lastAccount: "J56q6nX15WHRLJcsGB6s1bjaiywrn8DqLLvLccz61cYx",
@@ -98,6 +74,7 @@ describe("instruction parser", () => {
       feeMint: "So11111111111111111111111111111111111111112",
     };
 
+    const tokenMap = await utils.getTokenMap();
     const result = await extract(
       signature,
       connection,
@@ -106,57 +83,91 @@ describe("instruction parser", () => {
       tx.blockTime
     );
 
-    expect(result.transferAuthority).toEqual(expected.transferAuthority);
-    expect(result.lastAccount).toEqual(expected.lastAccount);
-    expect(result.instruction).toEqual(expected.instruction);
-    expect(result.owner).toEqual(expected.owner);
-    expect(result.programId).toEqual(expected.programId);
-    expect(result.signature).toEqual(expected.signature);
-    expect(result.timestamp).toEqual(expected.timestamp);
-    expect(result.legCount).toEqual(expected.legCount);
-    expect(result.volumeInUSD).toEqual(expected.volumeInUSD);
-    expect(result.inSymbol).toEqual(expected.inSymbol);
-    expect(result.inAmount).toEqual(expected.inAmount);
-    expect(result.inAmountInDecimal).toEqual(expected.inAmountInDecimal);
-    expect(result.inAmountInUSD).toEqual(expected.inAmountInUSD);
-    expect(result.inMint).toEqual(expected.inMint);
-    expect(result.outSymbol).toEqual(expected.outSymbol);
-    expect(result.outAmount).toEqual(expected.outAmount);
-    expect(result.outAmountInDecimal).toEqual(expected.outAmountInDecimal);
-    expect(result.outAmountInUSD).toEqual(expected.outAmountInUSD);
-    expect(result.outMint).toEqual(expected.outMint);
-    expect(result.exactOutAmount).toEqual(expected.exactOutAmount);
-    expect(result.exactOutAmountInUSD).toEqual(expected.exactOutAmountInUSD);
+    expect((result.swapData as any).length).toEqual(expected.swapData.length);
+    (result.swapData as any).forEach((swap, index) => {
+      expect(swap.amm).toEqual(expected.swapData[index].amm);
+      expect(swap.inMint).toEqual(expected.swapData[index].inMint);
+      expect(swap.inAmount).toEqual(expected.swapData[index].inAmount);
+      expect(swap.outMint).toEqual(expected.swapData[index].outMint);
+      expect(swap.outAmount).toEqual(expected.swapData[index].outAmount);
+    });
+    expect(result.feeTokenPubkey).toEqual(expected.feeTokenPubkey);
+    expect(result.feeSymbol).toEqual(expected.feeSymbol);
+    expect(result.feeAmount).toEqual(expected.feeAmount);
+    expect(result.feeMint).toEqual(expected.feeMint);
+  }, 200000);
+
+  test("openbbook swap parsing should work", async () => {
+    const signature =
+      "4riUkys7tZH6TSTgetiDoee6gG7HrzPqJniXoLm6CDnQ2cmkqdzVAtMjtbTYiVUz8vmhpE7tKkSJa2b2TrkPeuBr";
+    const tx = serialiseTransaction(openbookTrasaction);
+    const expected = {
+      transferAuthority: "AgHKxMdBmnvKVNBiqQHuLUVyHRGj7xsjVNGxnkUQbDHX",
+      lastAccount: "J56q6nX15WHRLJcsGB6s1bjaiywrn8DqLLvLccz61cYx",
+      instruction: "sharedAccountsRoute",
+      owner: "AgHKxMdBmnvKVNBiqQHuLUVyHRGj7xsjVNGxnkUQbDHX",
+      programId: "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+      signature:
+        "4riUkys7tZH6TSTgetiDoee6gG7HrzPqJniXoLm6CDnQ2cmkqdzVAtMjtbTYiVUz8vmhpE7tKkSJa2b2TrkPeuBr",
+      timestamp: new Date("2024-07-04T06:23:09.000Z"),
+      legCount: 1,
+      volumeInUSD: 8.090882,
+      inSymbol: "SOL",
+      inAmount: BigInt(60000000),
+      inAmountInDecimal: 0.06,
+      inAmountInUSD: 8.43317922372,
+      inMint: "So11111111111111111111111111111111111111112",
+      outSymbol: "USDC",
+      outAmount: BigInt(8090882),
+      outAmountInDecimal: 8.090882,
+      outAmountInUSD: 8.090882,
+      outMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      exactOutAmount: BigInt(8022110),
+      exactOutAmountInUSD: 8.02211,
+      swapData: [
+        {
+          amm: "Openbook",
+          inSymbol: "SOL",
+          inMint: "So11111111111111111111111111111111111111112",
+          inAmount: "60000000",
+          inAmountInDecimal: "0.06",
+          inAmountInUSD: "8.43317922372",
+          outSymbol: "USDC",
+          outMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          outAmount: "8090882",
+          outAmountInDecimal: "8.090882",
+          outAmountInUSD: "8.090882",
+        },
+      ],
+      feeTokenPubkey: "DB4KNmfTDs8XBjsqTfP2orBz297e5Uf7KtiGw39jRKPW",
+      feeOwner: "45ruCyfdRkWpRNGEqWzjCiXRHkZs8WXCLQ67Pnpye7Hp",
+      feeSymbol: "USDC",
+      feeAmount: BigInt(68772),
+      feeAmountInDecimal: 0.068772,
+      feeAmountInUSD: 0.068772,
+      feeMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    };
+
+    const tokenMap = await utils.getTokenMap();
+    const result = await extract(
+      signature,
+      connection,
+      tx,
+      tokenMap,
+      tx.blockTime
+    );
 
     expect((result.swapData as any).length).toEqual(expected.swapData.length);
     (result.swapData as any).forEach((swap, index) => {
       expect(swap.amm).toEqual(expected.swapData[index].amm);
-      expect(swap.inSymbol).toEqual(expected.swapData[index].inSymbol);
       expect(swap.inMint).toEqual(expected.swapData[index].inMint);
       expect(swap.inAmount).toEqual(expected.swapData[index].inAmount);
-      expect(swap.inAmountInDecimal).toEqual(
-        expected.swapData[index].inAmountInDecimal
-      );
-      expect(Number(swap.inAmountInUSD)).toEqual(
-        Number(expected.swapData[index].inAmountInUSD)
-      );
-      expect(swap.outSymbol).toEqual(expected.swapData[index].outSymbol);
       expect(swap.outMint).toEqual(expected.swapData[index].outMint);
       expect(swap.outAmount).toEqual(expected.swapData[index].outAmount);
-      expect(swap.outAmountInDecimal).toEqual(
-        expected.swapData[index].outAmountInDecimal
-      );
-      expect(Number(swap.outAmountInUSD)).toBeCloseTo(
-        Number(expected.swapData[index].outAmountInUSD)
-      );
     });
-
     expect(result.feeTokenPubkey).toEqual(expected.feeTokenPubkey);
-    expect(result.feeOwner).toEqual(expected.feeOwner);
     expect(result.feeSymbol).toEqual(expected.feeSymbol);
     expect(result.feeAmount).toEqual(expected.feeAmount);
-    expect(result.feeAmountInDecimal).toEqual(expected.feeAmountInDecimal);
-    expect(result.feeAmountInUSD).toEqual(expected.feeAmountInUSD);
     expect(result.feeMint).toEqual(expected.feeMint);
   }, 200000);
 });

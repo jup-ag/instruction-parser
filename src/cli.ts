@@ -3,9 +3,10 @@ import { Command } from "commander";
 import { getTokenMap } from "./lib/utils";
 import { extract } from ".";
 import { JUPITER_V6_PROGRAM_ID } from "./constants";
+import * as fs from "fs";
+import * as path from "path";
 
 const program = new Command();
-
 program
   .command("lookup-tx")
   .requiredOption("-s, --signature <signature>")
@@ -80,4 +81,31 @@ program
     }
   });
 
+  program
+  .command("save-tx")
+  .requiredOption("-s, --signature <signature>")
+  .requiredOption("-r, --rpc <rpc>")
+  .requiredOption("-n, --name <name>")
+  .addHelpText(
+    "beforeAll",
+    "Save transaction for mock testing"
+  )
+  .action(async ({ signature, rpc, name }) => {
+    const connection = new Connection(rpc); // Use your own RPC endpoint here.
+    const tx = await connection.getParsedTransaction(signature, {
+      maxSupportedTransactionVersion: 0,
+    });
+
+    if (tx.meta.err) {
+      console.log("Failed transaction", tx.meta.err);
+    } 
+
+    const filePath = path.join(__dirname, `./tests/mockTransactions/${name}.json`);
+
+    fs.writeFile(filePath, JSON.stringify(tx), { flag: 'w+' }, (writeErr) => {
+      if (writeErr) throw writeErr;
+      console.log('Content added to file!');
+    });
+  });
+  
 program.parse();
