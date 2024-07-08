@@ -13,6 +13,7 @@ import {
   LoadedAddresses,
 } from "@solana/web3.js";
 
+// Helper function to convert hardcoded json transcation to ParsedTransactionWithMeta
 export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
   const parsedTransactionWithMeta = {} as ParsedTransactionWithMeta;
   parsedTransactionWithMeta.slot = tx.slot;
@@ -20,7 +21,6 @@ export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
   parsedTransactionWithMeta.blockTime = tx.blockTime;
   const parsedTransaction = {} as ParsedTransaction;
   const message = {} as ParsedMessage;
-
   const accountKeys = [] as ParsedMessageAccount[];
   for (const account of tx.transaction.message.accountKeys) {
     const parsedAccount = {} as ParsedMessageAccount;
@@ -30,7 +30,6 @@ export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
     parsedAccount.source = account.source as "transaction" | "lookupTable";
     accountKeys.push(parsedAccount);
   }
-
   message.accountKeys = accountKeys;
   const instructions: (ParsedInstruction | PartiallyDecodedInstruction)[] = [];
   for (const instruction of tx.transaction.message.instructions) {
@@ -72,12 +71,9 @@ export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
     if (!message.addressTableLookups) message.addressTableLookups = [];
     message.addressTableLookups.push(parsedAddressTableLookup);
   }
-
   parsedTransaction.message = message;
   parsedTransaction.signatures = tx.transaction.signatures;
-
   parsedTransactionWithMeta.transaction = parsedTransaction;
-
   const meta = {} as ParsedTransactionMeta;
   meta.logMessages = tx.meta.logMessages;
   meta.innerInstructions = [] as ParsedInnerInstruction[];
@@ -118,7 +114,6 @@ export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
     }
     meta.innerInstructions.push(parsedInnerInstruction);
   }
-
   meta.preBalances = tx.meta.preBalances;
   meta.postBalances = tx.meta.postBalances;
   meta.logMessages = tx.meta.logMessages;
@@ -126,8 +121,6 @@ export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
   meta.postTokenBalances = tx.meta.postTokenBalances;
   meta.err = tx.meta.err;
   meta.computeUnitsConsumed = tx.meta.computeUnitsConsumed;
-
   parsedTransactionWithMeta.meta = meta;
-
   return parsedTransactionWithMeta;
 }
