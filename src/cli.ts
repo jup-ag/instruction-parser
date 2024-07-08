@@ -81,16 +81,12 @@ program
     }
   });
 
-  program
+program
   .command("save-tx")
   .requiredOption("-s, --signature <signature>")
   .requiredOption("-r, --rpc <rpc>")
-  .requiredOption("-n, --name <name>")
-  .addHelpText(
-    "beforeAll",
-    "Save transaction for mock testing"
-  )
-  .action(async ({ signature, rpc, name }) => {
+  .addHelpText("beforeAll", "Save transaction for mock testing")
+  .action(async ({ signature, rpc }) => {
     const connection = new Connection(rpc); // Use your own RPC endpoint here.
     const tx = await connection.getParsedTransaction(signature, {
       maxSupportedTransactionVersion: 0,
@@ -98,14 +94,17 @@ program
 
     if (tx.meta.err) {
       console.log("Failed transaction", tx.meta.err);
-    } 
+    }
 
-    const filePath = path.join(__dirname, `./tests/mockTransactions/${name}.json`);
+    const filePath = path.join(
+      __dirname,
+      `./tests/transactions/${signature}.json`
+    );
 
-    fs.writeFile(filePath, JSON.stringify(tx), { flag: 'w+' }, (writeErr) => {
+    fs.writeFile(filePath, JSON.stringify(tx), { flag: "w+" }, (writeErr) => {
       if (writeErr) throw writeErr;
-      console.log('Content added to file!');
+      console.log("Content added to file!");
     });
   });
-  
+
 program.parse();
