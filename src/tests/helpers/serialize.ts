@@ -12,6 +12,7 @@ import {
   ParsedAddressTableLookup,
   LoadedAddresses,
 } from "@solana/web3.js";
+import { SwapAttributes } from "../..";
 
 // Helper function to convert hardcoded json transcation to ParsedTransactionWithMeta
 export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
@@ -123,4 +124,12 @@ export function serialiseTransaction(tx: any): ParsedTransactionWithMeta {
   meta.computeUnitsConsumed = tx.meta.computeUnitsConsumed;
   parsedTransactionWithMeta.meta = meta;
   return parsedTransactionWithMeta;
+}
+
+export function serializeResult(swap: any): SwapAttributes {
+  return {
+    ...swap,
+    timestamp: new Date(swap.timestamp),
+    feeAmount: swap.feeAmount ? BigInt(swap.feeAmount) : undefined,
+  } as SwapAttributes;
 }
