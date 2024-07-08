@@ -143,9 +143,8 @@ export class InstructionParser {
 
   async getParsedEvents(tx: TransactionWithMeta, connection: Connection) {
     const events: ParsedEvent[] = [];
-    const routeInfo: RouteInfo = this.getProgramInstructionInfo(tx);
-
-    const { swaps, innerInstructions } = this.populateSwapsAndInnerInstructions(
+    const routeInfo: RouteInfo = this.getRouteInfo(tx);
+    const { swaps, innerInstructions } = this.getSwapsAndInnerInstructions(
       tx,
       routeInfo
     );
@@ -222,7 +221,7 @@ export class InstructionParser {
     return events;
   }
 
-  getProgramInstructionInfo(tx: TransactionWithMeta): RouteInfo {
+  getRouteInfo(tx: TransactionWithMeta): RouteInfo {
     const routeInfo = {} as RouteInfo;
 
     tx.transaction.message.instructions.forEach((instruction, index) => {
@@ -243,10 +242,7 @@ export class InstructionParser {
     return routeInfo;
   }
 
-  populateSwapsAndInnerInstructions(
-    tx: TransactionWithMeta,
-    routeInfo: RouteInfo
-  ) {
+  getSwapsAndInnerInstructions(tx: TransactionWithMeta, routeInfo: RouteInfo) {
     let innerInstructions: (PartialInstruction | ParsedInstruction)[];
     const swaps: SwapInfo[] = [];
 
@@ -259,6 +255,7 @@ export class InstructionParser {
             const swapProgramId = innerInstructions[index].programId;
             const routePlan = routeInfo.routePlan[routePlanIndex];
             const swapIxName = Object.keys(routePlan.swap)[0];
+
             if (CUSTOM_SWAPS.includes(swapIxName)) {
               const { inAccount, outAccount, skipToIndex } = this.getCustomSwap(
                 innerInstructions,
@@ -274,24 +271,24 @@ export class InstructionParser {
                 outAccount,
               });
               index = skipToIndex;
-              continue;
+            } else {
+              const isAsk = getSwapDirection(
+                swapProgramId.toBase58(),
+                routePlan.swap
+              );
+
+              const [inAccount, outAccount] = this.getInAndOutAccountKeys(
+                innerInstructions[index],
+                routePlan.swap
+              );
+
+              swaps.push({
+                instructionIndex: index,
+                isAsk,
+                inAccount,
+                outAccount,
+              });
             }
-            const isAsk = getSwapDirection(
-              swapProgramId.toBase58(),
-              routePlan.swap
-            );
-
-            const [inAccount, outAccount] = this.getInAndOutAccountKeys(
-              innerInstructions[index],
-              routePlan.swap
-            );
-
-            swaps.push({
-              instructionIndex: index,
-              isAsk,
-              inAccount,
-              outAccount,
-            });
           }
         }
         break;
@@ -315,23 +312,28 @@ export class InstructionParser {
       ) {
         let inAccount: PublicKey;
         let outAccount: PublicKey;
-        if (swapIxName == 'openbook' || swapIxName == 'serum') {
+        if (swapIxName == "openbook" || swapIxName == "serum") {
           const newOrderInstruction = innerInstructions[index];
-          const settleFundsInstruction = innerInstructions[i]
+          const settleFundsInstruction = innerInstructions[i];
           const sideObj = Object.values(swapData)[0]["side"];
           const side = Object.keys(sideObj)[0];
           inAccount = (newOrderInstruction as any).accounts[positions.in];
-          outAccount = (settleFundsInstruction as any).accounts[positions.out[side]];
+          outAccount = (settleFundsInstruction as any).accounts[
+            positions.out[side]
+          ];
           return {
             inAccount,
             outAccount,
             skipToIndex: i,
           };
-        }
-        else if (swapIxName == 'stakeDexPrefundWithdrawStakeAndDepositStake') {
+        } else if (
+          swapIxName == "stakeDexPrefundWithdrawStakeAndDepositStake"
+        ) {
           const prefundWithdrawStakeInstruction = innerInstructions[index];
           const depositStakeInstruction = innerInstructions[i];
-          inAccount = (prefundWithdrawStakeInstruction as any).accounts[positions.in];
+          inAccount = (prefundWithdrawStakeInstruction as any).accounts[
+            positions.in
+          ];
           outAccount = (depositStakeInstruction as any).accounts[positions.out];
         }
         return {
@@ -404,7 +406,8 @@ export class InstructionParser {
     instruction: ParsedInstruction | PartialInstruction,
     swapProgramId?: PublicKey
   ) {
-    if (swapProgramId) { // handles custom swap
+    if (swapProgramId) {
+      // handles custom swap
       return (
         pointerIndex < innerInstructionsLength &&
         (instruction.programId.toBase58() === swapProgramId.toBase58() ||

@@ -5,7 +5,6 @@ import { AccountInfo, Connection, PublicKey } from "@solana/web3.js";
 import Decimal from "decimal.js";
 import { InstructionParser } from "./lib/instruction-parser";
 import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
-import { getEvents } from "./lib/get-events";
 import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
 import {
   FeeEvent,
@@ -79,14 +78,7 @@ export async function extract(
 ): Promise<SwapAttributes | undefined> {
   const programId = JUPITER_V6_PROGRAM_ID;
   const accountInfosMap: AccountInfoMap = new Map();
-
-  const logMessages = tx.meta.logMessages;
-  if (!logMessages) {
-    throw new Error("Missing log messages...");
-  }
-
   const parser = new InstructionParser(programId);
-  const events = getEvents(program, tx);
   const parsedEvents = await parser.getParsedEvents(tx, connection);
 
   const swapEvents = reduceEventData<ParsedSwapEvent>(
