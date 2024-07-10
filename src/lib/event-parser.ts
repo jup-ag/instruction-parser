@@ -140,6 +140,7 @@ export class EventParser {
     return swaps;
   }
 
+  // To handle swaps where two instructions of swap program are invoked to complete the swap.
   getMultiStepSwap(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapIxIndex: number,
@@ -149,12 +150,12 @@ export class EventParser {
     const swapIxName = Object.keys(swapData)[0];
     const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
 
-    // get inAccount from the first swap instruction
+    // get inAccount from the first instruction
     let swap = {
       inAccount: (swapInstruction as any).accounts[positions.in],
     } as Swap;
 
-    // find next swap instruction index
+    // skip the second instruction while finding next swap instruction because its part of the current swap
     let index = swapIxIndex + 1;
     while (
       index < innerInstructions.length &&
@@ -162,9 +163,10 @@ export class EventParser {
         !isSwapInstruction(innerInstructions[index]))
     ) {
       const currentInstruction = innerInstructions[index];
-      // get outAccount from second swap instruction
+      // get outAccount from second instruction
       if (currentInstruction.programId.equals(swapInstruction.programId)) {
         if (swapIxName == "openbook" || swapIxName == "serum") {
+          // outAccount position of openbook and serum depends on the side of swap
           const side = Object.keys(Object.values(swapData)[0]["side"])[0];
           swap.outAccount = (currentInstruction as any).accounts[
             positions.out[side]
@@ -178,7 +180,7 @@ export class EventParser {
       index++;
     }
     swap.instructionIndex = swapIxIndex;
-    swap.nextSwapIndex = index;
+    swap.nextSwapIndex = index; // index points to next swap instruction
     return swap;
   }
 
