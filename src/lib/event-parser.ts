@@ -141,6 +141,12 @@ export class EventParser {
   }
 
   // To handle swaps where two instructions of swap program are invoked to complete the swap.
+  // One of the stakedex's swap (StakeDexPrefundWithdrawStakeAndDepositStake) uses following instructions to complete the swap:
+  //   1. stakedex_prefund_withdraw_stake
+  //   2. stakedex_deposit_stake
+  // Similarly both openbook and serum swap use the following instructions to complete the swap.
+  //   1. new_order_v3
+  //   2. settle_funds
   getMultiStepSwap(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapIxIndex: number,
@@ -150,12 +156,14 @@ export class EventParser {
     const swapIxName = Object.keys(swapData)[0];
     const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
 
-    // get inAccount from the first instruction
+    // Get inAccount from the first instruction
+    // For StakeDexPrefundWithdrawStakeAndDepositStake swap, inAccount is determined using accounts of stakedex_prefund_withdraw_stake instruction
+    // For openbook and serum swap, inAccount is determined using accounts of new_order_v3 instruction
     let swap = {
       inAccount: (swapInstruction as any).accounts[positions.in],
     } as Swap;
 
-    // skip the second instruction while finding next swap instruction because its part of the current swap
+    // Skip the second instruction while finding next swap instruction because its part of the current swap
     let index = swapIxIndex + 1;
     while (
       index < innerInstructions.length &&
@@ -163,10 +171,10 @@ export class EventParser {
         !isSwapInstruction(innerInstructions[index]))
     ) {
       const currentInstruction = innerInstructions[index];
-      // get outAccount from second instruction
+      // Get outAccount from second instruction
       if (currentInstruction.programId.equals(swapInstruction.programId)) {
         if (swapIxName == "openbook" || swapIxName == "serum") {
-          // outAccount position of openbook and serum depends on the side of swap
+          // For openbook and serum swap, outAccount is determined using accounts of settle_funds instruction and side of swap
           const side = Object.keys(Object.values(swapData)[0]["side"])[0];
           swap.outAccount = (currentInstruction as any).accounts[
             positions.out[side]
@@ -174,13 +182,14 @@ export class EventParser {
         } else if (
           swapIxName == "stakeDexPrefundWithdrawStakeAndDepositStake"
         ) {
+          // For StakeDexPrefundWithdrawStakeAndDepositStake swap, outAccount is determined using accounts of stakedex_deposit_stake instruction
           swap.outAccount = (currentInstruction as any).accounts[positions.out];
         }
       }
       index++;
     }
     swap.instructionIndex = swapIxIndex;
-    swap.nextSwapIndex = index; // index points to next swap instruction
+    swap.nextSwapIndex = index; // Index points to next swap instruction
     return swap;
   }
 
