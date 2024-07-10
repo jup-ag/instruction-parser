@@ -5,7 +5,7 @@ import { extract } from ".";
 import { JUPITER_V6_PROGRAM_ID } from "./constants";
 import { writeFile, mkdir } from "fs/promises";
 import * as path from "path";
-import { InstructionParser } from "./lib/instruction-parser";
+import { EventParser } from "./lib/event-parser";
 
 // Make sure JSON.stringify works with BigInt
 BigInt.prototype["toJSON"] = function () {
@@ -139,8 +139,8 @@ program
       maxSupportedTransactionVersion: 0,
     });
 
-    const parser = new InstructionParser(JUPITER_V6_PROGRAM_ID);
-    const parsedEvents = await parser.getParsedEvents(tx, connection);
+    const eventsParser = new EventParser(connection);
+    const parsedEvents = await eventsParser.getParsedEvents(tx);
     await writeFile(
       path.join(directoryPath + `/parsed-events.json`),
       JSON.stringify(parsedEvents),
