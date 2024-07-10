@@ -3,7 +3,7 @@ import got from "got";
 import { BN } from "@coral-xyz/anchor";
 import { TokenInfo } from "@solana/spl-token-registry";
 import { ParsedInstruction } from "@solana/web3.js";
-import { PartialInstruction, Swap } from "../types";
+import { PartialInstruction, SwapData } from "../types";
 import {
   AMM_TYPES,
   SWAP_DIRECTION_ARGS,
@@ -88,13 +88,13 @@ export function isSwapInstruction(
   );
 }
 
-export function isTransferInstruction(instruction: ParsedInstruction) {
+export function isTransferInstruction(innerInstruction: ParsedInstruction) {
   if (
-    instruction.programId.equals(TOKEN_PROGRAM_ID) ||
-    instruction.programId.equals(TOKEN_2022_PROGRAM_ID)
+    innerInstruction.programId.equals(TOKEN_PROGRAM_ID) ||
+    innerInstruction.programId.equals(TOKEN_2022_PROGRAM_ID)
   ) {
-    const ixType = instruction.parsed.type;
-    const ixstackHeight = (instruction as any).stackHeight;
+    const ixType = innerInstruction.parsed.type;
+    const ixstackHeight = (innerInstruction as any).stackHeight;
     if (
       TRANSFER_INSTRUCTION_TYPES.has(ixType) &&
       ixstackHeight >= STACK_HEIGHT.TOKEN_TRANSFER // Greater than is added to handle cases where token transfers happen in deposit and withdraw functions
@@ -105,12 +105,12 @@ export function isTransferInstruction(instruction: ParsedInstruction) {
 }
 
 export function isFeeInstruction(
-  instruction: ParsedInstruction,
+  innerInstruction: ParsedInstruction,
   feeAccount: string,
   destination: string
 ) {
-  const ixType = instruction.parsed.type;
-  const stackHeight = (instruction as any).stackHeight;
+  const ixType = innerInstruction.parsed.type;
+  const stackHeight = (innerInstruction as any).stackHeight;
   return (
     (ixType === "transfer" || ixType === "transferChecked") &&
     stackHeight === STACK_HEIGHT.FEE &&
@@ -118,20 +118,31 @@ export function isFeeInstruction(
   );
 }
 
-export function getSwapDirection(amm: string, swap: Swap) {
+export function getSwapDirection(amm: string, swapData: SwapData) {
   if (SWAP_DIRECTION_ARGS.SIDE.includes(amm))
-    return !Object.values(swap)[0]["side"]["bid"];
+    return !Object.values(swapData)[0]["side"]["bid"];
 
   if (SWAP_DIRECTION_ARGS.A_TO_B.includes(amm))
-    return Object.values(swap)[0]["aToB"];
+    return Object.values(swapData)[0]["aToB"];
 
   if (SWAP_DIRECTION_ARGS.X_TO_Y.includes(amm)) {
-    return Object.values(swap)[0]["xToY"];
+    return Object.values(swapData)[0]["xToY"];
   }
 
   if (SWAP_DIRECTION_ARGS.QUANTITY_IS_COLLATERAL.includes(amm)) {
-    return Object.values(swap)[0]["quantityIsCollateral"];
+    return Object.values(swapData)[0]["quantityIsCollateral"];
   }
 
   return true;
+}
+
+export function isRouting(name: string) {
+  return (
+    name === "route" ||
+    name === "routeWithTokenLedger" ||
+    name === "sharedAccountsRoute" ||
+    name === "sharedAccountsRouteWithTokenLedger" ||
+    name === "sharedAccountsExactOutRoute" ||
+    name === "exactOutRoute"
+  );
 }

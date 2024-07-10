@@ -214,14 +214,14 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     out: {
       ask: 6,
       bid: 5,
-    }
+    },
   },
   serum: {
     in: 6,
     out: {
       ask: 6,
       bid: 5,
-    }
+    },
   },
   stakeDexStakeWrappedSol: {
     in: 1,
@@ -291,7 +291,7 @@ export const PLATFORM_FEE_ACCOUNTS_POSITION = {
   exactOutRoute: 7,
 };
 
-export const CUSTOM_SWAPS = [
+export const MULTI_STEP_SWAPS = [
   "openbook",
   "serum",
   "stakeDexPrefundWithdrawStakeAndDepositStake",
