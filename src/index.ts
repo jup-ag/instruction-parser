@@ -7,13 +7,13 @@ import { InstructionParser } from "./lib/instruction-parser";
 import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
 import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
 import {
-  FeeEvent,
   ParsedFeeEvent,
   ParsedSwapEvent,
   SwapEvent,
   TransactionWithMeta,
 } from "./types";
 import { IDL, Jupiter } from "./idl/jupiter";
+import { EventParser } from "./lib/event-parser";
 
 export { getTokenMap } from "./lib/utils";
 export { TransactionWithMeta };
@@ -78,8 +78,9 @@ export async function extract(
 ): Promise<SwapAttributes | undefined> {
   const programId = JUPITER_V6_PROGRAM_ID;
   const accountInfosMap: AccountInfoMap = new Map();
-  const parser = new InstructionParser(programId);
-  const parsedEvents = await parser.getParsedEvents(tx, connection);
+  const instructionParser = new InstructionParser(programId);
+  const eventParser = new EventParser(connection);
+  const parsedEvents = await eventParser.getParsedEvents(tx);
 
   const swapEvents = reduceEventData<ParsedSwapEvent>(
     parsedEvents,
@@ -112,9 +113,9 @@ export async function extract(
   });
 
   const swapData = await parseSwapEvents(tokenMap, accountInfosMap, swapEvents);
-  const instructions = parser.getInstructions(tx);
+  const instructions = instructionParser.getInstructions(tx);
   const [initialPositions, finalPositions] =
-    parser.getInitialAndFinalSwapPositions(instructions);
+    instructionParser.getInitialAndFinalSwapPositions(instructions);
 
   const inSymbol = swapData[initialPositions[0]].inSymbol;
   const inMint = swapData[initialPositions[0]].inMint;
@@ -154,7 +155,9 @@ export async function extract(
   const swap = {} as SwapAttributes;
 
   const [instructionName, transferAuthority, lastAccount] =
-    parser.getInstructionNameAndTransferAuthorityAndLastAccount(instructions);
+    instructionParser.getInstructionNameAndTransferAuthorityAndLastAccount(
+      instructions
+    );
 
   swap.transferAuthority = transferAuthority;
   swap.lastAccount = lastAccount;
@@ -178,7 +181,7 @@ export async function extract(
   swap.outAmountInUSD = outAmountInUSD.toNumber();
   swap.outMint = outMint;
 
-  const exactOutAmount = parser.getExactOutAmount(
+  const exactOutAmount = instructionParser.getExactOutAmount(
     tx.transaction.message.instructions
   );
   if (exactOutAmount) {
@@ -192,7 +195,7 @@ export async function extract(
     }
   }
 
-  const exactInAmount = parser.getExactInAmount(
+  const exactInAmount = instructionParser.getExactInAmount(
     tx.transaction.message.instructions
   );
   if (exactInAmount) {

@@ -2,8 +2,7 @@ import { describe, expect, test } from "@jest/globals";
 import { Connection } from "@solana/web3.js";
 import { readFile } from "fs/promises";
 import * as path from "path";
-import { JUPITER_V6_PROGRAM_ID } from "../constants";
-import { InstructionParser } from "../lib/instruction-parser";
+import { EventParser } from "../lib/event-parser";
 
 // Make sure JSON.stringify works with BigInt
 BigInt.prototype["toJSON"] = function () {
@@ -46,7 +45,7 @@ const connection = new Proxy(actualConnection, {
     return Reflect.get(target, prop, receiver);
   },
 });
-const parser = new InstructionParser(JUPITER_V6_PROGRAM_ID);
+const eventParser = new EventParser(connection);
 
 describe("instruction parser", () => {
   test("verify simple transaction", async () => {
@@ -76,7 +75,7 @@ describe("instruction parser", () => {
 
 async function compare(signature: string) {
   const tx = await connection.getParsedTransaction(signature);
-  const parsedEvents = await parser.getParsedEvents(tx, connection);
+  const parsedEvents = await eventParser.getParsedEvents(tx);
 
   const filePath = path.join(
     __dirname,
