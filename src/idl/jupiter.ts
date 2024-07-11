@@ -1152,6 +1152,74 @@ export type Jupiter = {
           },
           {
             name: "RaydiumCP";
+          },
+          {
+            name: "WhirlpoolSwapV2";
+            fields: [
+              {
+                name: "aToB";
+                type: "bool";
+              },
+              {
+                name: "remainingAccountsInfo";
+                type: {
+                  option: {
+                    defined: "RemainingAccountsInfo";
+                  };
+                };
+              }
+            ];
+          },
+          {
+            name: "OneIntro";
+          }
+        ];
+      };
+    },
+    {
+      name: "RemainingAccountsSlice";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "accountsType";
+            type: {
+              defined: "AccountsType";
+            };
+          },
+          {
+            name: "length";
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "RemainingAccountsInfo";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "slices";
+            type: {
+              vec: {
+                defined: "RemainingAccountsSlice";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "AccountsType";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "TransferHookA";
+          },
+          {
+            name: "TransferHookB";
           }
         ];
       };
@@ -2462,6 +2530,74 @@ export const IDL: Jupiter = {
           },
           {
             name: "RaydiumCP",
+          },
+          {
+            name: "WhirlpoolSwapV2",
+            fields: [
+              {
+                name: "aToB",
+                type: "bool",
+              },
+              {
+                name: "remainingAccountsInfo",
+                type: {
+                  option: {
+                    defined: "RemainingAccountsInfo",
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: "OneIntro",
+          },
+        ],
+      },
+    },
+    {
+      name: "RemainingAccountsSlice",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "accountsType",
+            type: {
+              defined: "AccountsType",
+            },
+          },
+          {
+            name: "length",
+            type: "u8",
+          },
+        ],
+      },
+    },
+    {
+      name: "RemainingAccountsInfo",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "slices",
+            type: {
+              vec: {
+                defined: "RemainingAccountsSlice",
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: "AccountsType",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "TransferHookA",
+          },
+          {
+            name: "TransferHookB",
           },
         ],
       },
