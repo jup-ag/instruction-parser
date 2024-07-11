@@ -73,9 +73,16 @@ describe("instruction parser", () => {
   });
 
   test("verify transaction with multiple routing instructions", async () => {
-    currentSignature = "4cWStqraSHpMd8ix4eNaRSa22BUubTtDxLaemkPRwpnydJWsZUxHi4xXuMnuZZX7KS2eZdguspZJL8bpQ34ZikfU";
+    currentSignature =
+      "4cWStqraSHpMd8ix4eNaRSa22BUubTtDxLaemkPRwpnydJWsZUxHi4xXuMnuZZX7KS2eZdguspZJL8bpQ34ZikfU";
     await compare(currentSignature);
-  })
+  });
+
+  test("verify transaction with fee on transfer token", async () => {
+    currentSignature =
+      "GCeRpjvfNXZB6BJFQChjpKycdKpRwQGS1BSwUvLjVpJj6NgdzzQACAWt89ZEfEXjeRSqzhDX8CHtzpMUnfJ7VMJ";
+    await compare(currentSignature);
+  });
 });
 
 async function compare(signature: string) {
