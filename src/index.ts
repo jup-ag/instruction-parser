@@ -9,6 +9,7 @@ import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
 import {
   ParsedFeeEvent,
   ParsedSwapEvent,
+  RouteInfo,
   SwapEvent,
   TransactionWithMeta,
 } from "./types";
@@ -75,12 +76,42 @@ export async function extract(
   tx: TransactionWithMeta,
   tokenMap: Map<string, TokenInfo>,
   blockTime?: number
-): Promise<SwapAttributes | undefined> {
+): Promise<SwapAttributes[] | undefined> {
   const programId = JUPITER_V6_PROGRAM_ID;
-  const accountInfosMap: AccountInfoMap = new Map();
   const instructionParser = new InstructionParser(programId);
   const eventParser = new EventParser(connection);
-  const parsedEvents = await eventParser.getParsedEvents(tx);
+  const routeInfoList = eventParser.getRouteInfoList(tx);
+  const swaps = [];
+  for (const routeInfo of routeInfoList) {
+    const swap = await extractSingleRoute(
+      signature,
+      connection,
+      tx,
+      tokenMap,
+      blockTime,
+      routeInfo,
+      eventParser,
+      instructionParser,
+      programId
+    );
+    swaps.push(swap);
+  }
+  return swaps;
+}
+
+async function extractSingleRoute(
+  signature: string,
+  connection: Connection,
+  tx: TransactionWithMeta,
+  tokenMap: Map<string, TokenInfo>,
+  blockTime: number,
+  routeInfo: RouteInfo,
+  eventParser: EventParser,
+  instructionParser: InstructionParser,
+  programId: PublicKey
+): Promise<SwapAttributes | undefined> {
+  const accountInfosMap: AccountInfoMap = new Map();
+  const parsedEvents = await eventParser.getParsedEvents(tx, routeInfo);
 
   const swapEvents = reduceEventData<ParsedSwapEvent>(
     parsedEvents,

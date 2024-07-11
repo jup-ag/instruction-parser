@@ -42,9 +42,8 @@ export class EventParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  async getParsedEvents(tx: TransactionWithMeta) {
+  async getParsedEvents(tx: TransactionWithMeta, routeInfo: RouteInfo) {
     const events: ParsedEvent[] = [];
-    const routeInfo: RouteInfo = this.getRouteInfo(tx);
     const innerInstructions = this.getInnerInstructions(tx, routeInfo);
     const swaps = this.getSwaps(innerInstructions, routeInfo);
 
@@ -90,8 +89,8 @@ export class EventParser {
     return events;
   }
 
-  getRouteInfo(tx: TransactionWithMeta): RouteInfo {
-    const routeInfo = {} as RouteInfo;
+  getRouteInfoList(tx: TransactionWithMeta): RouteInfo[] {
+    const routeInfoList: RouteInfo[] = [];
     tx.transaction.message.instructions.forEach((instruction, index) => {
       if (instruction.programId.equals(JUPITER_V6_PROGRAM_ID)) {
         const ix = this.coder.instruction.decode(
@@ -99,15 +98,18 @@ export class EventParser {
           "base58"
         );
         if (isRouting(ix.name)) {
-          routeInfo.index = index;
-          routeInfo.name = ix.name;
-          routeInfo.accounts = (instruction as PartialInstruction).accounts;
-          routeInfo.routePlan = (ix.data as any).routePlan as RoutePlan;
-          routeInfo.platformFeeBps = (ix.data as any).platformFeeBps;
+          const routeInfo: RouteInfo = {
+            index: index,
+            name: ix.name,
+            accounts: (instruction as PartialInstruction).accounts,
+            routePlan: (ix.data as any).routePlan as RoutePlan,
+            platformFeeBps: (ix.data as any).platformFeeBps,
+          };
+          routeInfoList.push(routeInfo);
         }
       }
     });
-    return routeInfo;
+    return routeInfoList;
   }
 
   getInnerInstructions(tx: TransactionWithMeta, routeInfo: RouteInfo) {
