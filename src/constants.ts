@@ -7,7 +7,6 @@ export const JUPITER_V6_PROGRAM_ID = new PublicKey(
 export const TRANSFER_INSTRUCTION_TYPES = new Set<string>([
   "transfer",
   "transferChecked",
-  "transferCheckedWithFee",
   "mintTo",
   "burn",
 ]);
@@ -108,7 +107,7 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 8,
     out: 9,
   },
-  gooseFxv2: {
+  gooseFXV2: {
     in: 5,
     out: 6,
   },
@@ -210,14 +209,29 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 3,
     out: 6,
   },
-  openbook: {},
-  serum: {},
+  openbook: {
+    in: 6,
+    out: {
+      ask: 6,
+      bid: 5,
+    },
+  },
+  serum: {
+    in: 6,
+    out: {
+      ask: 6,
+      bid: 5,
+    },
+  },
   stakeDexStakeWrappedSol: {
     in: 1,
     out: 2,
   },
   stakeDexSwapViaStake: {},
-  stakeDexPrefundWithdrawStakeAndDepositStake: {},
+  stakeDexPrefundWithdrawStakeAndDepositStake: {
+    in: 1,
+    out: 2,
+  },
   step: {
     in: 3,
     out: 6,
@@ -253,6 +267,7 @@ export const SWAP_DIRECTION_ARGS = {
     "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb",
     "PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY",
     "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb",
+    "srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX",
   ],
   A_TO_B: [
     "H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt",
@@ -275,3 +290,9 @@ export const PLATFORM_FEE_ACCOUNTS_POSITION = {
   sharedAccountsExactOutRoute: 9,
   exactOutRoute: 7,
 };
+
+export const MULTI_STEP_SWAPS = [
+  "openbook",
+  "serum",
+  "stakeDexPrefundWithdrawStakeAndDepositStake",
+];
