@@ -279,6 +279,7 @@ export const SWAP_DIRECTION_ARGS = {
     "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt",
     "9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H",
     "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p",
+    "Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1",
   ],
   QUANTITY_IS_COLLATERAL: ["C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr"],
 };
