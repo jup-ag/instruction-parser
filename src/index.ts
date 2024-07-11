@@ -146,7 +146,7 @@ async function extractSingleRoute(
   const swapData = await parseSwapEvents(tokenMap, accountInfosMap, swapEvents);
   const instructions = instructionParser.getInstructions(tx);
   const [initialPositions, finalPositions] =
-    instructionParser.getInitialAndFinalSwapPositions(instructions);
+    instructionParser.getInitialAndFinalSwapPositions(routeInfo);
 
   const inSymbol = swapData[initialPositions[0]].inSymbol;
   const inMint = swapData[initialPositions[0]].inMint;

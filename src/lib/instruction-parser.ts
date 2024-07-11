@@ -1,7 +1,12 @@
 import { ParsedInstruction, PublicKey } from "@solana/web3.js";
 import { BorshCoder } from "@coral-xyz/anchor";
 import { IDL } from "../idl/jupiter";
-import { PartialInstruction, RoutePlan, TransactionWithMeta } from "../types";
+import {
+  PartialInstruction,
+  RouteInfo,
+  RoutePlan,
+  TransactionWithMeta,
+} from "../types";
 import { isRouting } from "./utils";
 
 export class InstructionParser {
@@ -73,51 +78,34 @@ export class InstructionParser {
   }
 
   // Extract the position of the initial and final swap from the swap array.
-  getInitialAndFinalSwapPositions(instructions: PartialInstruction[]) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
+  getInitialAndFinalSwapPositions(routeInfo: RouteInfo) {
+    const routePlan = routeInfo.routePlan;
+    const inputIndex = 0;
+    const outputIndex = routePlan.length;
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-      // This will happen because now event is also an CPI instruction.
-      if (!ix) {
-        continue;
-      }
-
-      if (isRouting(ix.name)) {
-        const routePlan = (ix.data as any).routePlan as RoutePlan;
-        const inputIndex = 0;
-        const outputIndex = routePlan.length;
-
-        const initialPositions: number[] = [];
-        for (let j = 0; j < routePlan.length; j++) {
-          if (routePlan[j].inputIndex === inputIndex) {
-            initialPositions.push(j);
-          }
-        }
-
-        const finalPositions: number[] = [];
-        for (let j = 0; j < routePlan.length; j++) {
-          if (routePlan[j].outputIndex === outputIndex) {
-            finalPositions.push(j);
-          }
-        }
-
-        if (
-          finalPositions.length === 0 &&
-          this.isCircular((ix.data as any).routePlan)
-        ) {
-          for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
-            if ((ix.data as any).routePlan[j].outputIndex === 0) {
-              finalPositions.push(j);
-            }
-          }
-        }
-
-        return [initialPositions, finalPositions];
+    const initialPositions: number[] = [];
+    for (let j = 0; j < routePlan.length; j++) {
+      if (routePlan[j].inputIndex === inputIndex) {
+        initialPositions.push(j);
       }
     }
+
+    const finalPositions: number[] = [];
+    for (let j = 0; j < routePlan.length; j++) {
+      if (routePlan[j].outputIndex === outputIndex) {
+        finalPositions.push(j);
+      }
+    }
+
+    if (finalPositions.length === 0 && this.isCircular(routePlan)) {
+      for (let j = 0; j < routePlan.length; j++) {
+        if (routePlan[j].outputIndex === 0) {
+          finalPositions.push(j);
+        }
+      }
+    }
+
+    return [initialPositions, finalPositions];
   }
 
   getExactOutAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
