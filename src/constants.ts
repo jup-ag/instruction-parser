@@ -108,7 +108,7 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 8,
     out: 9,
   },
-  gooseFXV2: {
+  gooseFxv2: {
     in: 5,
     out: 6,
   },
