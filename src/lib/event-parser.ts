@@ -128,10 +128,10 @@ export class EventParser {
           swap = this.getMultiStepSwap(
             innerInstructions,
             index,
-            routePlan.swap
+            routePlan.swap as any
           );
         } else {
-          swap = this.getSwap(innerInstructions, index, routePlan.swap);
+          swap = this.getSwap(innerInstructions, index, routePlan.swap as any);
         }
         swaps.push(swap);
         index = swap.nextSwapIndex - 1;
