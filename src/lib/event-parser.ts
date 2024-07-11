@@ -71,7 +71,7 @@ export class EventParser {
 
     if (routeInfo.platformFeeBps > 0) {
       const swapFee = await this.getSwapFee(routeInfo, innerInstructions);
-
+      if (!swapFee) return events; // In few cases, fee transfer doesn't occur even if platformFee is non-zero
       const feeEvent: ParsedEvent = {
         data: {
           account: swapFee.account,
@@ -240,7 +240,7 @@ export class EventParser {
     };
     const inAccount = swap.inAccount.toBase58();
     const outAccount = swap.outAccount.toBase58();
-
+    
     for (
       let index = swap.instructionIndex + 1;
       index < swap.nextSwapIndex;
