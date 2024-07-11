@@ -26,7 +26,12 @@ import {
   PLATFORM_FEE_ACCOUNTS_POSITION,
   SWAP_IN_OUT_ACCOUNTS_POSITION,
 } from "../constants";
-import { getAccount } from "@solana/spl-token";
+import {
+  getAccount,
+  getMint,
+  getTransferFeeConfig,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token";
 
 export class EventParser {
   private connection: Connection;
@@ -240,7 +245,7 @@ export class EventParser {
     };
     const inAccount = swap.inAccount.toBase58();
     const outAccount = swap.outAccount.toBase58();
-    
+
     for (
       let index = swap.instructionIndex + 1;
       index < swap.nextSwapIndex;
@@ -278,13 +283,29 @@ export class EventParser {
     transferType: TransferType
   ) {
     let mint: PublicKey;
-    const amount = transferInstructions.reduce((acc, instruction) => {
-      if (instruction.parsed.type === "transferChecked") {
-        return acc + BigInt(instruction.parsed.info.tokenAmount.amount);
+    let amount: bigint = BigInt(0);
+    for (const instruction of transferInstructions) {
+      // fee on transfer is only supported with transferChecked and transferCheckedWithFee
+      if (
+        instruction.parsed.type === "transferChecked" ||
+        instruction.parsed.type === "transferCheckedWithFee"
+      ) {
+        // fee should only be deducted from out transfers.
+        if (transferType === TransferType.OUT) {
+          amount += BigInt(
+            await this.getExactOutAmountAfterFee(
+              instruction.parsed.info,
+              instruction.parsed.type,
+              this.connection
+            )
+          );
+        } else {
+          amount += BigInt(instruction.parsed.info.tokenAmount.amount);
+        }
       } else {
-        return acc + BigInt(instruction.parsed.info.amount);
+        amount += BigInt(instruction.parsed.info.amount);
       }
-    }, BigInt(0));
+    }
 
     const transferInstruction = transferInstructions[0];
     if (transferInstruction.parsed.type === "transfer") {
@@ -339,6 +360,36 @@ export class EventParser {
           account: new PublicKey(destination),
         };
       }
+    }
+  }
+
+  async getExactOutAmountAfterFee(
+    info: any,
+    transferInstructionType: string,
+    connection: Connection
+  ) {
+    // fee should be calculated manually if transferChecked is used
+    if (transferInstructionType == "transferChecked") {
+      try {
+        const mint = await getMint(
+          connection,
+          new PublicKey(info.mint),
+          "confirmed",
+          TOKEN_2022_PROGRAM_ID
+        );
+        const feeConfig = getTransferFeeConfig(mint);
+        const feeBasisPoints =
+          feeConfig.newerTransferFee.transferFeeBasisPoints;
+
+        const amount = info.tokenAmount.amount;
+        const fee = (BigInt(amount) * BigInt(feeBasisPoints)) / BigInt(10000);
+        return BigInt(amount) - fee;
+      } catch (_) {
+        // handle transfer without transfer fee
+        return BigInt(info.tokenAmount.amount);
+      }
+    } else {
+      return BigInt(info.tokenAmount.amount) - BigInt(info.feeAmount.amount);
     }
   }
 }
