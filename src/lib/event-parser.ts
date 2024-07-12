@@ -100,6 +100,7 @@ export class EventParser {
         if (isRouting(ix.name)) {
           const routeInfo: RouteInfo = {
             index: index,
+            stackHeight: 1, // stack height for main instruction is always 1
             name: ix.name,
             accounts: (instruction as PartialInstruction).accounts,
             data: ix.data,
@@ -107,6 +108,30 @@ export class EventParser {
           routeInfoList.push(routeInfo);
         }
       }
+    });
+
+    // Find jupiter routes in inner instructions
+    // For example, Tulip program makes a CPI call to jupiter route instruction to swap
+    // In this case the jupiter route instruction would be an inner instruction
+    tx.meta.innerInstructions.forEach((instruction) => {
+      instruction.instructions.forEach((innerInstruction) => {
+        if (innerInstruction.programId.equals(JUPITER_V6_PROGRAM_ID)) {
+          const ix = this.coder.instruction.decode(
+            (innerInstruction as any).data,
+            "base58"
+          );
+          if (ix && isRouting(ix.name)) {
+            const routeInfo: RouteInfo = {
+              index: instruction.index, // Index of the tulip instruction in above case. Used to find the corresponding inner instructions.
+              stackHeight: (innerInstruction as any).stackHeight, // Stack height of the jupiter route instruction
+              name: ix.name,
+              accounts: (innerInstruction as PartialInstruction).accounts,
+              data: ix.data,
+            };
+            routeInfoList.push(routeInfo);
+          }
+        }
+      });
     });
     return routeInfoList;
   }
@@ -125,7 +150,7 @@ export class EventParser {
   ) {
     const swaps: Swap[] = [];
     for (let index = 0; index < innerInstructions.length; index++) {
-      if (isSwapInstruction(innerInstructions[index])) {
+      if (isSwapInstruction(innerInstructions[index], routeInfo.stackHeight)) {
         const routePlanIndex = swaps.length;
         const routePlan = routeInfo.data.routePlan[routePlanIndex];
         const swapIxName = Object.keys(routePlan.swap)[0];
@@ -134,10 +159,16 @@ export class EventParser {
           swap = this.getMultiStepSwap(
             innerInstructions,
             index,
-            routePlan.swap as any
+            routePlan.swap as any,
+            routeInfo.stackHeight
           );
         } else {
-          swap = this.getSwap(innerInstructions, index, routePlan.swap as any);
+          swap = this.getSwap(
+            innerInstructions,
+            index,
+            routePlan.swap as any,
+            routeInfo.stackHeight
+          );
         }
         swaps.push(swap);
         index = swap.nextSwapIndex - 1;
@@ -156,7 +187,8 @@ export class EventParser {
   getMultiStepSwap(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapIxIndex: number,
-    swapData: SwapData
+    swapData: SwapData,
+    routeIxStackHeight: number
   ) {
     const swapInstruction = innerInstructions[swapIxIndex];
     const swapIxName = Object.keys(swapData)[0];
@@ -174,7 +206,7 @@ export class EventParser {
     while (
       index < innerInstructions.length &&
       (innerInstructions[index].programId.equals(swapInstruction.programId) ||
-        !isSwapInstruction(innerInstructions[index]))
+        !isSwapInstruction(innerInstructions[index], routeIxStackHeight))
     ) {
       const currentInstruction = innerInstructions[index];
       // Get outAccount from second instruction
@@ -195,6 +227,7 @@ export class EventParser {
       index++;
     }
     swap.instructionIndex = swapIxIndex;
+    swap.stackHeight = (swapInstruction as any).stackHeight;
     swap.nextSwapIndex = index; // Index points to next swap instruction
     return swap;
   }
@@ -202,14 +235,14 @@ export class EventParser {
   getSwap(
     innerInstructions: (PartialInstruction | ParsedInstruction)[],
     swapIxIndex: number,
-    swapData: SwapData
+    swapData: SwapData,
+    routeIxStackHeight: number
   ) {
     let swap = {} as Swap;
-    const swapProgramId = innerInstructions[swapIxIndex].programId;
+    const swapInstruction = innerInstructions[swapIxIndex];
     const swapIxName = Object.keys(swapData)[0]; // get position based on instruction name
     const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
-    const accounts = (innerInstructions[swapIxIndex] as PartialInstruction)
-      .accounts;
+    const accounts = (swapInstruction as PartialInstruction).accounts;
     const inAccountPosition =
       positions.in < 0 ? accounts.length + positions.in : positions.in;
     const outAccountPosition =
@@ -217,7 +250,7 @@ export class EventParser {
 
     // Certain AMM uses an extra parameter to decide the in and out account positions
     [swap.inAccount, swap.outAccount] = getSwapDirection(
-      swapProgramId.toBase58(),
+      swapInstruction.programId.toBase58(),
       swapData
     )
       ? [accounts[inAccountPosition], accounts[outAccountPosition]]
@@ -227,11 +260,12 @@ export class EventParser {
     let index = swapIxIndex + 1;
     while (
       index < innerInstructions.length &&
-      !isSwapInstruction(innerInstructions[index])
+      !isSwapInstruction(innerInstructions[index], routeIxStackHeight)
     ) {
       index++;
     }
     swap.instructionIndex = swapIxIndex;
+    swap.stackHeight = (swapInstruction as any).stackHeight;
     swap.nextSwapIndex = index;
     return swap;
   }
@@ -253,7 +287,7 @@ export class EventParser {
       index++
     ) {
       const innerInstruction = innerInstructions[index] as ParsedInstruction;
-      const ixType = isTransferInstruction(innerInstruction);
+      const ixType = isTransferInstruction(innerInstruction, swap.stackHeight);
       if (ixType) {
         const source = innerInstruction.parsed.info.source;
         const destination = innerInstruction.parsed.info.destination;
@@ -336,7 +370,14 @@ export class EventParser {
       innerInstruction = innerInstruction as ParsedInstruction;
       if (!innerInstruction.parsed) continue;
       const destination = innerInstruction.parsed.info.destination;
-      if (isFeeInstruction(innerInstruction, feeAccount, destination)) {
+      if (
+        isFeeInstruction(
+          innerInstruction,
+          feeAccount,
+          destination,
+          routeInfo.stackHeight
+        )
+      ) {
         let mint: PublicKey;
         let amount: BigInt;
 

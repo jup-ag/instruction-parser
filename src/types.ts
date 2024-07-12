@@ -45,6 +45,7 @@ export type SwapFee = {
 
 export type RouteInfo = {
   index: number;
+  stackHeight: number;
   name: string;
   accounts: PublicKey[];
   data: any;
@@ -57,6 +58,7 @@ export enum TransferType {
 
 export type Swap = {
   instructionIndex: number;
+  stackHeight: number;
   nextSwapIndex: number;
   inAccount: PublicKey;
   outAccount: PublicKey;

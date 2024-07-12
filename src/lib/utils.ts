@@ -7,7 +7,6 @@ import { PartialInstruction, SwapData } from "../types";
 import {
   AMM_TYPES,
   SWAP_DIRECTION_ARGS,
-  STACK_HEIGHT,
   TRANSFER_INSTRUCTION_TYPES,
 } from "../constants";
 import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
@@ -80,15 +79,19 @@ export async function getTokenMap(): Promise<Map<string, TokenInfo>> {
 }
 
 export function isSwapInstruction(
-  instruction: ParsedInstruction | PartialInstruction
+  instruction: ParsedInstruction | PartialInstruction,
+  routeIxStackHeight: number
 ) {
   return (
     instruction.programId.toBase58() in AMM_TYPES &&
-    (instruction as any).stackHeight === STACK_HEIGHT.SWAP
+    (instruction as any).stackHeight === routeIxStackHeight + 1 // swap instructions are exactly one level above to corresponding routing instruction
   );
 }
 
-export function isTransferInstruction(innerInstruction: ParsedInstruction) {
+export function isTransferInstruction(
+  innerInstruction: ParsedInstruction,
+  swapIxStackHeight: number
+) {
   if (
     innerInstruction.programId.equals(TOKEN_PROGRAM_ID) ||
     innerInstruction.programId.equals(TOKEN_2022_PROGRAM_ID)
@@ -97,7 +100,7 @@ export function isTransferInstruction(innerInstruction: ParsedInstruction) {
     const ixstackHeight = (innerInstruction as any).stackHeight;
     if (
       TRANSFER_INSTRUCTION_TYPES.has(ixType) &&
-      ixstackHeight >= STACK_HEIGHT.TOKEN_TRANSFER // Greater than is added to handle cases where token transfers happen in deposit and withdraw functions
+      ixstackHeight >= swapIxStackHeight + 1 // trasfers are one level above to corresponding swap instruction
     )
       return ixType;
   }
@@ -107,13 +110,14 @@ export function isTransferInstruction(innerInstruction: ParsedInstruction) {
 export function isFeeInstruction(
   innerInstruction: ParsedInstruction,
   feeAccount: string,
-  destination: string
+  destination: string,
+  routeIxStackHeight: number
 ) {
   const ixType = innerInstruction.parsed.type;
   const stackHeight = (innerInstruction as any).stackHeight;
   return (
     (ixType === "transfer" || ixType === "transferChecked") &&
-    stackHeight === STACK_HEIGHT.FEE &&
+    stackHeight === routeIxStackHeight + 1 && // fee instruction is exactly one level above to corresponding routing instruction
     feeAccount === destination
   );
 }
