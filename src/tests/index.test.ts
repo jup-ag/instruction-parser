@@ -86,6 +86,12 @@ describe("instruction parser", () => {
       "GCeRpjvfNXZB6BJFQChjpKycdKpRwQGS1BSwUvLjVpJj6NgdzzQACAWt89ZEfEXjeRSqzhDX8CHtzpMUnfJ7VMJ";
     await compare(currentSignature);
   });
+
+  test("verify transaction with jupiter route as inner instruction", async () => {
+    currentSignature =
+      "5SnGKXqNQ6zYGfNHQwHWwRtbxnYHUHLbANXgpvCLuXD1LA5paStRBcuXwu2T5eM9xsVWFQTzeUNwPWx6UAQhUb2t";
+    await compare(currentSignature);
+  });
 });
 
 async function compare(signature: string) {
