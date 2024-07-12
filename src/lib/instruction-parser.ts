@@ -18,30 +18,15 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  getInstructionNameAndTransferAuthorityAndLastAccount(
-    instructions: PartialInstruction[]
-  ) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
+  getInstructionNameAndTransferAuthorityAndLastAccount(routeInfo: RouteInfo) {
+    const transferAuthority =
+      routeInfo.accounts[
+        this.getTransferAuthorityIndex(routeInfo.name)
+      ].toString();
+    const lastAccount =
+      routeInfo.accounts[routeInfo.accounts.length - 1].toString();
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-
-      if (isRouting(ix.name)) {
-        const instructionName = ix.name;
-        const transferAuthority =
-          instruction.accounts[
-            this.getTransferAuthorityIndex(instructionName)
-          ].toString();
-        const lastAccount =
-          instruction.accounts[instruction.accounts.length - 1].toString();
-
-        return [ix.name, transferAuthority, lastAccount];
-      }
-    }
-
-    return [];
+    return [routeInfo.name, transferAuthority, lastAccount];
   }
 
   getTransferAuthorityIndex(instructionName: string) {
@@ -57,29 +42,9 @@ export class InstructionParser {
     }
   }
 
-  // For CPI, we have to also check for innerInstructions.
-  getInstructions(tx: TransactionWithMeta): PartialInstruction[] {
-    const parsedInstructions: PartialInstruction[] = [];
-    for (const instruction of tx.transaction.message.instructions) {
-      if (instruction.programId.equals(this.programId)) {
-        parsedInstructions.push(instruction as any);
-      }
-    }
-
-    for (const instructions of tx.meta.innerInstructions) {
-      for (const instruction of instructions.instructions) {
-        if (instruction.programId.equals(this.programId)) {
-          parsedInstructions.push(instruction as any);
-        }
-      }
-    }
-
-    return parsedInstructions;
-  }
-
   // Extract the position of the initial and final swap from the swap array.
   getInitialAndFinalSwapPositions(routeInfo: RouteInfo) {
-    const routePlan = routeInfo.routePlan;
+    const routePlan = routeInfo.data.routePlan;
     const inputIndex = 0;
     const outputIndex = routePlan.length;
 
@@ -108,37 +73,17 @@ export class InstructionParser {
     return [initialPositions, finalPositions];
   }
 
-  getExactOutAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
-      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
-
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-
-      if (this.isExactIn(ix.name)) {
-        return (ix.data as any).quotedOutAmount.toString();
-      }
+  getExactOutAmount(routeInfo: RouteInfo) {
+    if (this.isExactIn(routeInfo.name)) {
+      return routeInfo.data.quotedOutAmount.toString();
     }
-
     return;
   }
 
-  getExactInAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
-      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
-
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-
-      if (this.isExactOut(ix.name)) {
-        return (ix.data as any).quotedInAmount.toString();
-      }
+  getExactInAmount(routeInfo: RouteInfo) {
+    if (this.isExactOut(routeInfo.name)) {
+      return routeInfo.data.quotedInAmount.toString();
     }
-
     return;
   }
 

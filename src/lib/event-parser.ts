@@ -73,7 +73,7 @@ export class EventParser {
       events.push(swapEvent);
     }
 
-    if (routeInfo.platformFeeBps > 0) {
+    if (routeInfo.data.platformFeeBps > 0) {
       const swapFee = await this.getSwapFee(routeInfo, innerInstructions);
       if (!swapFee) return events; // In few cases, fee transfer doesn't occur even if platformFee is non-zero
       const feeEvent: ParsedEvent = {
@@ -102,8 +102,7 @@ export class EventParser {
             index: index,
             name: ix.name,
             accounts: (instruction as PartialInstruction).accounts,
-            routePlan: (ix.data as any).routePlan as RoutePlan,
-            platformFeeBps: (ix.data as any).platformFeeBps,
+            data: ix.data,
           };
           routeInfoList.push(routeInfo);
         }
@@ -128,7 +127,7 @@ export class EventParser {
     for (let index = 0; index < innerInstructions.length; index++) {
       if (isSwapInstruction(innerInstructions[index])) {
         const routePlanIndex = swaps.length;
-        const routePlan = routeInfo.routePlan[routePlanIndex];
+        const routePlan = routeInfo.data.routePlan[routePlanIndex];
         const swapIxName = Object.keys(routePlan.swap)[0];
         let swap: Swap;
         if (MULTI_STEP_SWAPS.includes(swapIxName)) {

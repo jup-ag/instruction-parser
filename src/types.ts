@@ -47,8 +47,7 @@ export type RouteInfo = {
   index: number;
   name: string;
   accounts: PublicKey[];
-  routePlan: RoutePlan;
-  platformFeeBps: number;
+  data: any;
 };
 
 export enum TransferType {

@@ -144,7 +144,6 @@ async function extractSingleRoute(
   });
 
   const swapData = await parseSwapEvents(tokenMap, accountInfosMap, swapEvents);
-  const instructions = instructionParser.getInstructions(tx);
   const [initialPositions, finalPositions] =
     instructionParser.getInitialAndFinalSwapPositions(routeInfo);
 
@@ -187,7 +186,7 @@ async function extractSingleRoute(
 
   const [instructionName, transferAuthority, lastAccount] =
     instructionParser.getInstructionNameAndTransferAuthorityAndLastAccount(
-      instructions
+      routeInfo
     );
 
   swap.transferAuthority = transferAuthority;
@@ -212,9 +211,7 @@ async function extractSingleRoute(
   swap.outAmountInUSD = outAmountInUSD.toNumber();
   swap.outMint = outMint;
 
-  const exactOutAmount = instructionParser.getExactOutAmount(
-    tx.transaction.message.instructions
-  );
+  const exactOutAmount = instructionParser.getExactOutAmount(routeInfo);
   if (exactOutAmount) {
     swap.exactOutAmount = BigInt(exactOutAmount);
 
@@ -226,9 +223,7 @@ async function extractSingleRoute(
     }
   }
 
-  const exactInAmount = instructionParser.getExactInAmount(
-    tx.transaction.message.instructions
-  );
+  const exactInAmount = instructionParser.getExactInAmount(routeInfo);
   if (exactInAmount) {
     swap.exactInAmount = BigInt(exactInAmount);
 
