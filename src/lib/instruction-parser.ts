@@ -1,13 +1,7 @@
-import { ParsedInstruction, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { BorshCoder } from "@coral-xyz/anchor";
 import { IDL } from "../idl/jupiter";
-import {
-  PartialInstruction,
-  RouteInfo,
-  RoutePlan,
-  TransactionWithMeta,
-} from "../types";
-import { isRouting } from "./utils";
+import { RouteInfo, RoutePlan } from "../types";
 
 export class InstructionParser {
   private coder: BorshCoder;

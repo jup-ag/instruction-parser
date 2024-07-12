@@ -15,6 +15,8 @@ import { TOKEN_PROGRAM_ID, TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 // Caches for Price API
 const jupiterPrices: Map<string, any> = new Map();
 const jupiterTTL: Map<string, number> = new Map();
+// Cache for token list
+const tokenInfoCache: Map<string, TokenInfo> = new Map();
 
 // Use the Jupiter Pricing API to get the price of a token in USD.
 export async function getPriceInUSDByMint(
@@ -59,24 +61,15 @@ export class DecimalUtil {
   }
 }
 
-export async function getTokenMap(): Promise<Map<string, TokenInfo>> {
-  const tokenMap = new Map();
-
-  const tokenList = await got("https://cache.jup.ag/tokens").json<
-    Array<TokenInfo>
-  >();
-  tokenList.forEach((item) => {
-    tokenMap.set(item.address, item);
-  });
-
-  const unknownTokenList = await got(
-    "https://cache.jup.ag/unknown-tokens"
-  ).json<Array<TokenInfo>>();
-  unknownTokenList.forEach((item) => {
-    tokenMap.set(item.address, item);
-  });
-
-  return tokenMap;
+export async function getTokenInfo(token: string) {
+  if (tokenInfoCache.has(token)) {
+    return tokenInfoCache.get(token);
+  }
+  const tokenInfo = await got(
+    `https://tokens.jup.ag/token/${token}`
+  ).json<TokenInfo>();
+  tokenInfoCache.set(token, tokenInfo);
+  return tokenInfo;
 }
 
 export function isSwapInstruction(

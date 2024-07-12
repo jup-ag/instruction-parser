@@ -1,10 +1,9 @@
 import { BN, Event, Program, Provider } from "@coral-xyz/anchor";
 import { unpackAccount, unpackMint } from "@solana/spl-token";
-import { TokenInfo } from "@solana/spl-token-registry";
 import { AccountInfo, Connection, PublicKey } from "@solana/web3.js";
 import Decimal from "decimal.js";
 import { InstructionParser } from "./lib/instruction-parser";
-import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
+import { DecimalUtil, getPriceInUSDByMint, getTokenInfo } from "./lib/utils";
 import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
 import {
   ParsedFeeEvent,
@@ -16,7 +15,6 @@ import {
 import { IDL, Jupiter } from "./idl/jupiter";
 import { EventParser } from "./lib/event-parser";
 
-export { getTokenMap } from "./lib/utils";
 export { TransactionWithMeta };
 
 export const program = new Program<Jupiter>(
@@ -74,7 +72,6 @@ export async function extract(
   signature: string,
   connection: Connection,
   tx: TransactionWithMeta,
-  tokenMap: Map<string, TokenInfo>,
   blockTime?: number
 ): Promise<SwapAttributes[] | undefined> {
   const programId = JUPITER_V6_PROGRAM_ID;
@@ -87,7 +84,6 @@ export async function extract(
       signature,
       connection,
       tx,
-      tokenMap,
       blockTime,
       routeInfo,
       eventParser,
@@ -103,7 +99,6 @@ async function extractSingleRoute(
   signature: string,
   connection: Connection,
   tx: TransactionWithMeta,
-  tokenMap: Map<string, TokenInfo>,
   blockTime: number,
   routeInfo: RouteInfo,
   eventParser: EventParser,
@@ -143,7 +138,7 @@ async function extractSingleRoute(
     accountInfosMap.set(account.toBase58(), accountInfos[index]);
   });
 
-  const swapData = await parseSwapEvents(tokenMap, accountInfosMap, swapEvents);
+  const swapData = await parseSwapEvents(accountInfosMap, swapEvents);
   const [initialPositions, finalPositions] =
     instructionParser.getInitialAndFinalSwapPositions(routeInfo);
 
@@ -239,12 +234,7 @@ async function extractSingleRoute(
 
   if (feeEvent) {
     const { symbol, mint, amount, amountInDecimal, amountInUSD } =
-      await extractVolume(
-        tokenMap,
-        accountInfosMap,
-        feeEvent.mint,
-        feeEvent.amount
-      );
+      await extractVolume(accountInfosMap, feeEvent.mint, feeEvent.amount);
     swap.feeTokenPubkey = feeEvent.account.toBase58();
     swap.feeOwner = extractTokenAccountOwner(
       accountInfosMap,
@@ -261,21 +251,17 @@ async function extractSingleRoute(
 }
 
 async function parseSwapEvents(
-  tokenMap: Map<string, TokenInfo>,
   accountInfosMap: AccountInfoMap,
   swapEvents: SwapEvent[]
 ) {
   const swapData = await Promise.all(
-    swapEvents.map((swapEvent) =>
-      extractSwapData(tokenMap, accountInfosMap, swapEvent)
-    )
+    swapEvents.map((swapEvent) => extractSwapData(accountInfosMap, swapEvent))
   );
 
   return swapData;
 }
 
 async function extractSwapData(
-  tokenMap: Map<string, TokenInfo>,
   accountInfosMap: AccountInfoMap,
   swapEvent: SwapEvent
 ) {
@@ -288,7 +274,6 @@ async function extractSwapData(
     amountInDecimal: inAmountInDecimal,
     amountInUSD: inAmountInUSD,
   } = await extractVolume(
-    tokenMap,
     accountInfosMap,
     swapEvent.inputMint,
     swapEvent.inputAmount
@@ -300,7 +285,6 @@ async function extractSwapData(
     amountInDecimal: outAmountInDecimal,
     amountInUSD: outAmountInUSD,
   } = await extractVolume(
-    tokenMap,
     accountInfosMap,
     swapEvent.outputMint,
     swapEvent.outputAmount
@@ -322,12 +306,11 @@ async function extractSwapData(
 }
 
 async function extractVolume(
-  tokenMap: Map<string, TokenInfo>,
   accountInfosMap: AccountInfoMap,
   mint: PublicKey,
   amount: BN
 ) {
-  const token = tokenMap.get(mint.toBase58());
+  const token = await getTokenInfo(mint.toBase58());
   const tokenPriceInUSD = await getPriceInUSDByMint(mint.toBase58());
   const tokenDecimals = extractMintDecimals(accountInfosMap, mint);
   const symbol = token?.symbol;

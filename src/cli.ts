@@ -1,6 +1,5 @@
 import { Connection } from "@solana/web3.js";
 import { Command } from "commander";
-import { getTokenMap } from "./lib/utils";
 import { extract } from ".";
 import { JUPITER_V6_PROGRAM_ID } from "./constants";
 import { writeFile, mkdir } from "fs/promises";
@@ -32,15 +31,7 @@ program
       console.log("Failed transaction", tx.meta.err);
     }
 
-    const tokenMap = await getTokenMap();
-    const result = await extract(
-      signature,
-      connection,
-      tx,
-      tokenMap,
-      tx.blockTime
-    );
-
+    const result = await extract(signature, connection, tx, tx.blockTime);
     console.log(result);
   });
 
@@ -67,16 +58,8 @@ program
         continue;
       }
 
-      const tokenMap = await getTokenMap();
-
       try {
-        await extract(
-          signature.signature,
-          connection,
-          tx,
-          tokenMap,
-          tx.blockTime
-        );
+        await extract(signature.signature, connection, tx, tx.blockTime);
         console.log("Transaction succesfully extracted: ", signature.signature);
       } catch (error) {
         console.log(
