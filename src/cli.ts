@@ -140,12 +140,15 @@ program
     });
 
     const eventsParser = new EventParser(connection);
-    const parsedEvents = await eventsParser.getParsedEvents(tx);
-    await writeFile(
-      path.join(directoryPath + `/parsed-events.json`),
-      JSON.stringify(parsedEvents),
-      { flag: "w+" }
-    );
+    const routeInfoList = eventsParser.getRouteInfoList(tx);
+    for (const [index, routeInfo] of routeInfoList.entries()) {
+      const parsedEvents = await eventsParser.getParsedEvents(tx, routeInfo);
+      await writeFile(
+        path.join(directoryPath + `/parsed-events-${index}.json`),
+        JSON.stringify(parsedEvents),
+        { flag: "w+" }
+      );
+    }
   });
 
 program.parse();

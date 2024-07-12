@@ -7,6 +7,7 @@ export const JUPITER_V6_PROGRAM_ID = new PublicKey(
 export const TRANSFER_INSTRUCTION_TYPES = new Set<string>([
   "transfer",
   "transferChecked",
+  "transferCheckedWithFee",
   "mintTo",
   "burn",
 ]);
@@ -108,7 +109,7 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 8,
     out: 9,
   },
-  gooseFXV2: {
+  gooseFxv2: {
     in: 5,
     out: 6,
   },
@@ -279,6 +280,7 @@ export const SWAP_DIRECTION_ARGS = {
     "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt",
     "9tKE7Mbmj4mxDjWatikzGAtkoWosiiZX9y6J4Hfm2R8H",
     "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p",
+    "Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1",
   ],
   QUANTITY_IS_COLLATERAL: ["C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr"],
 };

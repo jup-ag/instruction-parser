@@ -26,7 +26,12 @@ import {
   PLATFORM_FEE_ACCOUNTS_POSITION,
   SWAP_IN_OUT_ACCOUNTS_POSITION,
 } from "../constants";
-import { getAccount } from "@solana/spl-token";
+import {
+  getAccount,
+  getMint,
+  getTransferFeeConfig,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token";
 
 export class EventParser {
   private connection: Connection;
@@ -37,9 +42,8 @@ export class EventParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  async getParsedEvents(tx: TransactionWithMeta) {
+  async getParsedEvents(tx: TransactionWithMeta, routeInfo: RouteInfo) {
     const events: ParsedEvent[] = [];
-    const routeInfo: RouteInfo = this.getRouteInfo(tx);
     const innerInstructions = this.getInnerInstructions(tx, routeInfo);
     const swaps = this.getSwaps(innerInstructions, routeInfo);
 
@@ -69,9 +73,9 @@ export class EventParser {
       events.push(swapEvent);
     }
 
-    if (routeInfo.platformFeeBps > 0) {
+    if (routeInfo.data.platformFeeBps > 0) {
       const swapFee = await this.getSwapFee(routeInfo, innerInstructions);
-
+      if (!swapFee) return events; // In few cases, fee transfer doesn't occur even if platformFee is non-zero
       const feeEvent: ParsedEvent = {
         data: {
           account: swapFee.account,
@@ -85,8 +89,8 @@ export class EventParser {
     return events;
   }
 
-  getRouteInfo(tx: TransactionWithMeta): RouteInfo {
-    const routeInfo = {} as RouteInfo;
+  getRouteInfoList(tx: TransactionWithMeta): RouteInfo[] {
+    const routeInfoList: RouteInfo[] = [];
     tx.transaction.message.instructions.forEach((instruction, index) => {
       if (instruction.programId.equals(JUPITER_V6_PROGRAM_ID)) {
         const ix = this.coder.instruction.decode(
@@ -94,15 +98,17 @@ export class EventParser {
           "base58"
         );
         if (isRouting(ix.name)) {
-          routeInfo.index = index;
-          routeInfo.name = ix.name;
-          routeInfo.accounts = (instruction as PartialInstruction).accounts;
-          routeInfo.routePlan = (ix.data as any).routePlan as RoutePlan;
-          routeInfo.platformFeeBps = (ix.data as any).platformFeeBps;
+          const routeInfo: RouteInfo = {
+            index: index,
+            name: ix.name,
+            accounts: (instruction as PartialInstruction).accounts,
+            data: ix.data,
+          };
+          routeInfoList.push(routeInfo);
         }
       }
     });
-    return routeInfo;
+    return routeInfoList;
   }
 
   getInnerInstructions(tx: TransactionWithMeta, routeInfo: RouteInfo) {
@@ -121,7 +127,7 @@ export class EventParser {
     for (let index = 0; index < innerInstructions.length; index++) {
       if (isSwapInstruction(innerInstructions[index])) {
         const routePlanIndex = swaps.length;
-        const routePlan = routeInfo.routePlan[routePlanIndex];
+        const routePlan = routeInfo.data.routePlan[routePlanIndex];
         const swapIxName = Object.keys(routePlan.swap)[0];
         let swap: Swap;
         if (MULTI_STEP_SWAPS.includes(swapIxName)) {
@@ -278,13 +284,29 @@ export class EventParser {
     transferType: TransferType
   ) {
     let mint: PublicKey;
-    const amount = transferInstructions.reduce((acc, instruction) => {
-      if (instruction.parsed.type === "transferChecked") {
-        return acc + BigInt(instruction.parsed.info.tokenAmount.amount);
+    let amount: bigint = BigInt(0);
+    for (const instruction of transferInstructions) {
+      // fee on transfer is only supported with transferChecked and transferCheckedWithFee
+      if (
+        instruction.parsed.type === "transferChecked" ||
+        instruction.parsed.type === "transferCheckedWithFee"
+      ) {
+        // fee should only be deducted from out transfers.
+        if (transferType === TransferType.OUT) {
+          amount += BigInt(
+            await this.getExactOutAmountAfterFee(
+              instruction.parsed.info,
+              instruction.parsed.type,
+              this.connection
+            )
+          );
+        } else {
+          amount += BigInt(instruction.parsed.info.tokenAmount.amount);
+        }
       } else {
-        return acc + BigInt(instruction.parsed.info.amount);
+        amount += BigInt(instruction.parsed.info.amount);
       }
-    }, BigInt(0));
+    }
 
     const transferInstruction = transferInstructions[0];
     if (transferInstruction.parsed.type === "transfer") {
@@ -339,6 +361,36 @@ export class EventParser {
           account: new PublicKey(destination),
         };
       }
+    }
+  }
+
+  async getExactOutAmountAfterFee(
+    info: any,
+    transferInstructionType: string,
+    connection: Connection
+  ) {
+    // fee should be calculated manually if transferChecked is used
+    if (transferInstructionType == "transferChecked") {
+      try {
+        const mint = await getMint(
+          connection,
+          new PublicKey(info.mint),
+          "confirmed",
+          TOKEN_2022_PROGRAM_ID
+        );
+        const feeConfig = getTransferFeeConfig(mint);
+        const feeBasisPoints =
+          feeConfig.newerTransferFee.transferFeeBasisPoints;
+
+        const amount = info.tokenAmount.amount;
+        const fee = (BigInt(amount) * BigInt(feeBasisPoints)) / BigInt(10000);
+        return BigInt(amount) - fee;
+      } catch (_) {
+        // handle transfer without transfer fee
+        return BigInt(info.tokenAmount.amount);
+      }
+    } else {
+      return BigInt(info.tokenAmount.amount) - BigInt(info.feeAmount.amount);
     }
   }
 }

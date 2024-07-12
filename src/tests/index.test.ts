@@ -71,18 +71,33 @@ describe("instruction parser", () => {
       "3LF4ABXfbETvFbQ7nr7WU8pZvQ3H4gFBRZnLb1gJMSKzHZZNMXbJA4VUsrsAMa9cgBJgJDv7aeNnbRDC39C2oi1X";
     await compare(currentSignature);
   });
+
+  test("verify transaction with multiple routing instructions", async () => {
+    currentSignature =
+      "4cWStqraSHpMd8ix4eNaRSa22BUubTtDxLaemkPRwpnydJWsZUxHi4xXuMnuZZX7KS2eZdguspZJL8bpQ34ZikfU";
+    await compare(currentSignature);
+  });
+
+  test("verify transaction with fee on transfer token", async () => {
+    currentSignature =
+      "GCeRpjvfNXZB6BJFQChjpKycdKpRwQGS1BSwUvLjVpJj6NgdzzQACAWt89ZEfEXjeRSqzhDX8CHtzpMUnfJ7VMJ";
+    await compare(currentSignature);
+  });
 });
 
 async function compare(signature: string) {
   const tx = await connection.getParsedTransaction(signature);
-  const parsedEvents = await eventParser.getParsedEvents(tx);
+  const routeInfoList = eventParser.getRouteInfoList(tx);
+  for (const [index, routeInfo] of routeInfoList.entries()) {
+    const parsedEvents = await eventParser.getParsedEvents(tx, routeInfo);
 
-  const filePath = path.join(
-    __dirname,
-    `./snapshot/${signature}/parsed-events.json`
-  );
-  const result = JSON.parse(await readFile(filePath, "utf8"));
+    const filePath = path.join(
+      __dirname,
+      `./snapshot/${signature}/parsed-events-${index}.json`
+    );
+    const result = JSON.parse(await readFile(filePath, "utf8"));
 
-  // Hack to make sure that BigInt can compare in String format
-  expect(JSON.parse(JSON.stringify(parsedEvents))).toEqual(result);
+    // Hack to make sure that BigInt can compare in String format
+    expect(JSON.parse(JSON.stringify(parsedEvents))).toEqual(result);
+  }
 }
