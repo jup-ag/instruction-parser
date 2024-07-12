@@ -59,24 +59,8 @@ export class DecimalUtil {
   }
 }
 
-export async function getTokenMap(): Promise<Map<string, TokenInfo>> {
-  const tokenMap = new Map();
-
-  const tokenList = await got("https://cache.jup.ag/tokens").json<
-    Array<TokenInfo>
-  >();
-  tokenList.forEach((item) => {
-    tokenMap.set(item.address, item);
-  });
-
-  const unknownTokenList = await got(
-    "https://cache.jup.ag/unknown-tokens"
-  ).json<Array<TokenInfo>>();
-  unknownTokenList.forEach((item) => {
-    tokenMap.set(item.address, item);
-  });
-
-  return tokenMap;
+export async function getTokenInfo(token: string) {
+  return await got(`https://tokens.jup.ag/token/${token}`).json<TokenInfo>();
 }
 
 export function isSwapInstruction(
