@@ -3,7 +3,6 @@ import {
   ParsedEvent,
   PartialInstruction,
   RouteInfo,
-  RoutePlan,
   Swap,
   SwapFee,
   SwapData,
