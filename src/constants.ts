@@ -258,6 +258,10 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 7,
     out: 9,
   },
+  oneIntro: {
+    in: 6,
+    out: 7,
+  },
 };
 
 export const SWAP_DIRECTION_ARGS = {
