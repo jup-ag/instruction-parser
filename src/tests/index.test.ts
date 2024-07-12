@@ -3,6 +3,8 @@ import { Connection } from "@solana/web3.js";
 import { readFile } from "fs/promises";
 import * as path from "path";
 import { EventParser } from "../lib/event-parser";
+import { InstructionParser } from "../lib/instruction-parser";
+import { JUPITER_V6_PROGRAM_ID } from "../constants";
 
 // Make sure JSON.stringify works with BigInt
 BigInt.prototype["toJSON"] = function () {
@@ -46,6 +48,7 @@ const connection = new Proxy(actualConnection, {
   },
 });
 const eventParser = new EventParser(connection);
+const instructionParser = new InstructionParser(JUPITER_V6_PROGRAM_ID);
 
 describe("instruction parser", () => {
   test("verify simple transaction", async () => {
@@ -74,7 +77,7 @@ describe("instruction parser", () => {
 
   test("verify transaction with multiple routing instructions", async () => {
     currentSignature =
-      "4cWStqraSHpMd8ix4eNaRSa22BUubTtDxLaemkPRwpnydJWsZUxHi4xXuMnuZZX7KS2eZdguspZJL8bpQ34ZikfU";
+      "5Rt3HkbvPRtQZ2FKxi8mAbsrTSLUQmb5SaphqD32pntbC3hgxZV9PayGL6pZGMSVXWBrrCAaw8uhDSR6R8J5bkgy";
     await compare(currentSignature);
   });
 
@@ -90,14 +93,24 @@ async function compare(signature: string) {
   const routeInfoList = eventParser.getRouteInfoList(tx);
   for (const [index, routeInfo] of routeInfoList.entries()) {
     const parsedEvents = await eventParser.getParsedEvents(tx, routeInfo);
-
+    const [initialPositions, finalPositions] =
+      instructionParser.getInitialAndFinalSwapPositions(routeInfo);
+    const exactOutAmount = instructionParser.getExactOutAmount(routeInfo);
+    const exactInAmount = instructionParser.getExactInAmount(routeInfo);
+    const swapResult = {
+      parsedEvents,
+      initialPositions,
+      finalPositions,
+      exactOutAmount,
+      exactInAmount,
+    };
     const filePath = path.join(
       __dirname,
-      `./snapshot/${signature}/parsed-events-${index}.json`
+      `./snapshot/${signature}/swap-result-${index}.json`
     );
     const result = JSON.parse(await readFile(filePath, "utf8"));
 
     // Hack to make sure that BigInt can compare in String format
-    expect(JSON.parse(JSON.stringify(parsedEvents))).toEqual(result);
+    expect(JSON.parse(JSON.stringify(swapResult))).toEqual(result);
   }
 }

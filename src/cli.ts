@@ -6,6 +6,7 @@ import { JUPITER_V6_PROGRAM_ID } from "./constants";
 import { writeFile, mkdir } from "fs/promises";
 import * as path from "path";
 import { EventParser } from "./lib/event-parser";
+import { InstructionParser } from "./lib/instruction-parser";
 
 // Make sure JSON.stringify works with BigInt
 BigInt.prototype["toJSON"] = function () {
@@ -140,12 +141,24 @@ program
     });
 
     const eventsParser = new EventParser(connection);
+    const instructionParser = new InstructionParser(JUPITER_V6_PROGRAM_ID);
     const routeInfoList = eventsParser.getRouteInfoList(tx);
     for (const [index, routeInfo] of routeInfoList.entries()) {
       const parsedEvents = await eventsParser.getParsedEvents(tx, routeInfo);
+      const [initialPositions, finalPositions] =
+        instructionParser.getInitialAndFinalSwapPositions(routeInfo);
+      const exactOutAmount = instructionParser.getExactOutAmount(routeInfo);
+      const exactInAmount = instructionParser.getExactInAmount(routeInfo);
+      const swapResult = {
+        parsedEvents,
+        initialPositions,
+        finalPositions,
+        exactOutAmount,
+        exactInAmount,
+      };
       await writeFile(
-        path.join(directoryPath + `/parsed-events-${index}.json`),
-        JSON.stringify(parsedEvents),
+        path.join(directoryPath + `/swap-result-${index}.json`),
+        JSON.stringify(swapResult),
         { flag: "w+" }
       );
     }
