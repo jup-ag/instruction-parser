@@ -62,12 +62,6 @@ export const AMM_TYPES = {
   DEXYosS6oEGvk8uCDayvwEZz4qEyDJRf9nFgYCaqPMTm: "1DEX",
 };
 
-export const STACK_HEIGHT = {
-  SWAP: 2,
-  FEE: 2,
-  TOKEN_TRANSFER: 3,
-};
-
 export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
   aldrin: {
     in: 7,
