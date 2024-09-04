@@ -92,6 +92,12 @@ describe("instruction parser", () => {
       "5SnGKXqNQ6zYGfNHQwHWwRtbxnYHUHLbANXgpvCLuXD1LA5paStRBcuXwu2T5eM9xsVWFQTzeUNwPWx6UAQhUb2t";
     await compare(currentSignature);
   });
+
+    test("transaction with extra 'createTokenAccount' instruction", async () => {
+        currentSignature =
+            "5SPdWfQrAf8xky2CU9nycbc7MYEcJvmuKYwG2vUJ5BEfzSFK38RTvkqMHA5TuZV5fpaw65LoKVfGfKWmVTi71DHr";
+        await compare(currentSignature);
+    });
 });
 
 async function compare(signature: string) {

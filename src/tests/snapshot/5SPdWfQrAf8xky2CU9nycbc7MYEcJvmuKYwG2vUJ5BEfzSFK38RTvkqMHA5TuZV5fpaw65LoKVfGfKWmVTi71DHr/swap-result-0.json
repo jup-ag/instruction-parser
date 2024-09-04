@@ -1,0 +1,21 @@
+{
+  "parsedEvents": [
+    {
+      "data": {
+        "amm": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+        "inputMint": "So11111111111111111111111111111111111111112",
+        "inputAmount": "39600000",
+        "outputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "outputAmount": "5300650"
+      },
+      "name": "ParsedSwapEvent"
+    }
+  ],
+  "initialPositions": [
+    0
+  ],
+  "finalPositions": [
+    0
+  ],
+  "exactOutAmount": "5300650"
+}
