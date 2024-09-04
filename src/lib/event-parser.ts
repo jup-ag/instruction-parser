@@ -367,7 +367,7 @@ export class EventParser {
 
     for (let innerInstruction of innerInstructions) {
       innerInstruction = innerInstruction as ParsedInstruction;
-      if (!innerInstruction.parsed) continue;
+      if (!innerInstruction.parsed?.info) continue;
       const destination = innerInstruction.parsed.info.destination;
       if (
         isFeeInstruction(

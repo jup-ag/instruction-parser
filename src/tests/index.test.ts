@@ -93,11 +93,17 @@ describe("instruction parser", () => {
     await compare(currentSignature);
   });
 
-    test("transaction with extra 'createTokenAccount' instruction", async () => {
-        currentSignature =
-            "5SPdWfQrAf8xky2CU9nycbc7MYEcJvmuKYwG2vUJ5BEfzSFK38RTvkqMHA5TuZV5fpaw65LoKVfGfKWmVTi71DHr";
-        await compare(currentSignature);
-    });
+  test("transaction with extra 'createTokenAccount' instruction", async () => {
+    currentSignature =
+      "5SPdWfQrAf8xky2CU9nycbc7MYEcJvmuKYwG2vUJ5BEfzSFK38RTvkqMHA5TuZV5fpaw65LoKVfGfKWmVTi71DHr";
+    await compare(currentSignature);
+  });
+
+  test("transaction with extra memo instruction", async () => {
+    currentSignature =
+      "5pcpYhqJyyHHxVaa9mvchML6Njro5Chxv7EFjHPSwxVpdyGAt6uVhd1xUBmXe7ztiuhS1iHFgXm67nwr7mem5itu";
+    await compare(currentSignature);
+  });
 });
 
 async function compare(signature: string) {
