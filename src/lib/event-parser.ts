@@ -192,6 +192,9 @@ export class EventParser {
     const swapInstruction = innerInstructions[swapIxIndex];
     const swapIxName = Object.keys(swapData)[0];
     const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
+    if (!positions) {
+      throw new Error(`Unsupported DEX ${swapIxName}`);
+    }
 
     // Get inAccount from the first instruction
     // For StakeDexPrefundWithdrawStakeAndDepositStake swap, inAccount is determined using accounts of stakedex_prefund_withdraw_stake instruction
@@ -241,6 +244,9 @@ export class EventParser {
     const swapInstruction = innerInstructions[swapIxIndex];
     const swapIxName = Object.keys(swapData)[0]; // get position based on instruction name
     const positions = SWAP_IN_OUT_ACCOUNTS_POSITION[swapIxName];
+    if (!positions) {
+      throw new Error(`Unsupported DEX ${swapIxName}`);
+    }
     const accounts = (swapInstruction as PartialInstruction).accounts;
     const inAccountPosition =
       positions.in < 0 ? accounts.length + positions.in : positions.in;
