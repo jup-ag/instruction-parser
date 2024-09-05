@@ -1,7 +1,7 @@
-import { ParsedInstruction, PublicKey } from "@solana/web3.js";
-import { BorshCoder, Program } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
+import { BorshCoder } from "@coral-xyz/anchor";
 import { IDL } from "../idl/jupiter";
-import { PartialInstruction, RoutePlan, TransactionWithMeta } from "../types";
+import { RouteInfo, RoutePlan } from "../types";
 
 export class InstructionParser {
   private coder: BorshCoder;
@@ -12,30 +12,15 @@ export class InstructionParser {
     this.coder = new BorshCoder(IDL);
   }
 
-  getInstructionNameAndTransferAuthorityAndLastAccount(
-    instructions: PartialInstruction[]
-  ) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
+  getInstructionNameAndTransferAuthorityAndLastAccount(routeInfo: RouteInfo) {
+    const transferAuthority =
+      routeInfo.accounts[
+        this.getTransferAuthorityIndex(routeInfo.name)
+      ].toString();
+    const lastAccount =
+      routeInfo.accounts[routeInfo.accounts.length - 1].toString();
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-
-      if (this.isRouting(ix.name)) {
-        const instructionName = ix.name;
-        const transferAuthority =
-          instruction.accounts[
-            this.getTransferAuthorityIndex(instructionName)
-          ].toString();
-        const lastAccount =
-          instruction.accounts[instruction.accounts.length - 1].toString();
-
-        return [ix.name, transferAuthority, lastAccount];
-      }
-    }
-
-    return [];
+    return [routeInfo.name, transferAuthority, lastAccount];
   }
 
   getTransferAuthorityIndex(instructionName: string) {
@@ -51,105 +36,48 @@ export class InstructionParser {
     }
   }
 
-  // For CPI, we have to also check for innerInstructions.
-  getInstructions(tx: TransactionWithMeta): PartialInstruction[] {
-    const parsedInstructions: PartialInstruction[] = [];
-    for (const instruction of tx.transaction.message.instructions) {
-      if (instruction.programId.equals(this.programId)) {
-        parsedInstructions.push(instruction as any);
-      }
-    }
-
-    for (const instructions of tx.meta.innerInstructions) {
-      for (const instruction of instructions.instructions) {
-        if (instruction.programId.equals(this.programId)) {
-          parsedInstructions.push(instruction as any);
-        }
-      }
-    }
-
-    return parsedInstructions;
-  }
-
   // Extract the position of the initial and final swap from the swap array.
-  getInitialAndFinalSwapPositions(instructions: PartialInstruction[]) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
+  getInitialAndFinalSwapPositions(routeInfo: RouteInfo) {
+    const routePlan = routeInfo.data.routePlan;
+    const inputIndex = 0;
+    const outputIndex = routePlan.length;
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-      // This will happen because now event is also an CPI instruction.
-      if (!ix) {
-        continue;
-      }
-
-      if (this.isRouting(ix.name)) {
-        const routePlan = (ix.data as any).routePlan as RoutePlan;
-        const inputIndex = 0;
-        const outputIndex = routePlan.length;
-
-        const initialPositions: number[] = [];
-        for (let j = 0; j < routePlan.length; j++) {
-          if (routePlan[j].inputIndex === inputIndex) {
-            initialPositions.push(j);
-          }
-        }
-
-        const finalPositions: number[] = [];
-        for (let j = 0; j < routePlan.length; j++) {
-          if (routePlan[j].outputIndex === outputIndex) {
-            finalPositions.push(j);
-          }
-        }
-
-        if (
-          finalPositions.length === 0 &&
-          this.isCircular((ix.data as any).routePlan)
-        ) {
-          for (let j = 0; j < (ix.data as any).routePlan.length; j++) {
-            if ((ix.data as any).routePlan[j].outputIndex === 0) {
-              finalPositions.push(j);
-            }
-          }
-        }
-
-        return [initialPositions, finalPositions];
+    const initialPositions: number[] = [];
+    for (let j = 0; j < routePlan.length; j++) {
+      if (routePlan[j].inputIndex === inputIndex) {
+        initialPositions.push(j);
       }
     }
+
+    const finalPositions: number[] = [];
+    for (let j = 0; j < routePlan.length; j++) {
+      if (routePlan[j].outputIndex === outputIndex) {
+        finalPositions.push(j);
+      }
+    }
+
+    if (finalPositions.length === 0 && this.isCircular(routePlan)) {
+      for (let j = 0; j < routePlan.length; j++) {
+        if (routePlan[j].outputIndex === 0) {
+          finalPositions.push(j);
+        }
+      }
+    }
+
+    return [initialPositions, finalPositions];
   }
 
-  getExactOutAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
-      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
-
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-
-      if (this.isExactIn(ix.name)) {
-        return (ix.data as any).quotedOutAmount.toString();
-      }
+  getExactOutAmount(routeInfo: RouteInfo) {
+    if (this.isExactIn(routeInfo.name)) {
+      return routeInfo.data.quotedOutAmount.toString();
     }
-
     return;
   }
 
-  getExactInAmount(instructions: (ParsedInstruction | PartialInstruction)[]) {
-    for (const instruction of instructions) {
-      if (!instruction.programId.equals(this.programId)) {
-        continue;
-      }
-      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
-
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
-
-      if (this.isExactOut(ix.name)) {
-        return (ix.data as any).quotedInAmount.toString();
-      }
+  getExactInAmount(routeInfo: RouteInfo) {
+    if (this.isExactOut(routeInfo.name)) {
+      return routeInfo.data.quotedInAmount.toString();
     }
-
     return;
   }
 
@@ -164,17 +92,6 @@ export class InstructionParser {
 
   isExactOut(name: string) {
     return name === "sharedAccountsExactOutRoute" || name === "exactOutRoute";
-  }
-
-  isRouting(name: string) {
-    return (
-      name === "route" ||
-      name === "routeWithTokenLedger" ||
-      name === "sharedAccountsRoute" ||
-      name === "sharedAccountsRouteWithTokenLedger" ||
-      name === "sharedAccountsExactOutRoute" ||
-      name === "exactOutRoute"
-    );
   }
 
   isCircular(routePlan: RoutePlan) {

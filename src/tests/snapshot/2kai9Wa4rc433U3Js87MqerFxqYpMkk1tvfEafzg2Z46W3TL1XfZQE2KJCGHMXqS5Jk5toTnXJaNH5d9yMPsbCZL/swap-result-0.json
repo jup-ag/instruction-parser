@@ -1,0 +1,41 @@
+{
+  "parsedEvents": [
+    {
+      "data": {
+        "amm": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "inputMint": "So11111111111111111111111111111111111111112",
+        "inputAmount": "500000000",
+        "outputMint": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+        "outputAmount": "2945866"
+      },
+      "name": "ParsedSwapEvent"
+    },
+    {
+      "data": {
+        "amm": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+        "inputMint": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+        "inputAmount": "2945866",
+        "outputMint": "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4",
+        "outputAmount": "23753244"
+      },
+      "name": "ParsedSwapEvent"
+    },
+    {
+      "data": {
+        "amm": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "inputMint": "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4",
+        "inputAmount": "23753244",
+        "outputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "outputAmount": "76612586"
+      },
+      "name": "ParsedSwapEvent"
+    }
+  ],
+  "initialPositions": [
+    0
+  ],
+  "finalPositions": [
+    2
+  ],
+  "exactOutAmount": "76610208"
+}

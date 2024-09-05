@@ -1,0 +1,49 @@
+{
+  "parsedEvents": [
+    {
+      "data": {
+        "amm": "2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c",
+        "inputMint": "So11111111111111111111111111111111111111112",
+        "inputAmount": "27309941",
+        "outputMint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+        "outputAmount": "17536596017"
+      },
+      "name": "ParsedSwapEvent"
+    },
+    {
+      "data": {
+        "amm": "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB",
+        "inputMint": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+        "inputAmount": "17536596017",
+        "outputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "outputAmount": "3948209"
+      },
+      "name": "ParsedSwapEvent"
+    },
+    {
+      "data": {
+        "amm": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "inputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "inputAmount": "3948209",
+        "outputMint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+        "outputAmount": "3947073"
+      },
+      "name": "ParsedSwapEvent"
+    },
+    {
+      "data": {
+        "account": "6WvkEJyEu72w9LsBpQ9rSU32ALszMrmBETWRuYnx7MMz",
+        "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+        "amount": "33550"
+      },
+      "name": "ParsedFeeEvent"
+    }
+  ],
+  "initialPositions": [
+    0
+  ],
+  "finalPositions": [
+    2
+  ],
+  "exactOutAmount": "3913523"
+}
