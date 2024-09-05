@@ -104,6 +104,12 @@ describe("instruction parser", () => {
       "5pcpYhqJyyHHxVaa9mvchML6Njro5Chxv7EFjHPSwxVpdyGAt6uVhd1xUBmXe7ztiuhS1iHFgXm67nwr7mem5itu";
     await compare(currentSignature);
   });
+
+  test("transaction with Jupiter Labs Perpetuals DEX", async () => {
+    currentSignature =
+      "2kai9Wa4rc433U3Js87MqerFxqYpMkk1tvfEafzg2Z46W3TL1XfZQE2KJCGHMXqS5Jk5toTnXJaNH5d9yMPsbCZL";
+    await compare(currentSignature);
+  });
 });
 
 async function compare(signature: string) {

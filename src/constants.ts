@@ -153,6 +153,10 @@ export const SWAP_IN_OUT_ACCOUNTS_POSITION = {
     in: 1,
     out: 2,
   },
+  perpsV2AddLiquidity: {
+    in: 1,
+    out: 2,
+  },
   perpsRemoveLiquidity: {
     in: 2,
     out: 1,
