@@ -245,7 +245,7 @@ async function extractSwapData(
   accountInfosMap: AccountInfoMap,
   swapEvent: SwapEvent
 ) {
-  const amm = AMM_TYPES[swapEvent.amm.toBase58()];
+  const amm = AMM_TYPES[swapEvent.amm.toBase58()] ?? `Unknown program ${swapEvent.amm.toBase58()}`;
 
   const {
     symbol: inSymbol,

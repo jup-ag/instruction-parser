@@ -18,17 +18,17 @@ export type Jupiter = {
         },
         {
           name: "userSourceTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
           name: "userDestinationTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
           name: "destinationTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
           isOptional: true;
         },
@@ -42,16 +42,6 @@ export type Jupiter = {
           isMut: true;
           isSigner: false;
           isOptional: true;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -97,17 +87,17 @@ export type Jupiter = {
         },
         {
           name: "userSourceTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
           name: "userDestinationTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
           name: "destinationTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
           isOptional: true;
         },
@@ -124,16 +114,6 @@ export type Jupiter = {
         },
         {
           name: "tokenLedger";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
           isMut: false;
           isSigner: false;
         }
@@ -224,16 +204,6 @@ export type Jupiter = {
           isMut: false;
           isSigner: false;
           isOptional: true;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -332,16 +302,6 @@ export type Jupiter = {
           name: "tokenLedger";
           isMut: false;
           isSigner: false;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -387,17 +347,17 @@ export type Jupiter = {
         },
         {
           name: "userSourceTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
           name: "userDestinationTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
           name: "destinationTokenAccount";
-          isMut: false;
+          isMut: true;
           isSigner: false;
           isOptional: true;
         },
@@ -422,16 +382,6 @@ export type Jupiter = {
           isMut: false;
           isSigner: false;
           isOptional: true;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -524,16 +474,6 @@ export type Jupiter = {
           isMut: false;
           isSigner: false;
           isOptional: true;
-        },
-        {
-          name: "eventAuthority";
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: "program";
-          isMut: false;
-          isSigner: false;
         }
       ];
       args: [
@@ -619,6 +559,42 @@ export type Jupiter = {
         }
       ];
       args: [];
+    },
+    {
+      name: "createTokenAccount";
+      accounts: [
+        {
+          name: "tokenAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "user";
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: "mint";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        }
+      ];
+      args: [
+        {
+          name: "bump";
+          type: "u8";
+        }
+      ];
     },
     {
       name: "createProgramOpenOrders";
@@ -774,7 +750,7 @@ export type Jupiter = {
   ];
   accounts: [
     {
-      name: "tokenLedger";
+      name: "TokenLedger";
       type: {
         kind: "struct";
         fields: [
@@ -829,6 +805,35 @@ export type Jupiter = {
           {
             name: "outputIndex";
             type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "PlatformFeeType";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "SourceMint";
+            fields: [
+              {
+                name: "mint";
+                type: "publicKey";
+              }
+            ];
+          },
+          {
+            name: "DestinationMint";
+            fields: [
+              {
+                name: "mint";
+                type: "publicKey";
+              }
+            ];
+          },
+          {
+            name: "Zero";
           }
         ];
       };
@@ -1152,6 +1157,110 @@ export type Jupiter = {
           },
           {
             name: "RaydiumCP";
+          },
+          {
+            name: "WhirlpoolSwapV2";
+            fields: [
+              {
+                name: "aToB";
+                type: "bool";
+              },
+              {
+                name: "remainingAccountsInfo";
+                type: {
+                  option: {
+                    defined: "RemainingAccountsInfo";
+                  };
+                };
+              }
+            ];
+          },
+          {
+            name: "OneIntro";
+          },
+          {
+            name: "PumpdotfunWrappedBuy";
+          },
+          {
+            name: "PumpdotfunWrappedSell";
+          },
+          {
+            name: "PerpsV2";
+          },
+          {
+            name: "PerpsV2AddLiquidity";
+          },
+          {
+            name: "PerpsV2RemoveLiquidity";
+          },
+          {
+            name: "MoonshotWrappedBuy";
+          },
+          {
+            name: "MoonshotWrappedSell";
+          },
+          {
+            name: "StabbleStableSwap";
+          },
+          {
+            name: "StabbleWeightedSwap";
+          },
+          {
+            name: "Obric";
+            fields: [
+              {
+                name: "x_to_y";
+                type: "bool";
+              }
+            ];
+          }
+        ];
+      };
+    },
+    {
+      name: "RemainingAccountsSlice";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "accountsType";
+            type: {
+              defined: "AccountsType";
+            };
+          },
+          {
+            name: "length";
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "RemainingAccountsInfo";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "slices";
+            type: {
+              vec: {
+                defined: "RemainingAccountsSlice";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "AccountsType";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "TransferHookA";
+          },
+          {
+            name: "TransferHookB";
           }
         ];
       };
@@ -1328,17 +1437,17 @@ export const IDL: Jupiter = {
         },
         {
           name: "userSourceTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
           name: "userDestinationTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
           name: "destinationTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
           isOptional: true,
         },
@@ -1352,16 +1461,6 @@ export const IDL: Jupiter = {
           isMut: true,
           isSigner: false,
           isOptional: true,
-        },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
-          isMut: false,
-          isSigner: false,
         },
       ],
       args: [
@@ -1407,17 +1506,17 @@ export const IDL: Jupiter = {
         },
         {
           name: "userSourceTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
           name: "userDestinationTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
           name: "destinationTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
           isOptional: true,
         },
@@ -1434,16 +1533,6 @@ export const IDL: Jupiter = {
         },
         {
           name: "tokenLedger",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
           isMut: false,
           isSigner: false,
         },
@@ -1534,16 +1623,6 @@ export const IDL: Jupiter = {
           isMut: false,
           isSigner: false,
           isOptional: true,
-        },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
-          isMut: false,
-          isSigner: false,
         },
       ],
       args: [
@@ -1643,16 +1722,6 @@ export const IDL: Jupiter = {
           isMut: false,
           isSigner: false,
         },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [
         {
@@ -1697,17 +1766,17 @@ export const IDL: Jupiter = {
         },
         {
           name: "userSourceTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
           name: "userDestinationTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
           name: "destinationTokenAccount",
-          isMut: false,
+          isMut: true,
           isSigner: false,
           isOptional: true,
         },
@@ -1732,16 +1801,6 @@ export const IDL: Jupiter = {
           isMut: false,
           isSigner: false,
           isOptional: true,
-        },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
-          isMut: false,
-          isSigner: false,
         },
       ],
       args: [
@@ -1835,16 +1894,6 @@ export const IDL: Jupiter = {
           isSigner: false,
           isOptional: true,
         },
-        {
-          name: "eventAuthority",
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: "program",
-          isMut: false,
-          isSigner: false,
-        },
       ],
       args: [
         {
@@ -1929,6 +1978,42 @@ export const IDL: Jupiter = {
         },
       ],
       args: [],
+    },
+    {
+      name: "createTokenAccount",
+      accounts: [
+        {
+          name: "tokenAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "user",
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: "mint",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: "bump",
+          type: "u8",
+        },
+      ],
     },
     {
       name: "createProgramOpenOrders",
@@ -2084,7 +2169,7 @@ export const IDL: Jupiter = {
   ],
   accounts: [
     {
-      name: "tokenLedger",
+      name: "TokenLedger",
       type: {
         kind: "struct",
         fields: [
@@ -2139,6 +2224,35 @@ export const IDL: Jupiter = {
           {
             name: "outputIndex",
             type: "u8",
+          },
+        ],
+      },
+    },
+    {
+      name: "PlatformFeeType",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "SourceMint",
+            fields: [
+              {
+                name: "mint",
+                type: "publicKey",
+              },
+            ],
+          },
+          {
+            name: "DestinationMint",
+            fields: [
+              {
+                name: "mint",
+                type: "publicKey",
+              },
+            ],
+          },
+          {
+            name: "Zero",
           },
         ],
       },
@@ -2462,6 +2576,110 @@ export const IDL: Jupiter = {
           },
           {
             name: "RaydiumCP",
+          },
+          {
+            name: "WhirlpoolSwapV2",
+            fields: [
+              {
+                name: "aToB",
+                type: "bool",
+              },
+              {
+                name: "remainingAccountsInfo",
+                type: {
+                  option: {
+                    defined: "RemainingAccountsInfo",
+                  },
+                },
+              },
+            ],
+          },
+          {
+            name: "OneIntro",
+          },
+          {
+            name: "PumpdotfunWrappedBuy",
+          },
+          {
+            name: "PumpdotfunWrappedSell",
+          },
+          {
+            name: "PerpsV2",
+          },
+          {
+            name: "PerpsV2AddLiquidity",
+          },
+          {
+            name: "PerpsV2RemoveLiquidity",
+          },
+          {
+            name: "MoonshotWrappedBuy",
+          },
+          {
+            name: "MoonshotWrappedSell",
+          },
+          {
+            name: "StabbleStableSwap",
+          },
+          {
+            name: "StabbleWeightedSwap",
+          },
+          {
+            name: "Obric",
+            fields: [
+              {
+                name: "x_to_y",
+                type: "bool",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      name: "RemainingAccountsSlice",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "accountsType",
+            type: {
+              defined: "AccountsType",
+            },
+          },
+          {
+            name: "length",
+            type: "u8",
+          },
+        ],
+      },
+    },
+    {
+      name: "RemainingAccountsInfo",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "slices",
+            type: {
+              vec: {
+                defined: "RemainingAccountsSlice",
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: "AccountsType",
+      type: {
+        kind: "enum",
+        variants: [
+          {
+            name: "TransferHookA",
+          },
+          {
+            name: "TransferHookB",
           },
         ],
       },
