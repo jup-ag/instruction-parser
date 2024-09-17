@@ -52,5 +52,9 @@ export const AMM_TYPES = {
   "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx": "Sanctum S",
   Gswppe6ERWKpUTXvRPfXdzHhiCyJvLadVvXGfdpBqcE1: "GuacSwap",
   DEXYosS6oEGvk8uCDayvwEZz4qEyDJRf9nFgYCaqPMTm: "1DEX",
-  "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P": "Pump.Fun"
+  "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P": "Pump.Fun",
+  MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG: "Moonshot",
+  swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ: "Stabble Stable",
+  swapFpHZwjELNnjvThjajtiVmkz3yPQEHjLtka2fwHW: "Stabble Weighted",
+  obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y: "Obric",
 };
