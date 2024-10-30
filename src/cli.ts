@@ -1,6 +1,5 @@
 import { Connection } from "@solana/web3.js";
 import { Command } from "commander";
-import { getTokenMap } from "./lib/utils";
 import { extract } from ".";
 
 const program = new Command();
@@ -23,14 +22,7 @@ program
       console.log("Failed transaction", tx.meta.err);
     }
 
-    const tokenMap = await getTokenMap();
-    const result = await extract(
-      signature,
-      connection,
-      tx,
-      tokenMap,
-      tx.blockTime
-    );
+    const result = await extract(signature, connection, tx, tx.blockTime);
 
     console.log(result);
   });
