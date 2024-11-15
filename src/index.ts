@@ -2,14 +2,14 @@ import { BN, Event, Program, Provider } from "@coral-xyz/anchor";
 import { unpackAccount, unpackMint } from "@solana/spl-token";
 import { AccountInfo, Connection, PublicKey } from "@solana/web3.js";
 import Decimal from "decimal.js";
+import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
+import { IDL, Jupiter } from "./idl/jupiter";
+import { getEvents } from "./lib/get-events";
 import { InstructionParser } from "./lib/instruction-parser";
 import { DecimalUtil, getPriceInUSDByMint } from "./lib/utils";
-import { getEvents } from "./lib/get-events";
-import { AMM_TYPES, JUPITER_V6_PROGRAM_ID } from "./constants";
 import { FeeEvent, SwapEvent, TransactionWithMeta } from "./types";
-import { IDL, Jupiter } from "./idl/jupiter";
 
-export { TransactionWithMeta };
+export { IDL, TransactionWithMeta };
 
 export const program = new Program<Jupiter>(
   IDL,
