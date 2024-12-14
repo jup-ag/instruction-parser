@@ -21,7 +21,7 @@ export async function getPriceInUSDByMint(
     }
 
     let payload = (await got
-      .get(`https://price.jup.ag/v4/price?ids=${tokenMint}`)
+      .get(`https://api.jup.ag/price/v2?ids=${tokenMint}`)
       .json()) as any;
 
     if (payload.data[tokenMint]) {
