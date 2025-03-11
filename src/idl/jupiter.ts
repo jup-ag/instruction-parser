@@ -1234,6 +1234,63 @@ export type Jupiter = {
                 type: "bool";
               }
             ];
+          },
+          {
+            name: "SolayerDelegateNoInit",
+          },
+          {
+            name: "SolayerUnDelegateNoInit";
+          },
+          {
+            name: "TokenMill";
+            fields: [
+              {
+                name: "side";
+                type: {
+                  defined: "Side";
+                }
+              }
+            ];
+          },
+          {
+            name: "DaoFunBuy";
+          },
+          {
+            name: "DaoFunSell";
+          },
+          {
+            name: "ZeroFi";
+          },
+          {
+            name: "WooFi";
+          },
+          {
+            name: "StakeDexWithdrawWrappedSol";
+          },
+          {
+            name: "VirtualsBuy";
+          },
+          {
+            name: "VirtualsSell";
+          },
+          {
+            name: "Perena";
+            fields: [
+              {
+                name: "in_index";
+                type: "u8";
+              },
+              {
+                name: "out_index";
+                type: "u8";
+              }
+            ];
+          },
+          {
+            name: "PumpdotfunAmmBuy";
+          },
+          {
+            name: "PumpdotfunAmmSell";
           }
         ];
       };
@@ -2675,6 +2732,63 @@ export const IDL: Jupiter = {
               },
             ],
           },
+          {
+            name: "SolayerDelegateNoInit",
+          },
+          {
+            name: "SolayerUnDelegateNoInit",
+          },
+          {
+            name: "TokenMill",
+            fields: [
+              {
+                name: "side",
+                type: {
+                  defined: "Side",
+                }
+              }
+            ],
+          },
+          {
+            name: "DaoFunBuy",
+          },
+          {
+            name: "DaoFunSell",
+          },
+          {
+            name: "ZeroFi",
+          },
+          {
+            name: "WooFi",
+          },
+          {
+            name: "StakeDexWithdrawWrappedSol",
+          },
+          {
+            name: "VirtualsBuy",
+          },
+          {
+            name: "VirtualsSell",
+          },
+          {
+            name: "Perena",
+            fields: [
+              {
+                name: "in_index",
+                type: "u8",
+              },
+              {
+                name: "out_index",
+                type: "u8",
+              }
+            ],
+          },
+          {
+            name: "PumpdotfunAmmBuy",
+          },
+          {
+            name: "PumpdotfunAmmSell",
+          }
         ],
       },
     },

@@ -56,4 +56,6 @@ export const AMM_TYPES = {
   obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y: "Obric",
   SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe: "SolFi",
   HyhpEq587ANShDdbx1mP4dTmDZC44CXWft29oYQXDb53: "Fox",
+  ZERor4xhbUycZ6gb9ntrhqscUcZmAbQDjEAtCf4hbZY: "ZeroFi",
+  swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ: "Stabble Stable Swap",
 };
