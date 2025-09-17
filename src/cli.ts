@@ -1,16 +1,16 @@
-import { Connection } from "@solana/web3.js";
-import { Command } from "commander";
-import { extract } from ".";
+import { Connection } from '@solana/web3.js';
+import { Command } from 'commander';
+import { extract } from '.';
 
 const program = new Command();
 
 program
-  .command("lookup-tx")
-  .requiredOption("-s, --signature <signature>")
-  .requiredOption("-r, --rpc <rpc>")
+  .command('lookup-tx')
+  .requiredOption('-s, --signature <signature>')
+  .requiredOption('-r, --rpc <rpc>')
   .addHelpText(
-    "beforeAll",
-    "Look up a Jupiter v6 swap transaction and extract its information"
+    'beforeAll',
+    'Look up a Jupiter v6 swap transaction and extract its information'
   )
   .action(async ({ signature, rpc }) => {
     const connection = new Connection(rpc); // Use your own RPC endpoint here.
@@ -19,10 +19,10 @@ program
     });
 
     if (tx.meta.err) {
-      console.log("Failed transaction", tx.meta.err);
+      console.log('Failed transaction', tx.meta.err);
     }
 
-    const result = await extract(signature, connection, tx, tx.blockTime);
+    const result = extract(signature, tx);
 
     console.log(result);
   });

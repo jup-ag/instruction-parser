@@ -1,7 +1,7 @@
-import { ParsedInstruction, PublicKey } from "@solana/web3.js";
-import { BorshCoder, Program } from "@coral-xyz/anchor";
-import { IDL } from "../idl/jupiter";
-import { PartialInstruction, RoutePlan, TransactionWithMeta } from "../types";
+import { ParsedInstruction, PublicKey } from '@solana/web3.js';
+import { BorshCoder } from '@coral-xyz/anchor';
+import { IDL } from '../idl/jupiter';
+import { PartialInstruction, RoutePlan, TransactionWithMeta } from '../types';
 
 export class InstructionParser {
   private coder: BorshCoder;
@@ -20,7 +20,7 @@ export class InstructionParser {
         continue;
       }
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
+      const ix = this.coder.instruction.decode(instruction.data, 'base58');
 
       if (this.isRouting(ix.name)) {
         const instructionName = ix.name;
@@ -40,13 +40,13 @@ export class InstructionParser {
 
   getTransferAuthorityIndex(instructionName: string) {
     switch (instructionName) {
-      case "route":
-      case "exactOutRoute":
-      case "routeWithTokenLedger":
+      case 'route':
+      case 'exactOutRoute':
+      case 'routeWithTokenLedger':
         return 1;
-      case "sharedAccountsRoute":
-      case "sharedAccountsRouteWithTokenLedger":
-      case "sharedAccountsExactOutRoute":
+      case 'sharedAccountsRoute':
+      case 'sharedAccountsRouteWithTokenLedger':
+      case 'sharedAccountsExactOutRoute':
         return 2;
     }
   }
@@ -78,7 +78,7 @@ export class InstructionParser {
         continue;
       }
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
+      const ix = this.coder.instruction.decode(instruction.data, 'base58');
       // This will happen because now event is also an CPI instruction.
       if (!ix) {
         continue;
@@ -124,9 +124,9 @@ export class InstructionParser {
       if (!instruction.programId.equals(this.programId)) {
         continue;
       }
-      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
+      if (!('data' in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
+      const ix = this.coder.instruction.decode(instruction.data, 'base58');
 
       if (this.isExactIn(ix.name)) {
         return (ix.data as any).quotedOutAmount.toString();
@@ -141,9 +141,9 @@ export class InstructionParser {
       if (!instruction.programId.equals(this.programId)) {
         continue;
       }
-      if (!("data" in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
+      if (!('data' in instruction)) continue; // Guard in case it is a parsed decoded instruction, should be impossible
 
-      const ix = this.coder.instruction.decode(instruction.data, "base58");
+      const ix = this.coder.instruction.decode(instruction.data, 'base58');
 
       if (this.isExactOut(ix.name)) {
         return (ix.data as any).quotedInAmount.toString();
@@ -155,25 +155,25 @@ export class InstructionParser {
 
   isExactIn(name: string) {
     return (
-      name === "route" ||
-      name === "routeWithTokenLedger" ||
-      name === "sharedAccountsRoute" ||
-      name === "sharedAccountsRouteWithTokenLedger"
+      name === 'route' ||
+      name === 'routeWithTokenLedger' ||
+      name === 'sharedAccountsRoute' ||
+      name === 'sharedAccountsRouteWithTokenLedger'
     );
   }
 
   isExactOut(name: string) {
-    return name === "sharedAccountsExactOutRoute" || name === "exactOutRoute";
+    return name === 'sharedAccountsExactOutRoute' || name === 'exactOutRoute';
   }
 
   isRouting(name: string) {
     return (
-      name === "route" ||
-      name === "routeWithTokenLedger" ||
-      name === "sharedAccountsRoute" ||
-      name === "sharedAccountsRouteWithTokenLedger" ||
-      name === "sharedAccountsExactOutRoute" ||
-      name === "exactOutRoute"
+      name === 'route' ||
+      name === 'routeWithTokenLedger' ||
+      name === 'sharedAccountsRoute' ||
+      name === 'sharedAccountsRouteWithTokenLedger' ||
+      name === 'sharedAccountsExactOutRoute' ||
+      name === 'exactOutRoute'
     );
   }
 
